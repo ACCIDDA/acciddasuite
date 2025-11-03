@@ -6,12 +6,14 @@
 
 # forecast_date = "2024-12-01" #"2025-10-12" # Sunday
 forecast_date_series <- lubridate::as_date("2024-12-01") + lubridate::weeks(-2:10) #"2025-10-12" # Sunday
+forecast_date_series <- lubridate::as_date("2024-12-01") + lubridate::weeks(-1:1) #"2025-10-12" # Sunday
+forecast_date_series <- lubridate::as_date(forecast_date_series)
 forecast_date <- forecast_date_series[1]
 
 state_name <- "Maryland"
 geo_ids <- "md"
 location_id <- "24"
-forecast_disease <- "influenza"
+forecast_disease <- "flu"
 target <- "wk inc flu hosp"
 forecast_horizon_wks <- 0:3
 
@@ -27,13 +29,13 @@ library(epipredict)
 
 
 # 1) Set up project file structure
-setup_file_structure(project_dir = "")
+setup_file_structure(project_dir = "testing")
 
 
 
 # Loop over forecast dates
 for (forecast_date in forecast_date_series) {
-
+  forecast_date <- lubridate::as_date(forecast_date)
   message("Running forecast for date: ", forecast_date)
 
 
@@ -41,7 +43,7 @@ for (forecast_date in forecast_date_series) {
 
   # Pull NHSN hospitalization data
   target_data <- get_nhsn_data(
-    disease = forecast_disease, #"influenza"  or "rsv" or "covid"
+    disease = forecast_disease, #"flu"  or "rsv" or "covid"
     geo_values = geo_ids,
     forecast_date = forecast_date,
     save_data = TRUE
@@ -49,7 +51,6 @@ for (forecast_date in forecast_date_series) {
 
   ## Save it
   write_csv(target_data, file = file.path("target-data", paste0("target-hospital-admissions-", forecast_date, ".csv")))
-
 
 
 
@@ -354,9 +355,10 @@ target_data_plot <- get_nhsn_data(
   disease = forecast_disease,
   geo_values = geo_ids,
   forecast_date = new_target_data_date,
-  save_data = TRUE
+  save_data = FALSE
 )
 
+write_csv(target_data_plot, file = file.path("target-data", paste0("target-hospital-admissions-", new_target_data_date, ".csv")))
 
 
 

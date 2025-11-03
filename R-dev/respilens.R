@@ -25,7 +25,8 @@
 
 
 library(AMPHForecastSuite)
-source("R-dev/respilens_main.R")
+library(tidyverse)
+source("R-dev/respilens_code.R")
 
 # combine model outputs
 combine_model_outout <- function(comb_file_path = "respiLens-output/AMPH_forecasts_comb.csv") {
@@ -142,7 +143,7 @@ setup_args_and_data_respilens <- function(
 }
 
 
-
+setwd("testing")
 
 # get latest target data file
 latest_target_file <- identify_latest_targetdata(target_data_dir = "target-data")
@@ -164,7 +165,7 @@ args <- setup_args_and_data_respilens(
     log_level = "INFO")
 
 # Run the respiLens data generator
-run_main()
+main()
 
 
 

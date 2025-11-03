@@ -609,7 +609,7 @@ copy_schema_from_github <- function(dest_dir) {
   }
 
   # Download the file from GitHub
-  schema_github_url <- "https://github.com/ACCIDDA/RespiLens-staging/blob/main/scripts/schemas/RespiLens_projections.schema.json"
+  schema_github_url <- "https://raw.githubusercontent.com/ACCIDDA/RespiLens/main/scripts/schemas/RespiLens_projections.schema.json"
   download.file(schema_github_url,
                 destfile = file.path(dest_dir, "RespiLens_projections.schema.json"),
                 mode = "wb")
@@ -643,17 +643,17 @@ main <- function() {
   dataset_configs <- list(
     flu = list(
       file_suffix = "flu",
-      dataset_label = "flusight forecasts",
+      dataset_label = "influenza forecasts",
       ground_truth_value_key = "wk inc flu hosp",
       ground_truth_date_column = "target_end_date",
-      ground_truth_target = NULL,
+      ground_truth_target = "wk inc flu hosp",
       ground_truth_min_date = as.Date("2023-10-01"),
       series_type = "projection",
       drop_output_types = c("sample")
     ),
-    rsvforecasthub = list(
+    rsv = list(
       file_suffix = "rsv",
-      dataset_label = "rsv forecast hub",
+      dataset_label = "rsv forecasts",
       ground_truth_value_key = "wk inc rsv hosp",
       ground_truth_date_column = "date",
       ground_truth_target = "wk inc rsv hosp",
@@ -661,9 +661,9 @@ main <- function() {
       series_type = "projection",
       drop_output_types = c("sample")
     ),
-    covid19forecasthub = list(
+    covid19 = list(
       file_suffix = "covid19",
-      dataset_label = "covid19 forecast hub",
+      dataset_label = "covid19 forecasts",
       ground_truth_value_key = "wk inc covid hosp",
       ground_truth_date_column = "date",
       ground_truth_target = "wk inc covid hosp",
@@ -673,7 +673,7 @@ main <- function() {
     )
   )
 
-  pathogen_aliases <- c(rsv = "rsvforecasthub", covid = "covid19forecasthub", covid19 = "covid19forecasthub")
+  pathogen_aliases <- c(flu = "flu", influenza = "flu", rsv = "rsv", covid = "covid19", covid19 = "covid19")
   canonical_pathogen <- if (args$pathogen %in% names(dataset_configs)) args$pathogen else pathogen_aliases[[args$pathogen]]
   if (is.na(canonical_pathogen)) {
     stop(sprintf("Unsupported pathogen '%s'. Supported options are: %s",
@@ -682,7 +682,7 @@ main <- function() {
   }
 
   config <- dataset_configs[[canonical_pathogen]]
-  log_message("INFO", sprintf("Starting %s projections processing...", toupper(canonical_pathogen)), context)
+  log_message("INFO", sprintf("Starting %s forecasts processing...", toupper(canonical_pathogen)), context)
 
   forecast_required_columns <- c(
     "location", "reference_date", "target", "model_id", "horizon",
@@ -690,13 +690,14 @@ main <- function() {
   )
   target_required_columns <- list(
     flu = c("as_of", "target_end_date", "location", "observation", "target"),
-    rsvforecasthub = c("as_of", "date", "location", "observation", "target"),
-    covid19forecasthub = c("as_of", "date", "location", "observation", "target")
+    rsv = c("as_of", "date", "location", "observation", "target"),
+    covid19 = c("as_of", "date", "location", "observation", "target")
   )
   location_required_columns <- c("location", "abbreviation", "location_name", "population")
 
   forecast_df <- load_forecast_data(args$data_path)
   check_required_columns(forecast_df, forecast_required_columns, args$data_path)
+
   # remove unneeded columns
   forecast_df <- forecast_df %>%
     dplyr::select(dplyr::all_of(forecast_required_columns))
@@ -715,6 +716,7 @@ main <- function() {
 
   locations_df <- load_locations_data(args$locations_data_path)
   check_required_columns(locations_df, location_required_columns, args$locations_data_path)
+
   # remove unneeded columns
   locations_df <- locations_df %>%
     dplyr::select(dplyr::all_of(location_required_columns))
@@ -742,8 +744,20 @@ main <- function() {
     copy_schema_from_github(respilens_dir)
   }
 
+  forecast_df <- forecast_df %>%
+    dplyr::filter(location == "24") #%>%
+  #   dplyr::filter(grepl("AMPH", model_id)) %>%
+  #   dplyr::filter(model_id == "AMPH-ensemble",
+  #                 horizon == "0",
+  #                 output_type == "quantile",
+  #                 output_type_id == "0.5")
+
+
+  locations_df <- locations_df %>%
+    dplyr::filter(location == "24")
+
   outputs <- process_dataset(forecast_df, locations_df, target_df, config)
-  path_mapping <- list(flu = "flusight", rsvforecasthub = "rsvforecasthub", covid19forecasthub = "covid19forecasthub")
+  path_mapping <- list(flu = "fluforecasts", rsv = "rsvforecasts", covid19 = "covid19forecasts")
   target_subdir <- path_mapping[[canonical_pathogen]]
   output_dir <- file.path(args$output_path, target_subdir)
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
@@ -767,24 +781,26 @@ main <- function() {
   invisible(0)
 }
 
-#' Title
-#'
-#' @returns
-#' @export
-#'
-#' @examples
-run_main <- function() {
-  tryCatch(
-    {
-      status <- main()
-      quit(save = "no", status = status, runLast = FALSE)
-    },
-    error = function(e) {
-      message(sprintf("ERROR: %s", e$message))
-      quit(save = "no", status = 1, runLast = FALSE)
-    }
-  )
-}
+
+# The function below always breaks Rstudio. not sure why.
+#' #' Title
+#' #'
+#' #' @returns
+#' #' @export
+#' #'
+#' #' @examples
+#' run_main <- function() {
+#'   tryCatch(
+#'     {
+#'       status <- main()
+#'       quit(save = "no", status = status, runLast = FALSE)
+#'     },
+#'     error = function(e) {
+#'       message(sprintf("ERROR: %s", e$message))
+#'       quit(save = "no", status = 1, runLast = FALSE)
+#'     }
+#'   )
+#' }
 
 # if (!interactive()) {
 #   run_main()
