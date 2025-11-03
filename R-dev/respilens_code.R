@@ -609,7 +609,7 @@ copy_schema_from_github <- function(dest_dir) {
   }
 
   # Download the file from GitHub
-  schema_github_url <- "https://github.com/ACCIDDA/RespiLens-staging/blob/main/scripts/schemas/RespiLens_projections.schema.json"
+  schema_github_url <- "https://raw.githubusercontent.com/ACCIDDA/RespiLens/main/scripts/schemas/RespiLens_projections.schema.json"
   download.file(schema_github_url,
                 destfile = file.path(dest_dir, "RespiLens_projections.schema.json"),
                 mode = "wb")
