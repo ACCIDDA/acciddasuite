@@ -30,17 +30,17 @@ fcast$plot
 
 ## All functions
 
-- [`get_data()`](https://ACCIDDA.github.io/accidasuite/reference/get_data.md)
+- [`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
   : Get hospitalisation data
-- [`get_fcast()`](https://ACCIDDA.github.io/accidasuite/reference/get_fcast.md)
+- [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
   : Rolling origin epidemic forecasts and model evaluation
-- [`loc_data`](https://ACCIDDA.github.io/accidasuite/reference/loc_data.md)
+- [`loc_data`](https://accidda.github.io/acciddasuite/reference/loc_data.md)
   : Location Dataset
-- [`print(`*`<accida_cast>`*`)`](https://ACCIDDA.github.io/accidasuite/reference/print.accida_cast.md)
+- [`print(`*`<accida_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accida_cast.md)
   : Print an accida_cast object
 
 # Articles
 
 ### All vignettes
 
-- [acciddasuite](https://ACCIDDA.github.io/accidasuite/articles/acciddasuite.md):
+- [acciddasuite](https://accidda.github.io/acciddasuite/articles/acciddasuite.md):

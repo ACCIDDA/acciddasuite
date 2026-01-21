@@ -30,5 +30,4 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 LazyData: true
-URL: https://github.com/ACCIDDA/accidasuite, https://ACCIDDA.github.io/accidasuite/
-
+URL: https://github.com/ACCIDDA/accidasuite, https://ACCIDDA.github.io/accidasuite/, https://accidda.github.io/acciddasuite/

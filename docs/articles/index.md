@@ -2,4 +2,4 @@
 
 ### All vignettes
 
-- [acciddasuite](https://ACCIDDA.github.io/accidasuite/articles/acciddasuite.md):
+- [acciddasuite](https://accidda.github.io/acciddasuite/articles/acciddasuite.md):
