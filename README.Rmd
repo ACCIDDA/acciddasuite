@@ -1,0 +1,29 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# acciddasuite <a href="https://ACCIDDA.github.io/accidasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of acciddasuite is to ...
+
+## Installation
+
+You can install the development version of acciddasuite from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+#pak::pak("ACCIDDA/acciddasuite")
+```
