@@ -1,0 +1,9 @@
+https://www.respilens.com/documentation
+Rscript external_to_projections.R \
+  --output-path <path/to/output-directory> \
+  --pathogen flu \
+  --data-path <path/to/hubverse-data.csv> \
+  --target-data-path <path/to/target-data.csv> \
+  --locations-data-path <path/to/locations.csv>
+
+https://github.com/ACCIDDA/RespiLens/blob/main/scripts/external_to_projections.R
