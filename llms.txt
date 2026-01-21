@@ -1,0 +1,46 @@
+# acciddasuite
+
+The goal of acciddasuite is to …
+
+## Installation
+
+You can install the development version of acciddasuite from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+#pak::pak("ACCIDDA/acciddasuite")
+```
+
+## Example
+
+``` r
+#library(acciddasuite)
+df <- get_data(pathogen = "flu", geo_values = "ny")
+fcast <- df |> 
+  get_fcast(eval_start_date = max(df$target_end_date) - 30)
+fcast
+```
+
+``` r
+fcast$plot
+```
+
+# Package index
+
+## All functions
+
+- [`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
+  : Get hospitalisation data
+- [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
+  : Rolling origin epidemic forecasts and model evaluation
+- [`loc_data`](https://accidda.github.io/acciddasuite/reference/loc_data.md)
+  : Location Dataset
+- [`print(`*`<accida_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accida_cast.md)
+  : Print an accida_cast object
+
+# Articles
+
+### All vignettes
+
+- [acciddasuite](https://accidda.github.io/acciddasuite/articles/acciddasuite.md):
