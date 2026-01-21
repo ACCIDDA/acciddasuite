@@ -4,10 +4,10 @@
 \alias{print.accida_cast}
 \title{Print an accida_cast object}
 \usage{
-\method{print}{accida_cast}(acast, ...)
+\method{print}{accida_cast}(x, ...)
 }
 \arguments{
-\item{acast}{An object of class \code{accida_cast}.}
+\item{x}{An object of class \code{accida_cast}.}
 
 \item{...}{Additional arguments (currently ignored).}
 }

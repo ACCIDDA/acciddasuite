@@ -3,17 +3,17 @@
 #' Displays a concise summary of an \code{accida_cast} object,
 #' including model scores, forecast horizon, and available contents.
 #'
-#' @param acast An object of class \code{accida_cast}.
+#' @param x An object of class \code{accida_cast}.
 #' @param ... Additional arguments (currently ignored).
 #' @export
-print.accida_cast <- function(acast, ...) {
+print.accida_cast <- function(x, ...) {
   cat("<accida_cast>\n\n")
 
   cat("Models evaluated:\n")
-  print(acast$score |> dplyr::select(.model, CRPS), row.names = FALSE)
+  print(x$score |> dplyr::select(.model, CRPS), row.names = FALSE)
 
   cat("\nForecast horizon:\n")
-  rng <- range(acast$forecast$target_end_date)
+  rng <- range(x$forecast$target_end_date)
   cat("  From:", as.character(rng[1]), "\n")
   cat("  To:  ", as.character(rng[2]), "\n")
 
@@ -22,5 +22,5 @@ print.accida_cast <- function(acast, ...) {
   cat("  $score     model ranking table\n")
   cat("  $plot      ggplot2 object\n")
 
-  invisible(acast)
+  invisible(x)
 }

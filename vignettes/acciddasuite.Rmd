@@ -36,7 +36,6 @@ For demonstration purposes, we will load data from the [CDC National Health Safe
 library(dplyr)
 library(ggplot2)
 library(pipetime)
-library(fabletools)
 library(acciddasuite)
 df <- get_data(pathogen = "covid", geo_values = "ny")
 summary(df)
@@ -77,7 +76,7 @@ Default models are:\
 **ETS**: Exponential Smoothing state space model (automatically selected).\ **ARIMA**: Auto-Regressive Integrated Moving Average model (automatically selected).
 
 
-```{r, models}
+```{r, models, eval = FALSE}
 fcast = get_fcast(
   df,
   eval_start_date = eval_start_date,
