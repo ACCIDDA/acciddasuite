@@ -32,7 +32,7 @@ The name of each list element is used as the model label in the output.}
 An object of class \code{accida_cast} containing:
 \describe{
 \item{forecast}{Final \code{h} week ahead forecasts for all models and the ensemble.}
-\item{score}{Model ranking based on rolling origin CRPS.}
+\item{score}{Model ranking based on rolling origin WIS.}
 \item{plot}{ggplot object showing forecasts and prediction intervals.}
 }
 }
@@ -44,10 +44,9 @@ origin scheme.
 \details{
 From \code{eval_start_date} onwards, models are repeatedly refitted on all data
 available up to each evaluation time point and used to forecast the next
-\code{h} weeks. Forecasts are compared to observations using the Continuous
-Ranked Probability Score (CRPS).
+\code{h} weeks.
 
-Models are ranked by mean CRPS across evaluation periods. The best
+Models are ranked by mean WIS score across evaluation periods. The best
 performing \code{top_n} models are combined into an equal weight ensemble.
 A final \code{h} week ahead forecast is then produced by refitting selected
 models using the full dataset.

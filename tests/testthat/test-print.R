@@ -12,7 +12,7 @@ test_that("print.accida_cast handles accida_cast objects", {
     plot = NULL
   )
   class(mock_cast) <- "accida_cast"
-  
+
   # Test that print doesn't error
   expect_output(print(mock_cast), "accida_cast")
   expect_output(print(mock_cast), "Models evaluated")

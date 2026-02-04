@@ -7,3 +7,6 @@ extra_models = NULL
 
 x = get_fcast(df, eval_start_date)
 x$plot
+x$forecast
+x$score
+x

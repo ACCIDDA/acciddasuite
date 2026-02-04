@@ -7,3 +7,5 @@ Rscript external_to_projections.R \
   --locations-data-path <path/to/locations.csv>
 
 https://github.com/ACCIDDA/RespiLens/blob/main/scripts/external_to_projections.R
+
+Describe the loc_data

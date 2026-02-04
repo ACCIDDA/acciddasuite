@@ -1,3 +1,16 @@
+#' Convert fable forecast to hub format
+#' Converts a fable object into `model_out_tbl` and `oracle_output` hub format tables.
+#' @param fcast A fable object containing the forecast.
+#' @param ts A tsibble containing the observed time series data.
+#' @param h Integer. The forecast horizon in weeks.
+#' @param quantiles Numeric vector. The quantiles to extract from the forecast. Default is c(0.025, 0.25, 0.5, 0.75, 0.975).
+#' @return A list with two elements: `model_out_tbl` and `oracle_output`.
+#' @importFrom dplyr as_tibble mutate reframe
+#' @importFrom tidyr unnest
+#' @importFrom stats quantile
+#' @keywords internal
+#' @noRd
+
 fable_to_hub <- function(
   fcast,
   ts,

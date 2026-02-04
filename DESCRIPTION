@@ -1,5 +1,5 @@
 Package: acciddasuite
-Title: A suite of tools for epidemic forecasting.
+Title: A suite of tools for epidemic forecasting
 Version: 0.0.0.9000
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
@@ -16,16 +16,17 @@ Imports:
     feasts,
     tsibble,
     dplyr,
+    tidyr,
     ggplot2,
     distributional,
-    lubridate,
     epidatr,
-    pipetime,
-    rlang
+    rlang,
+    hubEvals
 Suggests: 
     knitr,
     rmarkdown,
     devtools,
+    pipetime,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Depends: 
