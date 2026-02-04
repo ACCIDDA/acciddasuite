@@ -6,10 +6,9 @@
 #'
 #' From `eval_start_date` onwards, models are repeatedly refitted on all data
 #' available up to each evaluation time point and used to forecast the next
-#' `h` weeks. Forecasts are compared to observations using the Continuous
-#' Ranked Probability Score (CRPS).
+#' `h` weeks.
 #'
-#' Models are ranked by mean CRPS across evaluation periods. The best
+#' Models are ranked by mean WIS score across evaluation periods. The best
 #' performing `top_n` models are combined into an equal weight ensemble.
 #' A final `h` week ahead forecast is then produced by refitting selected
 #' models using the full dataset.
@@ -34,7 +33,7 @@
 #' @return An object of class `accida_cast` containing:
 #'   \describe{
 #'     \item{forecast}{Final `h` week ahead forecasts for all models and the ensemble.}
-#'     \item{score}{Model ranking based on rolling origin CRPS.}
+#'     \item{score}{Model ranking based on rolling origin WIS.}
 #'     \item{plot}{ggplot object showing forecasts and prediction intervals.}
 #'   }
 #'
@@ -136,18 +135,18 @@ get_fcast <- function(
       )
   )
 
-  score <- get_score(cv_fit, ts) |> dplyr::arrange(CRPS)
+  score <- get_score(cv_fit, ts, h) |> dplyr::arrange(wis)
 
   # --------- Ensemble ---------
   top_models <- score |>
     dplyr::slice_head(n = min(top_n, nrow(score))) |>
-    dplyr::pull(.model)
+    dplyr::pull(model_id)
 
   cv_ens <- cv_fit |>
     dplyr::filter(.model %in% top_models) |>
     dplyr::summarise(
       observation = do.call(
-        dist_mixture,
+        distributional::dist_mixture,
         c(
           as.list(observation),
           list(weights = rep(1 / length(top_models), length(top_models)))
@@ -157,8 +156,8 @@ get_fcast <- function(
     dplyr::mutate(.model = "ENSEMBLE")
 
   #takes the most time:
-  score <- dplyr::bind_rows(score, get_score(cv_ens, ts)) |>
-    dplyr::arrange(CRPS)
+  score <- get_score(dplyr::bind_rows(cv_fit, cv_ens), ts, h) |>
+    dplyr::arrange(wis)
 
   # --------- Final forecast ---------
   cat("Generating final forecasts...\n")
@@ -179,7 +178,7 @@ get_fcast <- function(
     dplyr::filter(.model %in% top_models) |>
     dplyr::summarise(
       observation = do.call(
-        dist_mixture,
+        distributional::dist_mixture,
         c(
           as.list(observation),
           list(weights = rep(1 / length(top_models), length(top_models)))
@@ -189,7 +188,9 @@ get_fcast <- function(
     dplyr::mutate(.model = "ENSEMBLE")
 
   forecast <- dplyr::bind_rows(final_fcast, final_ens) |>
-    mutate(.mean = ifelse(.model == "ENSEMBLE", mean(observation), .mean))
+    dplyr::mutate(
+      .mean = ifelse(.model == "ENSEMBLE", mean(observation), .mean)
+    )
 
   # --------- Plot ---------
   plot <- forecast |>
@@ -201,9 +202,9 @@ get_fcast <- function(
       .model = factor(
         .model,
         levels = score |>
-          dplyr::filter(.model %in% c(top_models, "ENSEMBLE")) |>
-          dplyr::arrange(CRPS) |>
-          dplyr::pull(.model)
+          dplyr::filter(model_id %in% c(top_models, "ENSEMBLE")) |>
+          dplyr::arrange(wis) |>
+          dplyr::pull(model_id)
       )
     ) |>
     ggplot2::ggplot(ggplot2::aes(x = target_end_date)) +

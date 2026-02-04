@@ -10,7 +10,7 @@ print.accida_cast <- function(x, ...) {
   cat("<accida_cast>\n\n")
 
   cat("Models evaluated:\n")
-  print(x$score |> dplyr::select(.model, CRPS), row.names = FALSE)
+  print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)
 
   cat("\nForecast horizon:\n")
   rng <- range(x$forecast$target_end_date)
