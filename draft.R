@@ -1,4 +1,4 @@
-devtools::load_all()
+# devtools::load_all()
 df <- get_data(pathogen = "rsv", geo_values = "ny")
 df
 eval_start_date = "2025-09-01"
@@ -37,3 +37,24 @@ x$hubcast$model_out_tbl |>
         color = "black",
         size = 1
     )
+
+
+# RESPILENS
+x$hubcast$model_out_tbl |>
+    mutate(
+        location = "36"
+    ) |>
+    write.csv("model_data.csv", row.names = FALSE)
+
+df |>
+    mutate(
+        location = "36"
+    ) |>
+    write.csv("target_data.csv", row.names = FALSE)
+
+# Rscript scripts/external_to_projections.R \
+#   --output-path '/Users/cy/Documents/PROJECTS LOCAL/RespiLens' \
+#   --pathogen flu \
+#   --data-path '/Users/cy/Documents/PROJECTS LOCAL/acciddasuite/model_data.csv'\
+#   --target-data-path '/Users/cy/Documents/PROJECTS LOCAL/acciddasuite/target_data.csv' \
+#   --locations-data-path '/Users/cy/Documents/PROJECTS LOCAL/RespiLens/data/locations.csv'
