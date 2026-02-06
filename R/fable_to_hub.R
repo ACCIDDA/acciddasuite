@@ -1,8 +1,7 @@
 #' Convert fable forecast to hub format
 #' Converts a fable object into `model_out_tbl` and `oracle_output` hub format tables.
-#' @param fcast A fable object containing the forecast.
+#' @param cv A time series cross-validation fable object containing the forecasts with `.id` column.
 #' @param ts A tsibble containing the observed time series data.
-#' @param h Integer. The forecast horizon in weeks.
 #' @param quantiles Numeric vector. The quantiles to extract from the forecast. Default is c(0.025, 0.25, 0.5, 0.75, 0.975).
 #' @return A list with two elements: `model_out_tbl` and `oracle_output`.
 #' @importFrom dplyr as_tibble mutate reframe
@@ -12,16 +11,19 @@
 #' @noRd
 
 fable_to_hub <- function(
-  fcast,
+  cv,
   ts,
-  h,
   quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
 ) {
   location <- unique(ts$location)
   target <- unique(ts$target)
 
-  model_out_tbl <- fcast |>
+  model_out_tbl <- cv |>
     dplyr::as_tibble() |>
+    dplyr::mutate(
+      reference_date = min(target_end_date) - 7,
+      .by = .id
+    ) |>
     dplyr::mutate(
       output_type_id = list(as.character(quantiles)),
       value = stats::quantile(observation, quantiles),
@@ -29,9 +31,13 @@ fable_to_hub <- function(
     tidyr::unnest(c(output_type_id, value)) |>
     dplyr::reframe(
       model_id = .model,
-      reference_date = target_end_date - (h * 7),
+      reference_date,
       target = target,
-      horizon = h,
+      horizon = as.integer(difftime(
+        target_end_date,
+        reference_date,
+        units = "weeks"
+      )),
       location = location,
       target_end_date,
       output_type = "quantile",

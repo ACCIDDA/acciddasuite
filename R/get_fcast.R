@@ -72,7 +72,7 @@ get_fcast <- function(
   top_n = 3,
   extra_models = NULL
 ) {
-  # --------- Validation ---------
+  # --------- Checks ---------
   eval_start_date <- as.Date(eval_start_date)
   stopifnot(
     is.data.frame(df),
@@ -120,8 +120,11 @@ get_fcast <- function(
 
   # --------- Time Series Cross Validation ---------
   cat("Time Series Cross Validation...\n")
+  #.init = init = first training window size
+  # .step = h = move the cutoff forward by h each time
+  # .id = rolling window id
   progressr::with_progress(
-    cv_fit <- ts |>
+    model_cv <- ts |>
       tsibble::stretch_tsibble(.init = init, .step = h) |>
       dplyr::filter(.id != max(.id)) |>
       fabletools::model(!!!all_models) |>
@@ -135,15 +138,14 @@ get_fcast <- function(
       )
   )
 
-  score <- get_score(cv_fit, ts, h) |> dplyr::arrange(wis)
-
-  # --------- Ensemble ---------
-  top_models <- score |>
-    dplyr::slice_head(n = min(top_n, nrow(score))) |>
+  top_models <- get_score(model_cv, ts) |>
+    dplyr::arrange(wis) |>
+    dplyr::slice_head(n = top_n) |>
     dplyr::pull(model_id)
 
-  cv_ens <- cv_fit |>
+  ens_cv <- model_cv |>
     dplyr::filter(.model %in% top_models) |>
+    as_tibble() |>
     dplyr::summarise(
       observation = do.call(
         distributional::dist_mixture,
@@ -151,18 +153,20 @@ get_fcast <- function(
           as.list(observation),
           list(weights = rep(1 / length(top_models), length(top_models)))
         )
-      )
+      ),
+      .by = c(.id, target_end_date)
     ) |>
     dplyr::mutate(.model = "ENSEMBLE")
 
-  #takes the most time:
-  score <- get_score(dplyr::bind_rows(cv_fit, cv_ens), ts, h) |>
+  cv <- dplyr::bind_rows(model_cv, ens_cv)
+
+  score <- get_score(cv, ts) |>
     dplyr::arrange(wis)
 
   # --------- Final forecast ---------
-  cat("Generating final forecasts...\n")
+  cat("Forecast Generation...\n")
   progressr::with_progress(
-    final_fcast <- ts |>
+    model_fcast <- ts |>
       fabletools::model(!!!all_models) |>
       fabletools::forecast(h = h) |>
       dplyr::mutate(
@@ -174,7 +178,7 @@ get_fcast <- function(
       )
   )
 
-  final_ens <- final_fcast |>
+  ens_fcast <- model_fcast |>
     dplyr::filter(.model %in% top_models) |>
     dplyr::summarise(
       observation = do.call(
@@ -187,18 +191,18 @@ get_fcast <- function(
     ) |>
     dplyr::mutate(.model = "ENSEMBLE")
 
-  forecast <- dplyr::bind_rows(final_fcast, final_ens) |>
+  fcast <- dplyr::bind_rows(model_fcast, ens_fcast) |>
     dplyr::mutate(
       .mean = ifelse(.model == "ENSEMBLE", mean(observation), .mean)
     )
 
   # --------- Plot ---------
-  plot <- forecast |>
+  plot <- fcast |>
     dplyr::filter(.model %in% c(top_models, "ENSEMBLE")) |>
-    fabletools::hilo(level = 95) |>
-    dplyr::mutate(
-      lower = `95%`$lower,
-      upper = `95%`$upper,
+    as_tibble() |>
+    mutate(q95 = fabletools::hilo(observation, level = 95)) |>
+    fabletools::unpack_hilo(q95) |>
+    mutate(
       .model = factor(
         .model,
         levels = score |>
@@ -220,7 +224,7 @@ get_fcast <- function(
       size = 0.7
     ) +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = lower, ymax = upper, fill = .model),
+      ggplot2::aes(ymin = q95_lower, ymax = q95_upper, fill = .model),
       alpha = 0.2
     ) +
     ggplot2::geom_line(ggplot2::aes(y = .mean, colour = .model)) +
@@ -229,7 +233,10 @@ get_fcast <- function(
 
   # --------- AccidaCast ---------
   acast <- list(
-    forecast = forecast,
+    hubcast = fable_to_hub(
+      cv = bind_rows(cv, fcast |> mutate(.id = max(cv$.id) + 1)),
+      ts = ts
+    ),
     score = score,
     plot = plot
   )

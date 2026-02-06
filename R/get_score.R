@@ -1,8 +1,7 @@
 #' Evaluate forecast accuracy
 #' Internal wrapper around fabletools::accuracy to compute multiple accuracy metrics.
-#' @param fcast A fable object containing forecasts.
+#' @param cv A time series cross-validation fable object containing the forecasts with `.id` column.
 #' @param ts A tsibble object containing the true values.
-#' @param h Integer. Forecast horizon in weeks.
 #' @param quantiles Double. A vector of quantiles. Default is c(0.025, 0.25, 0.5, 0.75, 0.975).
 #' @return A tibble with accuracy metrics sorted by WIS.
 #' @importFrom dplyr arrange
@@ -11,12 +10,11 @@
 #' @noRd
 
 get_score <- function(
-  fcast,
+  cv,
   ts,
-  h,
   quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
 ) {
-  fable_to_hub(fcast, ts, h, quantiles) |>
+  fable_to_hub(cv, ts, quantiles) |>
     (\(x) {
       hubEvals::score_model_out(
         model_out_tbl = x$model_out_tbl,

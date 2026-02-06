@@ -1,7 +1,7 @@
 #' Print an accida_cast object
 #'
 #' Displays a concise summary of an \code{accida_cast} object,
-#' including model scores, forecast horizon, and available contents.
+#' including model scores, forecast horizon, and hub format contents.
 #'
 #' @param x An object of class \code{accida_cast}.
 #' @param ... Additional arguments (currently ignored).
@@ -18,7 +18,7 @@ print.accida_cast <- function(x, ...) {
   cat("  To:  ", as.character(rng[2]), "\n")
 
   cat("\nContents:\n")
-  cat("  $forecast  fable forecast object\n")
+  cat("  $hubcast   hub forecast object\n")
   cat("  $score     model ranking table\n")
   cat("  $plot      ggplot2 object\n")
 
