@@ -91,6 +91,8 @@ fcast = get_fcast(
 
 fcast
 fcast$plot
+fcast$hubcast
+fcast$score
 ```
 
 
