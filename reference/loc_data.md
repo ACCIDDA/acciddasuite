@@ -29,6 +29,38 @@ A data frame with 53 rows and 12 variables:
 
   State population
 
+- count_rate0p3:
+
+  ??
+
+- count_rate0p5:
+
+  ??
+
+- count_rate0p7:
+
+  ??
+
+- count_rate1:
+
+  ??
+
+- count_rate1p7:
+
+  ??
+
+- count_rate3:
+
+  ??
+
+- count_rate4:
+
+  ??
+
+- count_rate5:
+
+  ??
+
 ## Source
 
 Where the data came from ??

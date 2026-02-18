@@ -56,7 +56,7 @@ An object of class `accida_cast` containing:
 
 - score:
 
-  Model ranking based on rolling origin CRPS.
+  Model ranking based on rolling origin WIS.
 
 - plot:
 
@@ -66,10 +66,9 @@ An object of class `accida_cast` containing:
 
 From `eval_start_date` onwards, models are repeatedly refitted on all
 data available up to each evaluation time point and used to forecast the
-next `h` weeks. Forecasts are compared to observations using the
-Continuous Ranked Probability Score (CRPS).
+next `h` weeks.
 
-Models are ranked by mean CRPS across evaluation periods. The best
+Models are ranked by mean WIS score across evaluation periods. The best
 performing `top_n` models are combined into an equal weight ensemble. A
 final `h` week ahead forecast is then produced by refitting selected
 models using the full dataset.
@@ -80,7 +79,8 @@ models using the full dataset.
 if (FALSE) { # \dontrun{
 extra_models <- list(
   CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
-  PROPHET = fable.prophet::PROPHET(observation)
+  PROPHET = fable.prophet::PROPHET(observation),
+  EPIESTIM = EPIESTIM(observation, mean_si = 3.96, std_si = 4.75)
 )
 
 get_fcast(

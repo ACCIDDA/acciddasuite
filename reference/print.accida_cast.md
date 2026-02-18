@@ -1,7 +1,7 @@
 # Print an accida_cast object
 
 Displays a concise summary of an `accida_cast` object, including model
-scores, forecast horizon, and available contents.
+scores, forecast horizon, and hub format contents.
 
 ## Usage
 
