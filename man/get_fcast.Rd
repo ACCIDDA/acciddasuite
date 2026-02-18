@@ -55,7 +55,8 @@ models using the full dataset.
 \dontrun{
 extra_models <- list(
   CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
-  PROPHET = fable.prophet::PROPHET(observation)
+  PROPHET = fable.prophet::PROPHET(observation),
+  EPIESTIM = EPIESTIM(observation, mean_si = 3.96, std_si = 4.75)
 )
 
 get_fcast(

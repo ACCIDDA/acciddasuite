@@ -13,5 +13,5 @@
 }
 \description{
 Displays a concise summary of an \code{accida_cast} object,
-including model scores, forecast horizon, and available contents.
+including model scores, forecast horizon, and hub format contents.
 }

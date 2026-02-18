@@ -13,7 +13,7 @@ print.accida_cast <- function(x, ...) {
   print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)
 
   cat("\nForecast horizon:\n")
-  rng <- range(x$forecast$target_end_date)
+  rng <- range(x$hubcast$model_out_tbl$target_end_date)
   cat("  From:", as.character(rng[1]), "\n")
   cat("  To:  ", as.character(rng[2]), "\n")
 

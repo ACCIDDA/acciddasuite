@@ -21,7 +21,10 @@ Imports:
     distributional,
     epidatr,
     rlang,
-    hubEvals
+    hubEvals,
+    EpiEstim,
+    projections,
+    incidence
 Suggests: 
     knitr,
     rmarkdown,

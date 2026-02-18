@@ -3,22 +3,34 @@ df <- get_data(pathogen = "rsv", geo_values = "ny")
 df
 eval_start_date = "2025-09-01"
 h = 4
-top_n = 3
-extra_models = NULL
+top_n = 5
+extra_models = list(
+    EPIESTIM = EPIESTIM(
+        observation,
+        mean_si = 4,
+        std_si = 3
+    )
+)
 
 x = get_fcast(df, eval_start_date)
 to_respilens(x) |> jsonlite::write_json("respi.json", auto_unbox = TRUE)
 
+x = get_fcast(df, eval_start_date, extra_models = extra_models)
+x
+x$plot
+x$hubcast
+x$score
 
 library(ggplot2)
 x$hubcast$model_out_tbl |>
-    ggplot(aes(
-        x = target_end_date,
-        y = value,
-        color = model_id,
-        group = interaction(model_id, reference_date, output_type_id)
-    )) +
-    geom_line(aes(lty = output_type_id)) +
+    filter(output_type_id %in% c("0.025", "0.5", "0.975")) |>
+    tidyr::pivot_wider(names_from = output_type_id, values_from = value) |>
+    ggplot(aes(x = target_end_date, group = model_id)) +
+    geom_ribbon(
+        aes(ymin = `0.025`, ymax = `0.975`, fill = model_id),
+        alpha = 0.2
+    ) +
+    geom_line(aes(y = `0.5`, colour = model_id), linetype = "solid") +
     geom_vline(aes(xintercept = reference_date), linetype = "dashed") +
     geom_vline(
         xintercept = as.Date(
