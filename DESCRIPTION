@@ -26,6 +26,7 @@ Imports:
     projections,
     incidence
 Suggests: 
+    DiagrammeR,
     knitr,
     rmarkdown,
     devtools,
