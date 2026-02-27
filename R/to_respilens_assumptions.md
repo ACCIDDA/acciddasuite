@@ -37,6 +37,7 @@
 ## `loc_data` dependency 
 The `to_respilens()` function relies on an external dependency (denoted as `loc_data`). `loc_data` is a tibble with one row per location, and `to_respilens()` requires the following columns:
 | column | description |
+|--------|-------------|
 | `abbreviation` | Location abbreviation. E.g., `"NC"` (chr) |
 | `location` | FIPS code for the location (unique identifier). E.g., `"37"` (chr)|
 | `location_name` | Full location name. E.g., `"North Carolina"` (chr) |
