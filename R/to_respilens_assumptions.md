@@ -42,4 +42,5 @@ The `to_respilens()` function relies on an external dependency (denoted as `loc_
 | `location` | FIPS code for the location (unique identifier). E.g., `"37"` (chr)|
 | `location_name` | Full location name. E.g., `"North Carolina"` (chr) |
 | `population` | Population of the location (numeric) | 
+
 `to_respilens()` will index the `loc_data` on the `location` column, so the location present in model data must have entries in `loc_data`'s columns.
