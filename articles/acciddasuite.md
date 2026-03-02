@@ -40,22 +40,20 @@ library(ggplot2)
 library(pipetime)
 library(acciddasuite)
 df <- get_data(pathogen = "covid", geo_values = "ny")
-summary(df)
-#>      as_of              location            target         
-#>  Min.   :2026-01-25   Length:286         Length:286        
-#>  1st Qu.:2026-01-25   Class :character   Class :character  
-#>  Median :2026-01-25   Mode  :character   Mode  :character  
-#>  Mean   :2026-01-25                                        
-#>  3rd Qu.:2026-01-25                                        
-#>  Max.   :2026-01-25                                        
-#>  target_end_date       observation     
-#>  Min.   :2020-08-08   Min.   :   60.0  
-#>  1st Qu.:2021-12-19   1st Qu.:  461.2  
-#>  Median :2023-05-02   Median :  995.0  
-#>  Mean   :2023-05-02   Mean   : 1644.0  
-#>  3rd Qu.:2024-09-12   3rd Qu.: 2241.8  
-#>  Max.   :2026-01-24   Max.   :11833.0
+head(df)
+#> # A tibble: 6 × 5
+#>   as_of      location target            target_end_date observation
+#>   <date>     <chr>    <chr>             <date>                <dbl>
+#> 1 2026-02-22 NY       wk inc covid hosp 2020-08-08              517
+#> 2 2026-02-22 NY       wk inc covid hosp 2020-08-15              490
+#> 3 2026-02-22 NY       wk inc covid hosp 2020-08-22              844
+#> 4 2026-02-22 NY       wk inc covid hosp 2020-08-29              483
+#> 5 2026-02-22 NY       wk inc covid hosp 2020-09-05              479
+#> 6 2026-02-22 NY       wk inc covid hosp 2020-09-12              573
 ```
+
+To look at what `df` looks like, you can access the example `csv` file
+here: [df.csv](NA).
 
 ### Time Series Cross-Validation
 
@@ -115,14 +113,14 @@ fcast
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>       ETS  39.50977
-#>     THETA  43.41059
-#>  ENSEMBLE  74.29495
-#>    SNAIVE 272.68963
+#>       ETS  31.84685
+#>     THETA  39.46278
+#>  ENSEMBLE  80.66361
+#>    SNAIVE 294.18118
 #> 
 #> Forecast horizon:
-#>   From: 2025-12-27 
-#>   To:   2026-02-21 
+#>   From: 2026-01-24 
+#>   To:   2026-03-21 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -139,21 +137,21 @@ fcast$hubcast
 #> # A tibble: 200 × 9
 #>    model_id reference_date target   horizon location target_end_date output_type
 #>    <chr>    <date>         <chr>      <int> <chr>    <date>          <chr>      
-#>  1 ARIMA    2025-12-20     wk inc …       1 NY       2025-12-27      quantile   
-#>  2 ARIMA    2025-12-20     wk inc …       1 NY       2025-12-27      quantile   
-#>  3 ARIMA    2025-12-20     wk inc …       1 NY       2025-12-27      quantile   
-#>  4 ARIMA    2025-12-20     wk inc …       1 NY       2025-12-27      quantile   
-#>  5 ARIMA    2025-12-20     wk inc …       1 NY       2025-12-27      quantile   
-#>  6 ARIMA    2025-12-20     wk inc …       2 NY       2026-01-03      quantile   
-#>  7 ARIMA    2025-12-20     wk inc …       2 NY       2026-01-03      quantile   
-#>  8 ARIMA    2025-12-20     wk inc …       2 NY       2026-01-03      quantile   
-#>  9 ARIMA    2025-12-20     wk inc …       2 NY       2026-01-03      quantile   
-#> 10 ARIMA    2025-12-20     wk inc …       2 NY       2026-01-03      quantile   
+#>  1 ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   
+#>  2 ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   
+#>  3 ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   
+#>  4 ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   
+#>  5 ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   
+#>  6 ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   
+#>  7 ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   
+#>  8 ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   
+#>  9 ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   
+#> 10 ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   
 #> # ℹ 190 more rows
 #> # ℹ 2 more variables: output_type_id <chr>, value <dbl>
 #> 
 #> $oracle_output
-#> # A tibble: 286 × 6
+#> # A tibble: 290 × 6
 #>    location target_end_date target       output_type output_type_id oracle_value
 #>    <chr>    <date>          <chr>        <chr>       <lgl>                 <dbl>
 #>  1 NY       2020-08-08      wk inc covi… quantile    NA                      517
@@ -166,21 +164,21 @@ fcast$hubcast
 #>  8 NY       2020-09-26      wk inc covi… quantile    NA                      656
 #>  9 NY       2020-10-03      wk inc covi… quantile    NA                      851
 #> 10 NY       2020-10-10      wk inc covi… quantile    NA                      840
-#> # ℹ 276 more rows
+#> # ℹ 280 more rows
 fcast$score
 #> Key: <model_id>
 #>    model_id       wis interval_coverage_50 interval_coverage_95
 #>      <char>     <num>                <num>                <num>
-#> 1:      ETS  39.50977                 1.00                    1
-#> 2:    THETA  43.41059                 0.50                    1
-#> 3: ENSEMBLE  74.29495                 1.00                    1
-#> 4:   SNAIVE 272.68963                 0.25                    1
+#> 1:      ETS  31.84685                 0.75                    1
+#> 2:    THETA  39.46278                 0.75                    1
+#> 3: ENSEMBLE  80.66361                 0.75                    1
+#> 4:   SNAIVE 294.18118                 0.00                    1
 #>    wis_relative_skill
 #>                 <num>
-#> 1:          0.5146032
-#> 2:          0.5654102
-#> 3:          0.9676700
-#> 4:          3.5517025
+#> 1:          0.4309529
+#> 2:          0.5340120
+#> 3:          1.0915433
+#> 4:          3.9808719
 ```
 
 ### Adding `extra_models`
@@ -216,18 +214,18 @@ fcast
 #> <accida_cast>
 #> 
 #> Models evaluated:
-#>      model_id        wis
-#>        <char>      <num>
-#>           ETS   32.52275
-#>         THETA   47.36624
-#>      ENSEMBLE   79.89596
-#>  CUSTOM_ARIMA  126.93577
-#>        SNAIVE  268.02628
-#>       PROPHET 1664.07816
+#>      model_id       wis
+#>        <char>     <num>
+#>           ETS  28.32143
+#>         THETA  36.47991
+#>      ENSEMBLE  88.81132
+#>  CUSTOM_ARIMA 155.76232
+#>        SNAIVE 288.46068
+#>       PROPHET 683.99907
 #> 
 #> Forecast horizon:
-#>   From: 2025-12-27 
-#>   To:   2026-02-14 
+#>   From: 2026-01-24 
+#>   To:   2026-03-14 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
