@@ -1,0 +1,20 @@
+---
+title: "Preparing External Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Formatting Requirements}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Data Requirements (test test test)
+
+To use `acciddasuite`, your data must follow the specific schema outlined below.
+
+```{r, echo=FALSE}
+DiagrammeR::mermaid("
+graph TB
+    A['External Data Source'] --> B{'Format Check'}
+    B -->|'Valid'| C['Proceed to get_data()']
+    B -->|'Invalid'| D['Apply acciddasuite Transformers']
+")
