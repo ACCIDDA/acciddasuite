@@ -94,7 +94,120 @@ NO  → Continue defining these data elements
 In this step, you will be asked a series of questions to direct you to become familiar with the available forecasting hubs being routinely provided for national and state level targets. 
 
 
-```{r eval=FALSE}
+```{r eval=FALSE, include=FALSE}
+#| fig-cap: acciddasuite Data Collection Flow
+
+DiagrammeR::mermaid("
+graph TB
+    A[Did you choose state-level forecasts?] --> B{Yes}
+    A --> C{No}
+        
+    B --> D[Review available forecasting hubs]
+    D --> F[Did you find the information you sought?]
+    
+    F --> J{No}
+    F --> I{Yes}
+    
+    C --> E[Is data available for target/spatial/time?]
+    E --> G{Yes}
+    E --> H{No}
+    
+    G --> K[Is historical data available?]
+    H --> L[Data exists but not easily accessible?]
+    
+    K --> n1{Yes}
+    K --> n2{No}
+    L --> n3{Yes}
+    L --> n4{No}
+    
+    n1 --> n18[Collect and store the available data]
+    n3 --> n20[Collect any available data]
+    J --> n17[Continue collecting data]
+    
+    n18 --> n5
+    n20 --> n5
+    
+    n5[Are data available in a consistent manner?] --> n6{Yes}
+    n5 --> n7{No}
+    
+    n7 --> n12[Determine reporting timeline]
+    n12 --> n5
+    
+    n6 --> n15[Establish reporting timeline]
+    n15 --> n8[Setup consistent downloads]
+    
+    n8 --> n9[Reporting delays or completeness issues?]
+    n9 --> n10{Yes}
+    n9 --> n11{No}
+    
+    n10 --> n13[Plan for Nowcasting]
+    n11 --> n14[Proceed to data formatting]
+    
+    I --> n16[Congrats!]
+    n2 --> n19[Reevaluate the project]
+    n4 --> n21[Reevaluate the project]
+")
+```
+
+```{r, echo=FALSE}
+#| fig.cap: "mermaid test Matt"
+
+DiagrammeR::mermaid("
+graph TB
+    A[Did you choose state-level forecasts for a particular pathogen?] --> B{Yes} 
+    
+    B --> D[Review available forecasting hubs providing state-level forecasts.]
+    D --> F[Did you find the state-level forecasting information you were orignially seeking?]
+    
+    F --> J{No} 
+    F --> I{Yes}
+    
+    J --> n17[Continue collecting data.]
+    I --> n16[Congrats!]
+    
+    A --> C{No}
+    C --> E[Is data available for the target, spactial unit, and time resolution?]
+    E --> G{Yes} 
+    E --> H{No}
+    
+    G --> K[Is historical data available for the target of interest?]
+    H --> L[Does the data exist, but are not easily accesible?]
+    
+    K --> n1{Yes} 
+    K --> n2{No}
+    
+    n1 --> n18[Collect and store the available data.]
+    n2 --> n19[Go back to STEP 1. Reevaluate the project.]
+    
+    L --> n3{Yes}
+    L --> n4{No}
+    
+    n3 --> n20[Collect any available data.]
+    n4 --> n21[Go back to STEP 1. Reevaluate the project.]
+
+    n18 --> n5
+    n20 --> n5
+    
+    n5[Are these data reported or available in a consistent manner? (e.g., same data is available every week on the same day)] --> n6{Yes}
+    n5 --> n7{No}
+    
+    n7 --> n12[Determine the reporting timeline and look for consistancies.]
+    n12 --> n5
+     
+    n6 --> n15[Establish a reporting timeline consistent with the time resolution.]
+    n15 --> n8
+    
+    n8[Setup consistent downloads of the entire dataset, not just the current week.] --> n9[Does your data have reporting delays or completeness issues?]
+    n9 --> n10{Yes}
+    n9 --> n11{No}
+    
+    n10 --> n13[Plan for Nowcasting.]
+    n11 --> n14[Continue to data formatting steps for forecasting.]
+")
+```
+
+
+```{r eval=FALSE, include=FALSE}
 # Decision Tree Approach to Public Health Forecasting 
 
                                 ┌───────────────────────────────────────┐
