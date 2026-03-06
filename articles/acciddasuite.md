@@ -53,7 +53,7 @@ head(df)
 ```
 
 To look at what `df` looks like, you can access the example `csv` file
-here: [df.csv](NA).
+here: [example_data.csv](NA).
 
 ### Time Series Cross-Validation
 
