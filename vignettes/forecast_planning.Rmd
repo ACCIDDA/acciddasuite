@@ -150,7 +150,7 @@ graph TB
 ```
 
 ```{r, echo=FALSE}
-#| fig.cap: "mermaid test Matt"
+#| fig.cap: "Forecasting Planning Decision Tree"
 
 DiagrammeR::mermaid("
 graph TB
@@ -188,7 +188,7 @@ graph TB
     n18 --> n5
     n20 --> n5
     
-    n5[Are these data reported or available in a consistent manner? (e.g., same data is available every week on the same day)] --> n6{Yes}
+    n5[Are these data reported or available in a consistent manner? e.g., same data is available every week on the same day] --> n6{Yes}
     n5 --> n7{No}
     
     n7 --> n12[Determine the reporting timeline and look for consistancies.]
@@ -290,15 +290,16 @@ graph TB
 
 ```
 
-National and State Level Forecasting Hubs:
+## National and State Level Forecasting Hubs:
 FluSight [guide](https://happygitwithr.com/https-pat) 
-MetroCast [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) for more information on creating a GitHub personal access token (PAT).
+
+MetroCast [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
 A full list of real-time collaborative public health hubs can be found [here](https://hubverse.io/community/hubs.html#real-time-collaborative-public-health-hubs).
 
 
 
-## Next steps
+## Next steps:
 
 1. Pull and manipulating data to use with forecasting models
 2. Consider Nowcasts
