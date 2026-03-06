@@ -50,7 +50,7 @@ head(df)
 df |> write.csv("example_data.csv", row.names = FALSE)
 ```
 
-To look at what `df` looks like, you can access the example `csv` file here: [df.csv]("https://raw.githubusercontent.com/acciddasuite/main/example_data.csv").
+To look at what `df` looks like, you can access the example `csv` file here: [example_data.csv]("https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv").
 
 ## Time Series Cross-Validation
 
