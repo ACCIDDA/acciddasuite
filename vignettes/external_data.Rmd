@@ -2,19 +2,54 @@
 title: "Preparing External Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data Formatting Requirements}
+  %\VignetteIndexEntry{Preparing External Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 # Utilizing external ground truth data
 
-If you would like to use your own ground truth data as the `df` parameter for modeling in `get_fcast()`, you must coerce your data to adhere to the format described below.
+The ACCCIDDA suite of tools supports forecasting of hospitalization incidence due to COVID-19, RSV, or influenza. While you are able to quickly pull state-level `inc hosp` data using `get_data()`, you may desire to use your own hospitalization ground truth data for forecasting (i.e., as the `df` parameter for modeling in `get_fcast()`). To do so, you must coerce your data to adhere to the format described below. Please note that `get_fcast()` only processes one location at a time; so if you have multiple locations' ground truth data, you should separate your ground truth dataset into one data frame per location and then initiate a `get_fcast()` run for each. 
 
-```{r, echo=FALSE}
-DiagrammeR::mermaid("
-graph TB
-    A['External Data Source'] --> B{'Format Check'}
-    B -->|'Valid'| C['Proceed to get_data()']
-    B -->|'Invalid'| D['Apply acciddasuite Transformers']
-")
+
+
+## Columns and data types
+
+Your ground truth data must contain 4 distinct columns:
+
+| column name | data type | description |
+|-------------|-----------|-------------|
+|`target_end_date`|Date|The date for which an observation is recorded|
+|`observation`|numeric|The observed value for a given date|
+|`location`|character|The location for which the data describes (e.g., "NY" or "nyc"). You may use any location identifier you like, as long as it is consistent and represented as a character.|
+|`target`|character|The data stream being observed (e.g, "inc hosp influenza")|
+
+
+
+## Data content restrictions
+
+Once your data has `target_end_date`, `observation`, `location` and `target` columns, you must ensure the following for successful processing in `get_fcast()`:
+
+* `target_end_date` values should be unique and have no NAs (i.e., there should be no duplicate or missing values in the `target_end_date` column)
+* `target_end_date` values should be 
+* Your data must be on a **weekly** cadence (i.e., `target_end_date` values should be exactly one week apart, **and be continuous from week 1 to end**)
+* Your dataset should contain ≥ 52 entries (weeks of observations; rows) where the `target_end_date` is < the `eval_start_date` parameter you pass into `get_fcast()`. Please note that NA entries in the `observation` column will be filtered out silently, and may result in the reduction of number of observations in your dataset. It is optimal to ensure that NA values are resolved prior to use in `get_fcast()`. 
+
+
+
+Properly converted data, for example, may resemble this:
+
+```{r, include=FALSE}
+df <- data.frame(
+  target_end_date = as.Date("2024-12-07") + seq(0, 35, by = 7),
+  observation = c(452, 489, 512, 601, 588, 540),
+  location = "NY",
+  target = "inc hosp influenza"
+)
+```
+
+```{r, echo=TRUE}
+head(df)
+```
+
+After ensuring compliance with all of the stipulations above, you can read your dataset in (either as `data.frame` or `tibble`) and pass it as the `df` parameter in `get_fcast()`.

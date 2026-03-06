@@ -14,7 +14,7 @@
 #' models using the full dataset.
 #'
 #' @param df Data frame of weekly observations containing
-#'   `target_end_date` (Date) and `observation` (numeric).
+#'   `target_end_date` (Date), `location` (character), `target` (character), and `observation` (numeric).
 #' @param eval_start_date Date or string coercible to Date. First date at
 #'   which forecasts are evaluated. At least 52 weeks of data must precede
 #'   this date.
@@ -77,7 +77,7 @@ get_fcast <- function(
   eval_start_date <- as.Date(eval_start_date)
   stopifnot(
     is.data.frame(df),
-    all(c("target_end_date", "observation") %in% names(df)),
+    all(c("target_end_date", "observation", "target", "location") %in% names(df)),
     is.numeric(h),
     length(h) == 1,
     h > 0,

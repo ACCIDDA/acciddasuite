@@ -32,9 +32,9 @@ We will aim to demonstrate the basic steps in a forecasting task, as defined by 
 
 ##  `get_data`
 
-**If you would like to load your own data, you can follow [these](external_data.html) steps for formatting.**
+**If you would like to load your own ground truth data, you can follow [these](external_data.html) steps for formatting.**
 
-For demonstration purposes, we will load data from the [CDC National Health Safety Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
+For demonstration purposes, we will load ground truth data from the [CDC National Health Safety Network](s. The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
 
 ```{r, get_data}
 library(dplyr)

@@ -15,7 +15,7 @@ x = get_fcast(
     top_n = 5,
     extra_models = extra_models
 )
-to_respilens(x, "ny") |> jsonlite::write_json("respi.json", auto_unbox = TRUE)
+to_respilens(x) |> jsonlite::write_json("respi.json", auto_unbox = TRUE)
 
 x
 x$plot
