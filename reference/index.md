@@ -11,9 +11,6 @@
 - [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
   : Rolling origin epidemic forecasts and model evaluation
 
-- [`loc_data`](https://accidda.github.io/acciddasuite/reference/loc_data.md)
-  : Location Dataset
-
 - [`metadata_key()`](https://accidda.github.io/acciddasuite/reference/metadata_key.md)
   :
 

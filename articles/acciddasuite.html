@@ -39,7 +39,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/forecast_planning.html">Disease Forecast Planning for Public Health</a></li>
+<li><a class="dropdown-item" href="../articles/external_data.html">Preparing External Data</a></li>
+    <li><a class="dropdown-item" href="../articles/forecast_planning.html">Disease Forecast Planning for Public Health</a></li>
   </ul>
 </li>
       </ul>
@@ -95,8 +96,11 @@ can be found <a href="https://robjhyndman.com/hyndsight/forecast9.html" class="e
 <h3 id="get_data">
 <code>get_data</code><a class="anchor" aria-label="anchor" href="#get_data"></a>
 </h3>
-<p><strong>Ideally, you would load your own data here</strong>.</p>
-<p>For demonstration purposes, we will load data from the <a href="https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data" class="external-link">CDC
+<p><strong>If you would like to load your own ground truth data, you can
+follow <a href="external_data.html">these</a> steps for
+formatting.</strong></p>
+<p>For demonstration purposes, we will load ground truth data from the
+<a href="https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data" class="external-link">CDC
 National Health Safety Network</a>. The data dictionary is available <a href="https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -108,12 +112,12 @@ National Health Safety Network</a>. The data dictionary is available <a href="ht
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   as_of      location target            target_end_date observation</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-02-22 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-02-22 NY       wk inc covid hosp 2020-08-15              490</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-02-22 NY       wk inc covid hosp 2020-08-22              844</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-02-22 NY       wk inc covid hosp 2020-08-29              483</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-02-22 NY       wk inc covid hosp 2020-09-05              479</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-02-22 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-01 NY       wk inc covid hosp 2020-08-08              517</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-01 NY       wk inc covid hosp 2020-08-15              490</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-01 NY       wk inc covid hosp 2020-08-22              844</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-01 NY       wk inc covid hosp 2020-08-29              483</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-01 NY       wk inc covid hosp 2020-09-05              479</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-01 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
 <p>To look at what <code>df</code> looks like, you can access the
 example <code>csv</code> file here: <a href="%22https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv%22" class="external-link">example_data.csv</a>.</p>
 </div>
@@ -171,14 +175,14 @@ Integrated Moving Average model (automatically selected).</p>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;  model_id       wis</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;       ETS  31.84685</span></span>
-<span><span class="co">#&gt;     THETA  39.46278</span></span>
-<span><span class="co">#&gt;  ENSEMBLE  80.66361</span></span>
-<span><span class="co">#&gt;    SNAIVE 294.18118</span></span>
+<span><span class="co">#&gt;     THETA  27.20068</span></span>
+<span><span class="co">#&gt;       ETS  41.93945</span></span>
+<span><span class="co">#&gt;  ENSEMBLE  62.72425</span></span>
+<span><span class="co">#&gt;    SNAIVE 262.42959</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-01-24 </span></span>
-<span><span class="co">#&gt;   To:   2026-03-21 </span></span>
+<span><span class="co">#&gt;   From: 2026-01-31 </span></span>
+<span><span class="co">#&gt;   To:   2026-03-28 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
@@ -192,21 +196,21 @@ Integrated Moving Average model (automatically selected).</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 200 × 9</span></span></span>
 <span><span class="co">#&gt;    model_id reference_date target   horizon location target_end_date output_type</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ARIMA    2026-01-17     wk inc …       1 NY       2026-01-24      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ARIMA    2026-01-17     wk inc …       2 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 190 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: output_type_id &lt;chr&gt;, value &lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $oracle_output</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 290 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 291 × 6</span></span></span>
 <span><span class="co">#&gt;    location target_end_date target       output_type output_type_id oracle_value</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> NY       2020-08-08      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      517</span></span>
@@ -219,21 +223,21 @@ Integrated Moving Average model (automatically selected).</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> NY       2020-09-26      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      656</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> NY       2020-10-03      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      851</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> NY       2020-10-10      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      840</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 280 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 281 more rows</span></span></span>
 <span><span class="va">fcast</span><span class="op">$</span><span class="va">score</span></span>
 <span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
 <span><span class="co">#&gt;    model_id       wis interval_coverage_50 interval_coverage_95</span></span>
 <span><span class="co">#&gt;      &lt;char&gt;     &lt;num&gt;                &lt;num&gt;                &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:      ETS  31.84685                 0.75                    1</span></span>
-<span><span class="co">#&gt; 2:    THETA  39.46278                 0.75                    1</span></span>
-<span><span class="co">#&gt; 3: ENSEMBLE  80.66361                 0.75                    1</span></span>
-<span><span class="co">#&gt; 4:   SNAIVE 294.18118                 0.00                    1</span></span>
+<span><span class="co">#&gt; 1:    THETA  27.20068                 1.00                    1</span></span>
+<span><span class="co">#&gt; 2:      ETS  41.93945                 0.75                    1</span></span>
+<span><span class="co">#&gt; 3: ENSEMBLE  62.72425                 1.00                    1</span></span>
+<span><span class="co">#&gt; 4:   SNAIVE 262.42959                 0.25                    1</span></span>
 <span><span class="co">#&gt;    wis_relative_skill</span></span>
 <span><span class="co">#&gt;                 &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          0.4309529</span></span>
-<span><span class="co">#&gt; 2:          0.5340120</span></span>
-<span><span class="co">#&gt; 3:          1.0915433</span></span>
-<span><span class="co">#&gt; 4:          3.9808719</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:          0.4132065</span></span>
+<span><span class="co">#&gt; 2:          0.6371035</span></span>
+<span><span class="co">#&gt; 3:          0.9528462</span></span>
+<span><span class="co">#&gt; 4:          3.9865765</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="adding-extra_models">Adding <code>extra_models</code><a class="anchor" aria-label="anchor" href="#adding-extra_models"></a>
@@ -268,16 +272,16 @@ documentation</a> for more information).</p>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;      model_id       wis</span></span>
 <span><span class="co">#&gt;        &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;           ETS  28.32143</span></span>
-<span><span class="co">#&gt;         THETA  36.47991</span></span>
-<span><span class="co">#&gt;      ENSEMBLE  88.81132</span></span>
-<span><span class="co">#&gt;  CUSTOM_ARIMA 155.76232</span></span>
-<span><span class="co">#&gt;        SNAIVE 288.46068</span></span>
-<span><span class="co">#&gt;       PROPHET 683.99907</span></span>
+<span><span class="co">#&gt;         THETA  21.70325</span></span>
+<span><span class="co">#&gt;           ETS  29.52682</span></span>
+<span><span class="co">#&gt;      ENSEMBLE  75.67269</span></span>
+<span><span class="co">#&gt;  CUSTOM_ARIMA 140.41996</span></span>
+<span><span class="co">#&gt;        SNAIVE 284.57923</span></span>
+<span><span class="co">#&gt;       PROPHET 429.13852</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-01-24 </span></span>
-<span><span class="co">#&gt;   To:   2026-03-14 </span></span>
+<span><span class="co">#&gt;   From: 2026-01-31 </span></span>
+<span><span class="co">#&gt;   To:   2026-03-21 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>

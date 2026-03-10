@@ -50,18 +50,18 @@ get_data(pathogen = "covid", geo_values = c("ca", "ny"))
 #> limits if you proceed.
 #> ℹ See `?save_api_key()` for details on obtaining and setting API keys.
 #> This warning is displayed once every 8 hours.
-#> # A tibble: 580 × 5
+#> # A tibble: 582 × 5
 #>    as_of      location target            target_end_date observation
 #>    <date>     <chr>    <chr>             <date>                <dbl>
-#>  1 2026-02-22 CA       wk inc covid hosp 2020-08-08             4836
-#>  2 2026-02-22 NY       wk inc covid hosp 2020-08-08              517
-#>  3 2026-02-22 CA       wk inc covid hosp 2020-08-15             4273
-#>  4 2026-02-22 NY       wk inc covid hosp 2020-08-15              490
-#>  5 2026-02-22 CA       wk inc covid hosp 2020-08-22             3498
-#>  6 2026-02-22 NY       wk inc covid hosp 2020-08-22              844
-#>  7 2026-02-22 CA       wk inc covid hosp 2020-08-29             3100
-#>  8 2026-02-22 NY       wk inc covid hosp 2020-08-29              483
-#>  9 2026-02-22 CA       wk inc covid hosp 2020-09-05             2888
-#> 10 2026-02-22 NY       wk inc covid hosp 2020-09-05              479
-#> # ℹ 570 more rows
+#>  1 2026-03-01 CA       wk inc covid hosp 2020-08-08             4836
+#>  2 2026-03-01 NY       wk inc covid hosp 2020-08-08              517
+#>  3 2026-03-01 CA       wk inc covid hosp 2020-08-15             4273
+#>  4 2026-03-01 NY       wk inc covid hosp 2020-08-15              490
+#>  5 2026-03-01 CA       wk inc covid hosp 2020-08-22             3498
+#>  6 2026-03-01 NY       wk inc covid hosp 2020-08-22              844
+#>  7 2026-03-01 CA       wk inc covid hosp 2020-08-29             3100
+#>  8 2026-03-01 NY       wk inc covid hosp 2020-08-29              483
+#>  9 2026-03-01 CA       wk inc covid hosp 2020-09-05             2888
+#> 10 2026-03-01 NY       wk inc covid hosp 2020-09-05              479
+#> # ℹ 572 more rows
 ```
