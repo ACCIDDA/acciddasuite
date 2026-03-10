@@ -164,17 +164,17 @@ model_sum.model_epiestim <- function(x) {
 
 #' @importFrom fabletools report
 #' @export
-report.model_epiestim <- function(x, ...) {
-  R_row <- x$Rt$R[nrow(x$Rt$R), ]
+report.model_epiestim <- function(object, ...) {
+  R_row <- object$Rt$R[nrow(object$Rt$R), ]
   cat("\n--- EpiEstim + Projections Model ---\n\n")
   cat(sprintf(
     "  Serial interval : mean = %.2f days, SD = %.2f days\n",
-    x$mean_si,
-    x$std_si
+    object$mean_si,
+    object$std_si
   ))
-  cat(sprintf("  Rt window       : last %d days\n", x$rt_window))
-  cat(sprintf("  Simulations     : %d\n", x$n_sim))
-  cat(sprintf("  R fix within    : %s\n\n", x$R_fix_within))
+  cat(sprintf("  Rt window       : last %d days\n", object$rt_window))
+  cat(sprintf("  Simulations     : %d\n", object$n_sim))
+  cat(sprintf("  R fix within    : %s\n\n", object$R_fix_within))
   cat("  Current Rt estimate:\n")
   cat(sprintf("    Median Rt : %.3f\n", R_row[["Median(R)"]]))
   cat(sprintf(
@@ -184,9 +184,9 @@ report.model_epiestim <- function(x, ...) {
   ))
   cat(sprintf(
     "\n  Training data   : %d observations (%d-day period), last date = %s\n",
-    x$n_obs,
-    x$dt_days,
-    format(x$last_date)
+    object$n_obs,
+    object$dt_days,
+    format(object$last_date)
   ))
 }
 

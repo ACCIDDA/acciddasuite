@@ -14,7 +14,7 @@
 #'   - `observation`: Observed hospital admissions
 #'
 #' @seealso \link[epidatr]{pub_covidcast}
-#' @seealso \link[hubvserse]{https://docs.hubverse.io/en/stable/user-guide/target-data.html}
+#' @seealso \link[hubverse]{https://docs.hubverse.io/en/stable/user-guide/target-data.html}
 #' @export
 #' @importFrom epidatr pub_covidcast
 #' @importFrom dplyr transmute

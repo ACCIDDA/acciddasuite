@@ -24,14 +24,14 @@ Imports:
     hubEvals,
     EpiEstim,
     projections,
-    incidence
+    incidence,
+    jsonlite
 Suggests: 
     knitr,
     rmarkdown,
     devtools,
     pipetime,
     fable.prophet,
-    jsonlite,
     testthat (>= 3.0.0)
 Remotes:
     hubverse-org/hubEvals

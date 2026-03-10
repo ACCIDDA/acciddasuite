@@ -77,7 +77,9 @@ get_fcast <- function(
   eval_start_date <- as.Date(eval_start_date)
   stopifnot(
     is.data.frame(df),
-    all(c("target_end_date", "observation", "target", "location") %in% names(df)),
+    all(
+      c("target_end_date", "observation", "target", "location") %in% names(df)
+    ),
     length(unique(df$target)) == 1,
     length(unique(df$location)) == 1,
     is.numeric(h),
@@ -122,7 +124,6 @@ get_fcast <- function(
   all_models <- c(default_models, extra_models)
 
   # --------- Time Series Cross Validation ---------
-  cat("Time Series Cross Validation...\n")
   #.init = init = first training window size
   # .step = h = move the cutoff forward by h each time
   # .id = rolling window id
@@ -167,7 +168,6 @@ get_fcast <- function(
     dplyr::arrange(wis)
 
   # --------- Final forecast ---------
-  cat("Forecast Generation...\n")
   progressr::with_progress(
     model_fcast <- ts |>
       fabletools::model(!!!all_models) |>

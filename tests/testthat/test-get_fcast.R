@@ -25,7 +25,9 @@ test_that("get_fcast validates h parameter", {
 test_that("get_fcast requires at least 52 weeks of data before eval_start_date", {
   df <- data.frame(
     target_end_date = seq(as.Date("2023-01-01"), by = "week", length.out = 30),
-    observation = rnorm(30, mean = 100, sd = 10)
+    observation = rnorm(30, mean = 100, sd = 10),
+    target = "wk incid covid",
+    location = "ny"
   )
   expect_error(
     get_fcast(df, eval_start_date = "2023-08-01"),

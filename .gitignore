@@ -11,3 +11,5 @@ docs
 .RData
 .Rhistory
 .Ruserdata
+
+**/*.quarto_ipynb

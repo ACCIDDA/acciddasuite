@@ -30,14 +30,19 @@ You can install the development version of acciddasuite from [GitHub](https://gi
 ```
 
 ## Example
-```{r, eval = FALSE}
-#library(acciddasuite)
+```{r, eval = TRUE, message = FALSE}
+library(acciddasuite)
 df <- get_data(pathogen = "flu", geo_values = "ny")
 fcast <- df |> 
   get_fcast(eval_start_date = max(df$target_end_date) - 30)
 fcast
 ```
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 fcast$plot
+```
+
+Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
+```{r, eval = FALSE}
+to_respilens(fcast, path = "example_respilens.json")
 ```

@@ -8,7 +8,7 @@ get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 }
 \arguments{
 \item{df}{Data frame of weekly observations containing
-\code{target_end_date} (Date) and \code{observation} (numeric).}
+\code{target_end_date} (Date), \code{location} (character), \code{target} (character), and \code{observation} (numeric).}
 
 \item{eval_start_date}{Date or string coercible to Date. First date at
 which forecasts are evaluated. At least 52 weeks of data must precede

@@ -1,7 +1,6 @@
 #' Build RespiLens metadata key from `model_out_tbl` data
 #'
 #' @param model_out_tbl Forecast tibble from `get_fcast()`.
-#' @param loc Location string.
 #' @return Named list for RespiLens metadata key
 metadata_key <- function(model_out_tbl) {
   # remove peak targets
@@ -118,10 +117,12 @@ forecasts_key <- function(model_out_tbl) {
 
 #' Convert accida_cast to RespiLens format
 #' @param accida_cast An object of class `accida_cast`, the output of `get_fcast()`.
-#' @param loc A character string that describes the location of the data provided.
+#' @param path Optional file path to write the JSON output to. Must end with `.json`.
+#' If `NULL`, the output is not written to disk.
 #' @return A named list with a single metadata JSON structure and one JSON structure per location.
-#' @noRd
-to_respilens <- function(accida_cast) {
+#' @export
+
+to_respilens <- function(accida_cast, path = NULL) {
   #check it is of class `accida_cast`
   if (!inherits(accida_cast, "accida_cast")) {
     stop("Input must be an object of class 'accida_cast'.")
@@ -144,17 +145,21 @@ to_respilens <- function(accida_cast) {
     dplyr::filter(output_type != "sample")
 
   model_loc <- unique(model_out_tbl$location)
-  gt_loc <-unique(oracle_output$location)
+  gt_loc <- unique(oracle_output$location)
 
   if (length(model_loc) != 1 || length(gt_loc) != 1) {
     stop("Expected exactly one location in input data.")
   }
 
-  return(
-    list(
-      metadata = metadata_key(model_out_tbl),
-      ground_truth = ground_truth_key(oracle_output),
-      forecasts = forecasts_key(model_out_tbl)
-    )
+  myrespilens <- list(
+    metadata = metadata_key(model_out_tbl),
+    ground_truth = ground_truth_key(oracle_output),
+    forecasts = forecasts_key(model_out_tbl)
   )
+
+  if (!is.null(path)) {
+    jsonlite::write_json(myrespilens, path, pretty = TRUE, auto_unbox = TRUE)
+  }
+
+  invisible(myrespilens)
 }

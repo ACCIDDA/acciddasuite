@@ -31,5 +31,5 @@ get_data(pathogen = "covid", geo_values = c("ca", "ny"))
 \seealso{
 \link[epidatr]{pub_covidcast}
 
-\link[hubvserse]{https://docs.hubverse.io/en/stable/user-guide/target-data.html}
+\link[hubverse]{https://docs.hubverse.io/en/stable/user-guide/target-data.html}
 }
