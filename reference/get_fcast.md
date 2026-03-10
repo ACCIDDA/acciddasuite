@@ -14,8 +14,9 @@ get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 
 - df:
 
-  Data frame of weekly observations containing `target_end_date` (Date)
-  and `observation` (numeric).
+  Data frame of weekly observations containing `target_end_date` (Date),
+  `location` (character), `target` (character), and `observation`
+  (numeric).
 
 - eval_start_date:
 

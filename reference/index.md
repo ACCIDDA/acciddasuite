@@ -18,3 +18,6 @@
 
 - [`print(`*`<accida_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accida_cast.md)
   : Print an accida_cast object
+
+- [`to_respilens()`](https://accidda.github.io/acciddasuite/reference/to_respilens.md)
+  : Convert accida_cast to RespiLens format

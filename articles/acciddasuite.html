@@ -73,35 +73,29 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>acciddasuite</code> package provides comprehensive tools,
-models, and information for building infectious disease forecasts using
-either national or state-level data. This forecasting suite is focused
-on using time series data (surveillance data) for public health use to
-create an ensemble of outputs from statistical models, evaluation and
-visualization tools.</p>
-<p>This series of vignettes demonstrate how the standard frameworks
-create and evaluate forecasts using R.</p>
-<p>This forecasting suite is initially being set up to run within the
-Fable framework, a tidyverse-based alternative for time series
-forecasting in R.</p>
-<p>We will aim to demonstrate the basic steps in a forecasting task, as
-defined by <a href="https://otexts.com/fpp3/basic-steps.html" class="external-link">Hyndman
-&amp; Athanasopoulos (2021)</a>. Updated forecasting package information
-can be found <a href="https://robjhyndman.com/hyndsight/forecast9.html" class="external-link">here</a>.</p>
+<p>The <code>acciddasuite</code> package provides tools for building
+infectious disease forecasts and relies on the <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a>
+framework.</p>
+<p>This vignette demonstrates a basic example of generating and
+evaluating forecasts following the standard forecasting workflow
+described by <a href="https://otexts.com/fpp3/basic-steps.html" class="external-link">Hyndman
+&amp; Athanasopoulos (2021)</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="statistical-modelling">Statistical Modelling<a class="anchor" aria-label="anchor" href="#statistical-modelling"></a>
+<h2 id="forecasting-workflow">Forecasting Workflow<a class="anchor" aria-label="anchor" href="#forecasting-workflow"></a>
 </h2>
 <div class="section level3">
 <h3 id="get_data">
 <code>get_data</code><a class="anchor" aria-label="anchor" href="#get_data"></a>
 </h3>
-<p><strong>If you would like to load your own ground truth data, you can
+<p><strong>If you would like to load your own surveillance, you can
 follow <a href="external_data.html">these</a> steps for
 formatting.</strong></p>
-<p>For demonstration purposes, we will load ground truth data from the
+<p>For demonstration purposes, we will load surveillance data from the
 <a href="https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data" class="external-link">CDC
-National Health Safety Network</a>. The data dictionary is available <a href="https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr" class="external-link">here</a>.</p>
+National Health Safety Network</a>. The <code><a href="../reference/get_data.html">get_data()</a></code> function
+provides a convenient interface to access this data using the <a href="https://cmu-delphi.github.io/epidatr/" class="external-link"><code>epidatr</code></a>
+package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
@@ -119,45 +113,29 @@ National Health Safety Network</a>. The data dictionary is available <a href="ht
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-01 NY       wk inc covid hosp 2020-09-05              479</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-01 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
 <p>To look at what <code>df</code> looks like, you can access the
-example <code>csv</code> file here: <a href="%22https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv%22" class="external-link">example_data.csv</a>.</p>
+example <code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="time-series-cross-validation">Time Series Cross-Validation<a class="anchor" aria-label="anchor" href="#time-series-cross-validation"></a>
 </h3>
-<p>To evaluate predictive performance, we employ <em>time series
+<p>To evaluate model performance, we employ <em>time series
 cross-validation</em>. We fit models using the data available up to a
 specific cutoff point (<code>eval_start_date</code>), then forecast
-<code>h</code> weeks ahead with expanding windows. You do not want to
-<code>eval_start_date</code> to be too far back in time as it can be
-computationally expensive.</p>
-<p>We visualise the data and decide on the
-<code>eval_start_date</code>.</p>
+<code>h</code> weeks ahead with expanding windows. The further back in
+time <code>eval_start_date</code> is, the more computationally intensive
+the evaluation step will be.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We ony evaluate on the last 30 days of data for demonstration purposes</span></span>
-<span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">30</span></span>
-<span></span>
-<span><span class="va">df</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">target_end_date</span>, y <span class="op">=</span> <span class="va">observation</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span></span>
-<span>    xintercept <span class="op">=</span> <span class="va">eval_start_date</span>,</span>
-<span>    linetype <span class="op">=</span> <span class="st">"dashed"</span>,</span>
-<span>    color <span class="op">=</span> <span class="st">"red"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate</a></span><span class="op">(</span></span>
-<span>    <span class="st">"label"</span>,</span>
-<span>    x <span class="op">=</span> <span class="va">eval_start_date</span>,</span>
-<span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">observation</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.8</span>,</span>
-<span>    label <span class="op">=</span> <span class="st">"Model evaluation\nstarts here"</span>,</span>
-<span>    color <span class="op">=</span> <span class="st">"red"</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_labels <span class="op">=</span> <span class="st">"%b\n%y"</span>, breaks <span class="op">=</span> <span class="st">"5 months"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="acciddasuite_files/figure-html/tscv-setup-1.png" class="r-plt" alt="" width="672"></p>
-<p>Default models are:  <strong>Naïve (Random Walk RW)</strong>: A
-baseline model carrying forward the last observation.<br><strong>ETS</strong>: Exponential Smoothing state space model
-(automatically selected). <strong>ARIMA</strong>: Auto-Regressive
-Integrated Moving Average model (automatically selected).</p>
+<span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">30</span></span></code></pre></div>
+<p>Default models are:  * <code>SNAIVE</code> (Seasonal Naïve): Assumes
+this week will look like the same week last year. The simplest possible
+baseline. * <code>ETS</code> (Exponential Smoothing): A weighted average
+where recent weeks matter more than older ones. Adapts to trends and
+seasonal patterns. * <code>THETA</code>: Splits the data into a
+long-term trend and short-term fluctuations, forecasts each separately,
+then combines them. * <code>ARIMA</code>: Learns repeating patterns from
+past values to predict future ones. Auto-configured to find the best
+fit.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">df</span>,</span>
@@ -165,9 +143,7 @@ Integrated Moving Average model (automatically selected).</p>
 <span>  top_n <span class="op">=</span> <span class="fl">4</span>, <span class="co"># Select top 4 models</span></span>
 <span>  h <span class="op">=</span> <span class="fl">4</span> <span class="co"># forecast 4 weeks ahead</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"forecasting"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time Series Cross Validation...</span></span>
-<span><span class="co">#&gt; Forecast Generation...</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"base fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fcast</span></span>
 <span><span class="co">#&gt; &lt;accida_cast&gt;</span></span>
@@ -187,64 +163,19 @@ Integrated Moving Average model (automatically selected).</p>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
 <span><span class="co">#&gt;   $score     model ranking table</span></span>
-<span><span class="co">#&gt;   $plot      ggplot2 object</span></span>
-<span><span class="va">fcast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="acciddasuite_files/figure-html/models-1.png" class="r-plt" alt="" width="672"></p>
+<span><span class="co">#&gt;   $plot      ggplot2 object</span></span></code></pre></div>
+<p>Visualize forecasts by accessing the <code>plot</code> element of the
+forecast object:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">hubcast</span></span>
-<span><span class="co">#&gt; $model_out_tbl</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 200 × 9</span></span></span>
-<span><span class="co">#&gt;    model_id reference_date target   horizon location target_end_date output_type</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ARIMA    2026-01-24     wk inc …       1 NY       2026-01-31      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ARIMA    2026-01-24     wk inc …       2 NY       2026-02-07      quantile   </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 190 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: output_type_id &lt;chr&gt;, value &lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $oracle_output</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 291 × 6</span></span></span>
-<span><span class="co">#&gt;    location target_end_date target       output_type output_type_id oracle_value</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> NY       2020-08-08      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      517</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> NY       2020-08-15      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      490</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> NY       2020-08-22      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      844</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> NY       2020-08-29      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      483</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> NY       2020-09-05      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      479</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> NY       2020-09-12      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      573</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> NY       2020-09-19      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      578</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> NY       2020-09-26      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      656</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> NY       2020-10-03      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      851</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> NY       2020-10-10      wk inc covi… quantile    <span style="color: #BB0000;">NA</span>                      840</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 281 more rows</span></span></span>
-<span><span class="va">fcast</span><span class="op">$</span><span class="va">score</span></span>
-<span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
-<span><span class="co">#&gt;    model_id       wis interval_coverage_50 interval_coverage_95</span></span>
-<span><span class="co">#&gt;      &lt;char&gt;     &lt;num&gt;                &lt;num&gt;                &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:    THETA  27.20068                 1.00                    1</span></span>
-<span><span class="co">#&gt; 2:      ETS  41.93945                 0.75                    1</span></span>
-<span><span class="co">#&gt; 3: ENSEMBLE  62.72425                 1.00                    1</span></span>
-<span><span class="co">#&gt; 4:   SNAIVE 262.42959                 0.25                    1</span></span>
-<span><span class="co">#&gt;    wis_relative_skill</span></span>
-<span><span class="co">#&gt;                 &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          0.4132065</span></span>
-<span><span class="co">#&gt; 2:          0.6371035</span></span>
-<span><span class="co">#&gt; 3:          0.9528462</span></span>
-<span><span class="co">#&gt; 4:          3.9865765</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<p><img src="acciddasuite_files/figure-html/plot-forecast-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="adding-extra_models">Adding <code>extra_models</code><a class="anchor" aria-label="anchor" href="#adding-extra_models"></a>
 </h3>
-<p>Additonal models can be added to the forecasting suite by defining
-them in a list and passing them to <code><a href="../reference/get_fcast.html">get_fcast()</a></code>. The models
-should be compatible with the fable framework (see <a href="https://fabletools.tidyverts.org/articles/extension_models.html" class="external-link">fable
+<p>Additonal models can be added by defining them in a list and passing
+them to <code><a href="../reference/get_fcast.html">get_fcast()</a></code>. The models should be compatible with
+the fable framework (see <a href="https://fabletools.tidyverts.org/articles/extension_models.html" class="external-link">fable
 documentation</a> for more information).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fable.tidyverts.org" class="external-link">fable</a></span><span class="op">)</span></span>
@@ -262,31 +193,15 @@ documentation</a> for more information).</p>
 <span>  h <span class="op">=</span> <span class="fl">3</span>, <span class="co"># forecast 3 weeks ahead,</span></span>
 <span>  extra_models <span class="op">=</span> <span class="va">extra</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"forecasting"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time Series Cross Validation...</span></span>
-<span><span class="co">#&gt; Forecast Generation...</span></span>
-<span></span>
-<span><span class="va">fcast</span></span>
-<span><span class="co">#&gt; &lt;accida_cast&gt;</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Models evaluated:</span></span>
-<span><span class="co">#&gt;      model_id       wis</span></span>
-<span><span class="co">#&gt;        &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;         THETA  21.70325</span></span>
-<span><span class="co">#&gt;           ETS  29.52682</span></span>
-<span><span class="co">#&gt;      ENSEMBLE  75.67269</span></span>
-<span><span class="co">#&gt;  CUSTOM_ARIMA 140.41996</span></span>
-<span><span class="co">#&gt;        SNAIVE 284.57923</span></span>
-<span><span class="co">#&gt;       PROPHET 429.13852</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-01-31 </span></span>
-<span><span class="co">#&gt;   To:   2026-03-21 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Contents:</span></span>
-<span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
-<span><span class="co">#&gt;   $score     model ranking table</span></span>
-<span><span class="co">#&gt;   $plot      ggplot2 object</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"extra fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span></code></pre></div>
+<p>You can check how long each step took by calling
+<code><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">pipetime::get_log()</a></code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $timing</span></span>
+<span><span class="co">#&gt;             timestamp       label duration unit</span></span>
+<span><span class="co">#&gt; 1 2026-03-10 19:16:36  base fcast 5.475423 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-10 19:16:42 extra fcast 9.185729 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -294,13 +209,10 @@ documentation</a> for more information).</p>
 </h2>
 <p><a href="https://www.respilens.com/" class="external-link">RespiLens</a> is a platform for
 sharing and visualizing respiratory disease forecasts. To submit
-forecasts to RespiLens, you can use the <code>to_respilens()</code> with
-<code><a href="https://jeroen.r-universe.dev/jsonlite/reference/read_json.html" class="external-link">jsonlite::write_json()</a></code> to save a JSON file in the required
-format. You can then upload this file to MyRespiLens <a href="https://www.respilens.com/myrespilens" class="external-link">here</a>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jeroen.r-universe.dev/jsonlite" class="external-link">jsonlite</a></span><span class="op">)</span></span>
-<span><span class="fu">to_respilens</span><span class="op">(</span><span class="va">fcast</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/read_json.html" class="external-link">write_json</a></span><span class="op">(</span><span class="st">"respilens.json"</span>, pretty <span class="op">=</span> <span class="cn">TRUE</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+forecasts to RespiLens, you can use <code><a href="../reference/to_respilens.html">to_respilens()</a></code> to save
+the file in JSON format and upload it to MyRespiLens <a href="https://www.respilens.com/myrespilens" class="external-link">here</a>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
