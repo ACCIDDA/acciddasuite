@@ -37,12 +37,12 @@ head(df)
 #> # A tibble: 6 × 5
 #>   as_of      location target            target_end_date observation
 #>   <date>     <chr>    <chr>             <date>                <dbl>
-#> 1 2026-03-01 NY       wk inc covid hosp 2020-08-08              517
-#> 2 2026-03-01 NY       wk inc covid hosp 2020-08-15              490
-#> 3 2026-03-01 NY       wk inc covid hosp 2020-08-22              844
-#> 4 2026-03-01 NY       wk inc covid hosp 2020-08-29              483
-#> 5 2026-03-01 NY       wk inc covid hosp 2020-09-05              479
-#> 6 2026-03-01 NY       wk inc covid hosp 2020-09-12              573
+#> 1 2026-03-08 NY       wk inc covid hosp 2020-08-08              517
+#> 2 2026-03-08 NY       wk inc covid hosp 2020-08-15              490
+#> 3 2026-03-08 NY       wk inc covid hosp 2020-08-22              844
+#> 4 2026-03-08 NY       wk inc covid hosp 2020-08-29              483
+#> 5 2026-03-08 NY       wk inc covid hosp 2020-09-05              479
+#> 6 2026-03-08 NY       wk inc covid hosp 2020-09-12              573
 ```
 
 To look at what `df` looks like, you can access the example `csv` file
@@ -86,14 +86,14 @@ fcast
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  27.20068
-#>       ETS  41.93945
-#>  ENSEMBLE  62.72425
-#>    SNAIVE 262.42959
+#>     THETA  26.88197
+#>       ETS  31.33395
+#>  ENSEMBLE  61.29016
+#>    SNAIVE 256.25401
 #> 
 #> Forecast horizon:
-#>   From: 2026-01-31 
-#>   To:   2026-03-28 
+#>   From: 2026-02-07 
+#>   To:   2026-04-04 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -144,9 +144,9 @@ You can check how long each step took by calling
 ``` r
 get_log()
 #> $timing
-#>             timestamp       label duration unit
-#> 1 2026-03-10 19:16:36  base fcast 5.475423 secs
-#> 2 2026-03-10 19:16:42 extra fcast 9.185729 secs
+#>             timestamp       label  duration unit
+#> 1 2026-03-17 16:52:41  base fcast  6.766221 secs
+#> 2 2026-03-17 16:52:49 extra fcast 10.934566 secs
 ```
 
 ## Submit to MyRespiLens

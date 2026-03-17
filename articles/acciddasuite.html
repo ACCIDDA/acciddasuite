@@ -106,12 +106,12 @@ package.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   as_of      location target            target_end_date observation</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-01 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-01 NY       wk inc covid hosp 2020-08-15              490</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-01 NY       wk inc covid hosp 2020-08-22              844</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-01 NY       wk inc covid hosp 2020-08-29              483</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-01 NY       wk inc covid hosp 2020-09-05              479</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-01 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-08 NY       wk inc covid hosp 2020-08-08              517</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-08 NY       wk inc covid hosp 2020-08-15              490</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-08 NY       wk inc covid hosp 2020-08-22              844</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-08 NY       wk inc covid hosp 2020-08-29              483</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-08 NY       wk inc covid hosp 2020-09-05              479</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-08 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
 <p>To look at what <code>df</code> looks like, you can access the
 example <code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
 </div>
@@ -151,14 +151,14 @@ fit.</p>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;  model_id       wis</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;     THETA  27.20068</span></span>
-<span><span class="co">#&gt;       ETS  41.93945</span></span>
-<span><span class="co">#&gt;  ENSEMBLE  62.72425</span></span>
-<span><span class="co">#&gt;    SNAIVE 262.42959</span></span>
+<span><span class="co">#&gt;     THETA  26.88197</span></span>
+<span><span class="co">#&gt;       ETS  31.33395</span></span>
+<span><span class="co">#&gt;  ENSEMBLE  61.29016</span></span>
+<span><span class="co">#&gt;    SNAIVE 256.25401</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-01-31 </span></span>
-<span><span class="co">#&gt;   To:   2026-03-28 </span></span>
+<span><span class="co">#&gt;   From: 2026-02-07 </span></span>
+<span><span class="co">#&gt;   To:   2026-04-04 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
@@ -199,9 +199,9 @@ documentation</a> for more information).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $timing</span></span>
-<span><span class="co">#&gt;             timestamp       label duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-10 19:16:36  base fcast 5.475423 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-10 19:16:42 extra fcast 9.185729 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;             timestamp       label  duration unit</span></span>
+<span><span class="co">#&gt; 1 2026-03-17 16:52:41  base fcast  6.766221 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-17 16:52:49 extra fcast 10.934566 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
