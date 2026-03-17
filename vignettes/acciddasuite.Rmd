@@ -20,65 +20,67 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `acciddasuite` package provides comprehensive tools, models, and information for building infectious disease forecasts using either national or state-level data. This forecasting suite is focused on using time series data (surveillance data) for public health use to create an ensemble of outputs from statistical models, evaluation and visualization tools.   
+The `acciddasuite` package provides a forecasting pipeline framework for building infectious disease forecasts and relies on the [`fable`](https://fable.tidyverts.org/) modeling framework. This forecasting suite uses time series data (surveillance data) from either national data sets (NHSN & ESSENCE) or local surveillance data. 
 
-This series of vignettes demonstrate how the standard frameworks create and evaluate forecasts using R.
+The overall goal is to provide public health with an easily adoptable approach to create an ensemble of outputs from statistical models, provide forecast evaluation, and a tool for visualization.   
 
-This forecasting suite is initially being set up to run within the Fable framework, a tidyverse-based alternative for time series forecasting in R.
+This vignette demonstrates a basic example of generating, evaluating, and visualizing forecasts following the standard forecasting workflow described by [Hyndman & Athanasopoulos (2021)](https://otexts.com/fpp3/basic-steps.html). 
 
-We will aim to demonstrate the basic steps in a forecasting task, as defined by [Hyndman & Athanasopoulos (2021)](https://otexts.com/fpp3/basic-steps.html). Updated forecasting package information can be found [here](https://robjhyndman.com/hyndsight/forecast9.html).
+Updated forecasting package information can be found [here](https://robjhyndman.com/hyndsight/forecast9.html).
 
-# Statistical Modelling
+# Forecasting Workflow
 
-##  `get_data`
+## `Forecast Planning`
 
-**Ideally, you would load your own data here**.
+**To get more information about how to know whether forecasting is the best approach to answer the information you are seeking or being asked to provide, follow the steps in [this](forecast_planning.html) article.**
 
-For demonstration purposes, we will load data from the [CDC National Health Safety Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
+## `Time Series Data`
+
+**If you would like to load your own surveillance, you can follow [these](external_data.html) steps for formatting.**
+
+For demonstration purposes, we will load surveillance data from the [CDC National Health Safety Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
+
+The `get_data()` function provides a convenient interface to access this data using the [`epidatr`](https://cmu-delphi.github.io/epidatr/) package.
 
 ```{r, get_data}
 library(dplyr)
 library(ggplot2)
 library(pipetime)
 library(acciddasuite)
-df <- get_data(pathogen = "covid", geo_values = "ny")
-summary(df)
 
+df <- get_data(pathogen = "flu", geo_values = "nc")
+
+head(df)
 ```
+
+```{r, to_csv, echo = FALSE}
+df |> write.csv("example_data.csv", row.names = FALSE)
+```
+
+To look at what `df` looks like, you can access the example `csv` file here: [example_data.csv](https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv).
+
 
 ## Time Series Cross-Validation
 
-To evaluate predictive performance, we employ *time series cross-validation*. We fit models using the data available up to a specific cutoff point (`eval_start_date`), then forecast `h` weeks ahead with expanding windows. You do not want to `eval_start_date` to be too far back in time as it can be computationally expensive.
+To evaluate model performance, we employ *time series cross-validation*. 
+We fit models using the data available up to a specific cutoff point (`eval_start_date`), then forecast `h` weeks ahead with expanding windows. The further back in time `eval_start_date` is, the more computationally intensive the evaluation step will be.
 
-We visualise the data and decide on the `eval_start_date`.
+We visualize the data and decide on the `eval_start_date`.
 
 ```{r, tscv-setup}
-# We ony evaluate on the last 30 days of data for demonstration purposes
-eval_start_date <- max(df$target_end_date) - 30
-
-df |>
-  ggplot(aes(x = target_end_date, y = observation)) +
-  geom_line() +
-  geom_vline(
-    xintercept = eval_start_date,
-    linetype = "dashed",
-    color = "red"
-  ) +
-  annotate(
-    "label",
-    x = eval_start_date,
-    y = max(df$observation) * 0.8,
-    label = "Model evaluation\nstarts here",
-    color = "red"
-  ) +
-  scale_x_date(date_labels = "%b\n%y", breaks = "5 months") +
-  theme_classic()
+# We ony evaluate on the last 90 days of data for demonstration purposes
+eval_start_date <- max(df$target_end_date) - 90
 ```
 
-Default models are:\ 
-**Naïve (Random Walk RW)**: A baseline model carrying forward the last observation.\
-**ETS**: Exponential Smoothing state space model (automatically selected).\ **ARIMA**: Auto-Regressive Integrated Moving Average model (automatically selected).
+Default models are:
 
+* `SNAIVE` (Seasonal Naïve): Assumes this week will look like the same week last year. The simplest possible baseline.
+
+* `ETS` (Exponential Smoothing): A weighted average where recent weeks matter more than older ones. Adapts to trends and seasonal patterns.
+
+* `THETA`: Splits the data into a long-term trend and short-term fluctuations, forecasts each separately, then combines them.
+
+* `ARIMA`: Learns repeating patterns from past values to predict future ones. Auto-configured to find the best fit.
 
 ```{r, models}
 fcast = get_fcast(
@@ -87,17 +89,26 @@ fcast = get_fcast(
   top_n = 4, # Select top 4 models
   h = 4 # forecast 4 weeks ahead
 ) |>
-  time_pipe("forecasting")
+  time_pipe("base fcast", log = "timing")
 
 fcast
+```
+
+Visualize forecasts by accessing the `plot` element of the forecast object:
+```{r, plot-forecast}
 fcast$plot
-fcast$hubcast
+```
+
+View forecast evaluation by viewing the `score` element of the object:
+```{r, score-forecast}
 fcast$score
 ```
 
 
 ## Adding `extra_models`
-Additonal models can be added to the forecasting suite by defining them in a list and passing them to `get_fcast()`. The models should be compatible with the fable framework (see [fable documentation](https://fabletools.tidyverts.org/articles/extension_models.html) for more information).
+
+Additional models can be added by defining them in a list and passing them to `get_fcast()`. The models should be compatible with the fable framework (see [fable documentation](https://fabletools.tidyverts.org/articles/extension_models.html) for more information).
+
 ```{r, extra-models}
 library(fable)
 library(fable.prophet)
@@ -114,17 +125,17 @@ fcast = get_fcast(
   h = 3, # forecast 3 weeks ahead,
   extra_models = extra
 ) |>
-  time_pipe("forecasting")
-
-fcast
+  time_pipe("extra fcast", log = "timing")
 ```
 
+You can check how long each step took by calling `pipetime::get_log()`:
+```{r, timing}
+get_log()
+```
 
-# Submit to MyRespiLens
-[RespiLens](https://www.respilens.com/) is a platform for sharing and visualizing respiratory disease forecasts. To submit forecasts to RespiLens, you can use the `to_respilens()` with `jsonlite::write_json()` to save a JSON file in the required format. You can then upload this file to MyRespiLens [here](https://www.respilens.com/myrespilens).
+# Visualization - Submit to MyRespiLens
+[RespiLens](https://www.respilens.com/) is a platform for sharing and visualizing respiratory disease forecasts. To submit forecasts to RespiLens, you can use `to_respilens()` to save the file in JSON format and upload it to MyRespiLens [here](https://www.respilens.com/myrespilens).
 
 ```{r, to-respilens, eval = FALSE}
-library(jsonlite)
-to_respilens(fcast) |>
-  jsonlite::write_json("respilens.json", pretty = TRUE, auto_unbox = TRUE)
+to_respilens(fcast, "respilens.json")
 ```
