@@ -1,13 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# acciddasuite <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
+# A Framework for Infectious Disease Forecasting <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-The goal of acciddasuite is to …
+A suite of tools, models, functions, and information to prepare and
+build a data pipeline to produce and visualize infectious disease
+forecasts. The goal of this suite is to provide a comprehensive guided
+process to easily adopt disease forecasting into routine activities.
 
 ## Installation
 
@@ -21,11 +24,18 @@ You can install the development version of acciddasuite from
 
 ## Example
 
+In this example, the suite uses a function to pull in NHSN data by
+designated pathogen and state, and then forecasts the most recent target
+date available.
+
 ``` r
-#library(acciddasuite)
-df <- get_data(pathogen = "flu", geo_values = "ny")
+library(acciddasuite)
+
+df <- get_data(pathogen = "flu", geo_values = "nc")
+
 fcast <- df |> 
   get_fcast(eval_start_date = max(df$target_end_date) - 30)
+
 fcast
 ```
 

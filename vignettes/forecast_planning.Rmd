@@ -149,7 +149,302 @@ graph TB
 ")
 ```
 
+```{r, echo=FALSE, include=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+
+DiagrammeR::mermaid("
+graph TB
+    A[Did you choose state-level forecasts for a particular pathogen?] --> B{Yes} 
+    
+    B --> D[Review available forecasting hubs providing state-level forecasts.]
+    D --> F[Did you find the state-level forecasting information you were orignially seeking?]
+    
+    F --> J{No} 
+    F --> I{Yes}
+    
+    J --> n17[Continue collecting data.]
+    I --> n16[Congrats!]
+")
+```
+
+```{r, echo=FALSE, include=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+
+DiagrammeR::mermaid("
+graph TB
+    A[Did you choose state-level forecasts for a particular pathogen?] --> B{Yes} 
+    
+    B --> D[Review available forecasting hubs providing state-level forecasts.]
+    D --> F[Did you find the state-level forecasting information you were orignially seeking?]
+    
+    F --> J{No} 
+    F --> I{Yes}
+    
+    J --> n17[Continue collecting data.]
+    I --> n16[Congrats!]
+    
+    A --> C{No}
+    C --> E[Is data available for the target, spactial unit, and time resolution?]
+    E --> G{Yes} 
+    E --> H{No}
+")
+```
+
+```{r, echo=FALSE, include=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+
+DiagrammeR::mermaid("
+graph TB
+    G{Yes} --> K[Is historical data available for the target of interest?]
+    H{No} --> L[Does the data exist, but are not easily accesible?]
+    
+    K --> n1{Yes} 
+    K --> n2{No}
+    
+    n1 --> n18[Collect and store the available data.]
+    n2 --> n19[Go back to STEP 1. Reevaluate the project.]
+    
+    L --> n3{Yes}
+    L --> n4{No}
+    
+    n3 --> n20[Collect any available data.]
+    n4 --> n21[Go back to STEP 1. Reevaluate the project.]
+
+    n18 --> n5
+    n20 --> n5
+    
+    n5[Are these data reported or available in a consistent manner? e.g., same data is available every week on the same day] --> n6{Yes}
+    n5 --> n7{No}
+    
+    n7 --> n12[Determine the reporting timeline and look for consistancies.]
+    n12 --> n5
+     
+    n6 --> n15[Establish a reporting timeline consistent with the time resolution.]
+    n15 --> n8
+    
+    n8[Setup consistent downloads of the entire dataset, not just the current week.] --> n9[Does your data have reporting delays or completeness issues?]
+    n9 --> n10{Yes}
+    n9 --> n11{No}
+    
+    n10 --> n13[Plan for Nowcasting.]
+    n11 --> n14[Continue to data formatting steps for forecasting.]
+    ")
+```
+
 ```{r, echo=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+#| fig.width: 14
+#| fig.height: 12
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    A[Use state-level forecasts for a pathogen?] --> B{Yes}
+    A --> C{No}
+
+    %% --- STATE FORECAST PATH ---
+    B --> D[Review available state-level forecasting hubs]
+    D --> F[Did you find the forecast information you need?]
+
+    F --> I{Yes}
+    F --> J{No}
+
+    I --> END1[Done]
+    J --> CONT1[Continue data collection]
+
+    %% --- DATA AVAILABILITY PATH ---
+    C --> E[Is data available at the needed scale and resolution?]
+    E --> G{Yes}
+    E --> H{No}
+
+    G --> K[Is historical data available?]
+    H --> L[Does the data exist but hard to access?]
+
+    %% --- HISTORICAL DATA ---
+    K --> Y1{Yes}
+    K --> N1{No}
+
+    Y1 --> STEP1[Collect and store available data]
+    N1 --> RESTART1[Return to Step 1 and reassess]
+
+    %% --- ACCESSIBILITY ---
+    L --> Y2{Yes}
+    L --> N2{No}
+
+    Y2 --> STEP2[Collect any accessible data]
+    N2 --> RESTART2[Return to Step 1 and reassess]
+
+    STEP1 --> CONSIST
+    STEP2 --> CONSIST
+
+    %% --- CONSISTENCY ---
+    CONSIST[Are data reported consistently?] --> CY{Yes}
+    CONSIST --> CN{No}
+
+    CN --> FIX[Identify reporting patterns and inconsistencies]
+    FIX --> CONSIST
+
+    %% --- PIPELINE SETUP ---
+    CY --> TIMELINE[Define a reporting timeline]
+    TIMELINE --> PIPE
+
+    PIPE[Download the full dataset regularly--not just current data] --> DELAY
+    DELAY[Are there reporting delays or missing data?] --> DY{Yes}
+    DELAY --> DN{No}
+
+    DY --> NOWCAST[Plan for nowcasting]
+    DN --> READY[Proceed to data formatting for forecasting]
+")
+```
+
+```{r, echo=FALSE}
+#| fig.cap: "Figure 1. Forecasting planning decision tree: initial pathway selection. The data-readiness branch continues in Figure 2."
+#| fig.width: 14
+#| fig.height: 8
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    A[Use state-level forecasts for a pathogen?] --> B{Yes}
+    A --> C{No}
+
+    %% --- STATE-LEVEL FORECAST PATH ---
+    B --> D[Review available state-level forecasting hubs]
+    D --> F[Did you find the forecast information you need?]
+
+    F --> I{Yes}
+    F --> J{No}
+
+    I --> END1[Done]
+    J --> CONT1[Continue data collection]
+
+    %% --- DATA AVAILABILITY HANDOFF ---
+    C --> E[Is data available at the needed scale and time resolution?]
+    E --> G{Yes}
+    E --> H{No}
+
+    G --> K[Is historical data available?]
+    H --> L[Does the data exist but is hard to access?]
+
+    K --> Y1{Yes}
+    K --> N1{No}
+
+    L --> Y2{Yes}
+    L --> N2{No}
+
+    Y1 --> HANDOFF[Go to Figure 2: data readiness and reporting workflow]
+    Y2 --> HANDOFF
+
+    N1 --> RESTART1[Return to Step 1 and reassess]
+    N2 --> RESTART2[Return to Step 1 and reassess]
+")
+```
+
+## Figure 2: Data readiness and reporting workflow
+
+```{r, echo=FALSE}
+#| fig.cap: "Figure 2. Forecasting planning decision tree: data readiness and reporting workflow. This figure continues from the handoff node in Figure 1."
+#| fig.width: 14
+#| fig.height: 9
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    START[From Figure 1: data readiness and reporting workflow] --> STEP1[Collect and store available data]
+
+    STEP1 --> CONSIST[Are data reported consistently, such as on the same day each week?]
+
+    CONSIST --> CY{Yes}
+    CONSIST --> CN{No}
+
+    CN --> FIX[Identify reporting patterns and inconsistencies]
+    FIX --> CONSIST
+
+    CY --> TIMELINE[Define a reporting timeline consistent with the data frequency]
+    TIMELINE --> PIPE[Download the full dataset regularly, not only the current period]
+
+    PIPE --> DELAY[Are there reporting delays or completeness issues?]
+    DELAY --> DY{Yes}
+    DELAY --> DN{No}
+
+    DY --> NOWCAST[Plan for nowcasting]
+    DN --> READY[Proceed to data formatting for forecasting]
+")
+```
+
+```{r, echo=FALSE, include=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+#| fig.width: 14
+#| fig.height: 20
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    A[Did you choose state-level forecasts for a particular pathogen?] --> B{Yes} 
+    A --> C{No}
+
+    B --> D[Review available forecasting hubs providing state-level forecasts.]
+    D --> F[Did you find the state-level forecasting information you were originally seeking?]
+
+    F --> I{Yes}
+    F --> J{No} 
+
+    I --> n16[Congrats!]
+    J --> n17[Continue collecting data.]
+
+    C --> E[Is data available for the target, spatial unit, and time resolution?]
+    E --> G{Yes} 
+    E --> H{No}
+
+    G --> K[Is historical data available for the target of interest?]
+    H --> L[Does the data exist, but is it not easily accessible?]
+
+    K --> n1{Yes} 
+    K --> n2{No}
+
+    n1 --> n18[Collect and store the available data.]
+    n2 --> n19[Go back to STEP 1. Reevaluate the project.]
+
+    L --> n3{Yes}
+    L --> n4{No}
+
+    n3 --> n20[Collect any available data.]
+    n4 --> n21[Go back to STEP 1. Reevaluate the project.]
+
+    n18 --> n5
+    n20 --> n5
+
+    n5[Are these data reported or available in a consistent manner? For example, is the same data available every week on the same day?] --> n6{Yes}
+    n5 --> n7{No}
+
+    n7 --> n12[Determine the reporting timeline and look for consistencies.]
+    n12 --> n5
+
+    n6 --> n15[Establish a reporting timeline consistent with the time resolution.]
+    n15 --> n8
+
+    n8[Set up consistent downloads of the entire dataset, not just the current week.] --> n9[Does your data have reporting delays or completeness issues?]
+    n9 --> n10{Yes}
+    n9 --> n11{No}
+
+    n10 --> n13[Plan for nowcasting.]
+    n11 --> n14[Continue to data-formatting steps for forecasting.]
+")
+```
+
+```{r, echo=FALSE, include=FALSE}
 #| fig.cap: "Forecasting Planning Decision Tree"
 
 DiagrammeR::mermaid("
@@ -301,11 +596,8 @@ A full list of real-time collaborative public health hubs can be found [here](ht
 
 ## Next steps:
 
-1. Pull and manipulating data to use with forecasting models
-2. Consider Nowcasts
-3. Run forecasting models
-4. Ensemble, visualize, and evaluate forecasts
-5. Share forecasts with stakeholders
+* For NHSN data, return to Get Started and use the get_data function to run forecasts 
+* To forecast local surveillance data, follow [these](external_data.html) steps for formatting.
 
 
 For more information, see the documentation and help pages.
