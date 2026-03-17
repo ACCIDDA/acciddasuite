@@ -1,6 +1,9 @@
 ---
 title: "Disease Forecast Planning for Public Health"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    keep_md: false
+always_allow_html: true
 vignette: >
   %\VignetteIndexEntry{Disease Forecast Planning for Public Health}
   %\VignetteEngine{knitr::rmarkdown}
