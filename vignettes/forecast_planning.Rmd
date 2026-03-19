@@ -100,9 +100,9 @@ Answer prior to proceeding:
 
 
 ## Step 3: Data Availability & Limitations
-In this step, we provide a decision tree to assist with directing you toward a forecasting approach using available data and considering the data limitations. **Figure 1** describes the important initial questions needed to use existing forecasting resources or prepare to collect data for conducting your forecast. **Figure 2** describes the process and neccisary steps to collect and organize the required data to conduct a forecast.  
+In this step, we provide a decision tree approach to assist with directing you toward a forecasting approach using available data and considering the data limitations. 
 
-Forecasting planning decision tree:
+### Forecasting planning decision tree:
 
 ```{r, echo=FALSE, include=FALSE}
 #| fig.cap: "Forecasting Planning Decision Tree"
@@ -172,11 +172,11 @@ graph TB
     DN --> READY[Proceed to data formatting for forecasting]
 ")
 ```
+**Figure 1. Initial forecast selection** describes the important initial questions needed to use existing forecasting resources or prepare to collect data for conducting your forecast. 
 
 ```{r, echo=FALSE}
-#| fig.cap: "Figure 1. Initial forecast selection."
-#| fig.width: 14
-#| fig.height: 10
+#| fig.width: 18
+#| fig.height: 12
 #| out.width: "100%"
 #| out.height: "100%"
 #| fig.align: "center"
@@ -188,7 +188,7 @@ graph TB
     A --> C{No}
 
     %% --- STATE-LEVEL FORECAST PATH ---
-    B --> D[Review available state-level forecasting hubs [below]]
+    B --> D[Review available state-level forecasting hubs below]
     D --> F[Did you find the forecast information you need?]
 
     F --> I{Yes}
@@ -198,7 +198,7 @@ graph TB
     J --> CONT1[Continue data collection]
 
     %% --- DATA AVAILABILITY HANDOFF ---
-    C --> E[Is data available at the needed scale and time resolution?]
+    C --> E[Is data available for the target, spatial scale, and time resolution?]
     E --> G{Yes}
     E --> H{No}
 
@@ -211,19 +211,20 @@ graph TB
     L --> Y2{Yes}
     L --> N2{No}
 
-    Y1 --> HANDOFF[Go to Figure 2: data readiness and reporting workflow]
+    Y1 --> HANDOFF[Go to Figure 2: Data collection and reporting workflow]
     Y2 --> HANDOFF
 
-    N1 --> RESTART1[Return to Step 1 and reassess]
-    N2 --> RESTART2[Return to Step 1 and reassess]
+    N1 --> RESTART1[Return to Step 1 and re-evaluate]
+    N2 --> RESTART2[Return to Step 1 and re-evaluate]
 ")
 ```
 
 
+**Figure 2. Data collection and reporting workflow** describes the process and necessary steps to collect and organize the required data to conduct a forecast.  
+
 ```{r, echo=FALSE}
-#| fig.cap: "Figure 2. Data collection and reporting workflow."
-#| fig.width: 14
-#| fig.height: 10
+#| fig.width: 16
+#| fig.height: 12
 #| out.width: "100%"
 #| out.height: "100%"
 #| fig.align: "center"
@@ -231,7 +232,7 @@ graph TB
 DiagrammeR::mermaid("
 graph TB
 
-    START[From Figure 1: data readiness and reporting workflow] --> STEP1[Collect and store available data]
+    START[From Figure 1: Initial forecast selection] --> STEP1[Collect and store available data]
 
     STEP1 --> CONSIST[Are data reported consistently, such as on the same day each week?]
 
