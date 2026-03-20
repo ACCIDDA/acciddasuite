@@ -1,6 +1,9 @@
 ---
 title: "Disease Forecast Planning for Public Health"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    keep_md: false
+always_allow_html: true
 vignette: >
   %\VignetteIndexEntry{Disease Forecast Planning for Public Health}
   %\VignetteEngine{knitr::rmarkdown}
@@ -26,10 +29,12 @@ First, there needs to be a clearly defined project to get started. Here are a se
 
     - Determine what it is you are trying to gain from the forecasting project. Being specific here will be useful in determining your approach.
 
+
 2. Who is the audience or who will benefit from the insights?
 
     - Documenting who will use the forecasts and how will assist in the interpretation of the forecasting output.
-  
+
+
 3. How far into the future are you interested in forecasting? 
       How far into the future do these insights need to be to be useful?
           What aspects of a forecast need to be accurate?
@@ -37,14 +42,16 @@ First, there needs to be a clearly defined project to get started. Here are a se
     - Clearly defining what you think is going to be useful information will determine how to approach the problems and if forecasting is the best tool.
     
     - For example, seasonal influenza forecasting typically involves predictions 1 to 4 weeks into the future. Forecasts provide a range of possible trajectories for that time period. Predicting a specific number, such as the number of total hospitalizations during that time period would require a different approach and models.
-  
+
+
 Answer prior to proceeding:
 
-Have you defined your forecasting project and approach?
+**Have you defined your forecasting project and approach?**
 
-YES → Proceed to next steps
+    - YES → Proceed to next steps
 
-NO  → Continue defining the approach
+    - NO  → Continue defining the approach
+
 
 ## Step 2: Define Your Data
 Next, defining what pathogen, the target (time series data), the geographical area, and the time resolution in order to know what data is required for the forecasting project.
@@ -70,128 +77,196 @@ Some examples of forecasting targets:
     - Respiratory disease deaths
     - Emergency Department (ED) visits related to respiratory disease-like illnesses
   
-3. What *spatial unit* will provide the best insight? Are these data available at that scale? 
+5. What *spatial unit* will provide the best insight? Are these data available at that scale? 
 
 This may include, but are not limited to:
 
     - State, county, city, health jurisdiction, hospital system, or even facility (e.g., hospital)
   
-4. What *time resolution* is adaquate and available to provide the required information for the audience? 
+6. What *time resolution* is adaquate and available to provide the required information for the audience? 
 
 Planning the time steps is important for determining if your data is consistently and readily available for that resolution. Also, this will assist in thinking about the reporting delays or lag time for each of these time steps. 
 
 Some typical forecasting time steps include days, weeks, or even months. 
 
+
 Answer prior to proceeding:
 
-Have you defined your pathogen, target, spatial unit, and time resolution?
+**Have you defined your pathogen, target, spatial unit, and time resolution?**
 
-YES → Proceed to next steps
+    - YES → Proceed to next steps
 
-NO  → Continue defining these data elements
+    - NO  → Continue defining these data elements
+
 
 ## Step 3: Data Availability & Limitations
-In this step, you will be asked a series of questions to direct you to become familiar with the available forecasting hubs being routinely provided for national and state level targets. 
+In this step, we provide a decision tree approach to assist with directing you toward a forecasting approach using available data and considering the data limitations. 
 
+### Forecasting planning decision tree:
 
-```{r eval=FALSE}
-# Decision Tree Approach to Public Health Forecasting 
+```{r, echo=FALSE, include=FALSE}
+#| fig.cap: "Forecasting Planning Decision Tree"
+#| fig.width: 14
+#| fig.height: 12
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
 
-                                ┌───────────────────────────────────────┐
-                                │  Did you choose state-level forecasts │
-                                │        for a particular pathogen?     │
-                                └────────────────────┬──────────────────┘
-                                                     │
-                                         ┌───────────────────────┐
-                                         ▼                       ▼
-                                 ┌───────────────┐       ┌───────────────┐
-                                 │      Yes      │       │       No      │
-                                 └───────┬───────┘       └───────┬───────┘
-                                         │                       │
-                                         ▼                       ▼
-          ┌────────────────────────────────────┐            ┌────────────────────────────────────┐
-          │  Review available forecasting hubs │            │ Is data available for the target,  │
-          │   providing state-level forecast.  │     ┌──────│  spatial unit, and time resolution │
-          └─────────────────┬──────────────────┘     │      │  you have chosen?                  │
-                            │                        │      │  (e.g., weekly flu hosp in NC)     │
-                            │                        │      └──────────────────┬─────────────────┘
-                            ▼                        │                         │
-              ┌───────────────────────────────┐      │               ┌───────────────────┐
-              │  Did you find the state-level │      │               ▼                   ▼
-              │  forecasting information you  │      │           ┌───────┐           ┌───────┐
-              │  were originally seeking?     │      │           │  YES  │           │  NO   │
-              └───────────────┬───────────────┘      │           └───────┘           └───────┘
-                              │                      │               │                   │
-                              │                      │               │                   │
-                    ┌───────────────────┐            │               │                   │
-                    ▼                   ▼            │               │                   │
-     ┌───────────────────┐          ┌─────────┐      │               │                   │
-     │  YES → Fantastic! │          │  NO →   │──────┘               │                   │
-     └───────────────────┘          └────┬────┘                      │                   │
-                                                                     │                   │
-                                                                     ▼                   ▼
-                                        ┌──────────────────────────────┐            ┌─────────────────────────────┐
-                                        │ Is historical data available │            │ Does the data exist, but    │
-                                        │  for the target of interest? │            │  are not easily accessible? │
-                                        └──────────────┬───────────────┘            └─────────────┬───────────────┘
-                                                       │                                          │
-                          ┌─────────────────────────────────┐                      ┌─────────────────────────────┐
-                          ▼                                 ▼                      ▼                             ▼
-          ┌──────────────────────┐     ┌───────────────────────────┐      ┌────────────────────┐      ┌───────────────────────────┐
-          │         YES →        │     │           NO →            │      │       YES →        │      │           NO →            │
-          │  [Collect and store  │     │     Go back to Step 1.    │      │ [Collect any       │      │   Go back to Step 1.      │ 
-          │  the available data] │     │  Re-evaluate the project. │      │  available data]   │      │  Re-evaluate the project. │
-          └──────────┬───────────┘     └───────────────────────────┘      └──────────┬─────────┘      └───────────────────────────┘
-                     │                                                               │
-                     │                                                               │
-                     └───────────────────────────────┬───────────────────────────────┘
-                                                     │
-                                                     │
-                      ┌──────────────────────────────────────────────────────────────┐
-                      │ Are these data reported or available in a consistent manner? │────────────────┐
-                      │  (e.g., same data is available every week on the same day)   │                │
-                      └──────────────────────────────┬───────────────────────────────┘                │
-                                                     │                                                │
-                         ┌────────────────────────────────────────────────────────┐                   │
-                         │                                                        │                   │
-                         │                                                        │                   │
-                         ▼                                                        ▼                   │
-           ┌──────────────────────────┐                              ┌──────────────────────────┐     │
-           │            YES →         │                              │           NO →           │     │
-           │ Establish a reporting    │                              │  Determine the reporting │─────┘
-           │ timeline consistnet with │                              │  timeline and look for   │
-           │ resolution.              │                              │  consistencies.          │
-           └─────────────┬────────────┘                              └──────────────────────────┘
-                         │                    
-                         ▼                       
-  ┌──────────────────────────────────────────────────────┐
-  │   Setup consistent downloads of the entire dataset   │
-  │ (not just the ci=urrent week - e.g., versioned data) │                
-  └──────────────────────┬───────────────────────────────┘  
-                         │                       
-                         │
-      ┌─────────────────────────────────────────┐                ┌────────────────────────┐
-      │   Does your data have reporting delays  │────────────────│          YES →         │
-      │       and completeness issues?          │                │  (Plan for Nowcasting) │
-      └─────────────────────────────────────────┘                └────────────────────────┘
+DiagrammeR::mermaid("
+graph TB
 
+    A[Use state-level forecasts for a pathogen?] --> B{Yes}
+    A --> C{No}
+
+    %% --- STATE FORECAST PATH ---
+    B --> D[Review available state-level forecasting hubs]
+    D --> F[Did you find the forecast information you need?]
+
+    F --> I{Yes}
+    F --> J{No}
+
+    I --> END1[Done]
+    J --> CONT1[Continue data collection]
+
+    %% --- DATA AVAILABILITY PATH ---
+    C --> E[Is data available at the needed scale and resolution?]
+    E --> G{Yes}
+    E --> H{No}
+
+    G --> K[Is historical data available?]
+    H --> L[Does the data exist but hard to access?]
+
+    %% --- HISTORICAL DATA ---
+    K --> Y1{Yes}
+    K --> N1{No}
+
+    Y1 --> STEP1[Collect and store available data]
+    N1 --> RESTART1[Return to Step 1 and reassess]
+
+    %% --- ACCESSIBILITY ---
+    L --> Y2{Yes}
+    L --> N2{No}
+
+    Y2 --> STEP2[Collect any accessible data]
+    N2 --> RESTART2[Return to Step 1 and reassess]
+
+    STEP1 --> CONSIST
+    STEP2 --> CONSIST
+
+    %% --- CONSISTENCY ---
+    CONSIST[Are data reported consistently?] --> CY{Yes}
+    CONSIST --> CN{No}
+
+    CN --> FIX[Identify reporting patterns and inconsistencies]
+    FIX --> CONSIST
+
+    %% --- PIPELINE SETUP ---
+    CY --> TIMELINE[Define a reporting timeline]
+    TIMELINE --> PIPE
+
+    PIPE[Download the full dataset regularly--not just current data] --> DELAY
+    DELAY[Are there reporting delays or missing data?] --> DY{Yes}
+    DELAY --> DN{No}
+
+    DY --> NOWCAST[Plan for nowcasting]
+    DN --> READY[Proceed to data formatting for forecasting]
+")
+```
+**Figure 1. Initial forecast selection** describes the important initial questions needed to use existing forecasting resources or prepare to collect data for conducting your forecast. 
+
+```{r, echo=FALSE}
+#| fig.width: 18
+#| fig.height: 12
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    A[Use state-level forecasts for a pathogen?] --> B{Yes}
+    A --> C{No}
+
+    %% --- STATE-LEVEL FORECAST PATH ---
+    B --> D[Review available state-level forecasting hubs below]
+    D --> F[Did you find the forecast information you need?]
+
+    F --> I{Yes}
+    F --> J{No}
+
+    I --> END1[Done]
+    J --> CONT1[Continue data collection]
+
+    %% --- DATA AVAILABILITY HANDOFF ---
+    C --> E[Is data available for the target, spatial scale, and time resolution?]
+    E --> G{Yes}
+    E --> H{No}
+
+    G --> K[Is historical data available?]
+    H --> L[Does the data exist but is hard to access?]
+
+    K --> Y1{Yes}
+    K --> N1{No}
+
+    L --> Y2{Yes}
+    L --> N2{No}
+
+    Y1 --> HANDOFF[Go to Figure 2: Data collection and reporting workflow]
+    Y2 --> HANDOFF
+
+    N1 --> RESTART1[Return to Step 1 and re-evaluate]
+    N2 --> RESTART2[Return to Step 1 and re-evaluate]
+")
 ```
 
-National and State Level Forecasting Hubs:
+
+**Figure 2. Data collection and reporting workflow** describes the process and necessary steps to collect and organize the required data to conduct a forecast.  
+
+```{r, echo=FALSE}
+#| fig.width: 16
+#| fig.height: 12
+#| out.width: "100%"
+#| out.height: "100%"
+#| fig.align: "center"
+
+DiagrammeR::mermaid("
+graph TB
+
+    START[From Figure 1: Initial forecast selection] --> STEP1[Collect and store available data]
+
+    STEP1 --> CONSIST[Are data reported consistently, such as on the same day each week?]
+
+    CONSIST --> CY{Yes}
+    CONSIST --> CN{No}
+
+    CN --> FIX[Identify reporting patterns and inconsistencies]
+    FIX --> CONSIST
+
+    CY --> TIMELINE[Define a reporting timeline consistent with the data frequency]
+    TIMELINE --> PIPE[Download the full dataset regularly, not only the current period]
+
+    PIPE --> DELAY[Are there reporting delays or completeness issues?]
+    DELAY --> DY{Yes}
+    DELAY --> DN{No}
+
+    DY --> NOWCAST[Plan for nowcasting]
+    DN --> READY[Proceed to data formatting for forecasting]
+")
+```
+
+
+## National and State Level Forecasting Hubs:
 FluSight [guide](https://happygitwithr.com/https-pat) 
-MetroCast [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) for more information on creating a GitHub personal access token (PAT).
+
+MetroCast [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 
 A full list of real-time collaborative public health hubs can be found [here](https://hubverse.io/community/hubs.html#real-time-collaborative-public-health-hubs).
 
 
+## Next steps:
 
-## Next steps
-
-1. Pull and manipulating data to use with forecasting models
-2. Consider Nowcasts
-3. Run forecasting models
-4. Ensemble, visualize, and evaluate forecasts
-5. Share forecasts with stakeholders
+* For NHSN data, return to Get Started and use the get_data function to run forecasts 
+* To forecast local surveillance data, follow [these](external_data.html) steps for formatting.
 
 
 For more information, see the documentation and help pages.
