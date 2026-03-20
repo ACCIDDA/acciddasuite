@@ -32,17 +32,17 @@ library(dplyr)
 library(ggplot2)
 library(pipetime)
 library(acciddasuite)
-df <- get_data(pathogen = "covid", geo_values = "ny")
+df <- get_data(pathogen = "covid", geo_values = "nc")
 head(df)
 #> # A tibble: 6 × 5
 #>   as_of      location target            target_end_date observation
 #>   <date>     <chr>    <chr>             <date>                <dbl>
-#> 1 2026-03-08 NY       wk inc covid hosp 2020-08-08              517
-#> 2 2026-03-08 NY       wk inc covid hosp 2020-08-15              490
-#> 3 2026-03-08 NY       wk inc covid hosp 2020-08-22              844
-#> 4 2026-03-08 NY       wk inc covid hosp 2020-08-29              483
-#> 5 2026-03-08 NY       wk inc covid hosp 2020-09-05              479
-#> 6 2026-03-08 NY       wk inc covid hosp 2020-09-12              573
+#> 1 2026-03-15 NC       wk inc covid hosp 2020-08-08             1008
+#> 2 2026-03-15 NC       wk inc covid hosp 2020-08-15              782
+#> 3 2026-03-15 NC       wk inc covid hosp 2020-08-22             1150
+#> 4 2026-03-15 NC       wk inc covid hosp 2020-08-29             2055
+#> 5 2026-03-15 NC       wk inc covid hosp 2020-09-05             1762
+#> 6 2026-03-15 NC       wk inc covid hosp 2020-09-12              941
 ```
 
 To look at what `df` looks like, you can access the example `csv` file
@@ -57,9 +57,11 @@ We fit models using the data available up to a specific cutoff point
 windows. The further back in time `eval_start_date` is, the more
 computationally intensive the evaluation step will be.
 
+We visualize the data and decide on the `eval_start_date`.
+
 ``` r
-# We ony evaluate on the last 30 days of data for demonstration purposes
-eval_start_date <- max(df$target_end_date) - 30
+# We only evaluate on the last 90 days of data for demonstration purposes
+eval_start_date <- max(df$target_end_date) - 90
 ```
 
 Default models are:  \* `SNAIVE` (Seasonal Naïve): Assumes this week
@@ -86,14 +88,14 @@ fcast
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  26.88197
-#>       ETS  31.33395
-#>  ENSEMBLE  61.29016
-#>    SNAIVE 256.25401
+#>     THETA  35.32154
+#>       ETS  39.75354
+#>  ENSEMBLE  49.24098
+#>    SNAIVE 136.40562
 #> 
 #> Forecast horizon:
-#>   From: 2026-02-07 
-#>   To:   2026-04-04 
+#>   From: 2025-12-20 
+#>   To:   2026-04-11 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -145,8 +147,8 @@ You can check how long each step took by calling
 get_log()
 #> $timing
 #>             timestamp       label  duration unit
-#> 1 2026-03-20 13:59:51  base fcast  6.808165 secs
-#> 2 2026-03-20 13:59:58 extra fcast 11.041293 secs
+#> 1 2026-03-20 19:15:37  base fcast  9.385167 secs
+#> 2 2026-03-20 19:15:48 extra fcast 19.198079 secs
 ```
 
 ## Submit to MyRespiLens
