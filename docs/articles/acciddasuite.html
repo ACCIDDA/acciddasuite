@@ -166,37 +166,73 @@ predict future ones. Auto-configured to find the best fit.</p></li>
 <span>  h <span class="op">=</span> <span class="fl">4</span> <span class="co"># forecast 4 weeks ahead</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"base fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time Series Cross Validation...</span></span>
-<span><span class="co">#&gt; Forecast Generation...</span></span>
 <span></span>
 <span><span class="va">fcast</span></span>
-<span><span class="co">#&gt; &lt;accida_cast&gt;</span></span>
+<span><span class="co">#&gt; $hubcast</span></span>
+<span><span class="co">#&gt; $hubcast$model_out_tbl</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 400 × 9</span></span></span>
+<span><span class="co">#&gt;    model_id reference_date target   horizon location target_end_date output_type</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> ARIMA    2025-12-06     wk inc …       1 NC       2025-12-13      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> ARIMA    2025-12-06     wk inc …       1 NC       2025-12-13      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> ARIMA    2025-12-06     wk inc …       1 NC       2025-12-13      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> ARIMA    2025-12-06     wk inc …       1 NC       2025-12-13      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ARIMA    2025-12-06     wk inc …       1 NC       2025-12-13      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ARIMA    2025-12-06     wk inc …       2 NC       2025-12-20      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> ARIMA    2025-12-06     wk inc …       2 NC       2025-12-20      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> ARIMA    2025-12-06     wk inc …       2 NC       2025-12-20      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ARIMA    2025-12-06     wk inc …       2 NC       2025-12-20      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ARIMA    2025-12-06     wk inc …       2 NC       2025-12-20      quantile   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 390 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: output_type_id &lt;chr&gt;, value &lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Models evaluated:</span></span>
-<span><span class="co">#&gt;  model_id      wis</span></span>
-<span><span class="co">#&gt;    &lt;char&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt;  ENSEMBLE 566.1915</span></span>
-<span><span class="co">#&gt;     ARIMA 590.6836</span></span>
-<span><span class="co">#&gt;       ETS 649.2414</span></span>
-<span><span class="co">#&gt;     THETA 650.4553</span></span>
-<span><span class="co">#&gt;    SNAIVE 650.8430</span></span>
+<span><span class="co">#&gt; $hubcast$oracle_output</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 282 × 6</span></span></span>
+<span><span class="co">#&gt;    location target_end_date target       output_type output_type_id oracle_value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> NC       2020-10-17      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> NC       2020-10-24      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> NC       2020-10-31      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                       12</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> NC       2020-11-07      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> NC       2020-11-14      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> NC       2020-11-21      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                       18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> NC       2020-11-28      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                       19</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> NC       2020-12-05      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        9</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> NC       2020-12-12      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                       11</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> NC       2020-12-19      wk inc flu … quantile    <span style="color: #BB0000;">NA</span>                        8</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 272 more rows</span></span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2025-12-13 </span></span>
-<span><span class="co">#&gt;   To:   2026-04-04 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Contents:</span></span>
-<span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
-<span><span class="co">#&gt;   $score     model ranking table</span></span>
-<span><span class="co">#&gt;   $plot      ggplot2 object</span></span></code></pre></div>
+<span><span class="co">#&gt; $score</span></span>
+<span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
+<span><span class="co">#&gt;    model_id      wis interval_coverage_50 interval_coverage_95</span></span>
+<span><span class="co">#&gt;      &lt;char&gt;    &lt;num&gt;                &lt;num&gt;                &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: ENSEMBLE 566.1915            0.4166667            1.0000000</span></span>
+<span><span class="co">#&gt; 2:    ARIMA 590.6836            0.3333333            0.7500000</span></span>
+<span><span class="co">#&gt; 3:      ETS 649.2414            0.3333333            0.6666667</span></span>
+<span><span class="co">#&gt; 4:    THETA 650.4553            0.3333333            0.6666667</span></span>
+<span><span class="co">#&gt; 5:   SNAIVE 650.8430            0.2500000            1.0000000</span></span>
+<span><span class="co">#&gt;    wis_relative_skill</span></span>
+<span><span class="co">#&gt;                 &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          0.9125984</span></span>
+<span><span class="co">#&gt; 2:          0.9520753</span></span>
+<span><span class="co">#&gt; 3:          1.0464598</span></span>
+<span><span class="co">#&gt; 4:          1.0484165</span></span>
+<span><span class="co">#&gt; 5:          1.0490414</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $plot</span></span></code></pre></div>
+<p><img src="acciddasuite_files/figure-html/models-1.png" class="r-plt" alt="" width="672"></p>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attr(,"class")</span></span>
+<span><span class="co">#&gt; [1] "accidda_cast"</span></span></code></pre>
 <p>Visualize forecasts by accessing the <code>plot</code> element of the
 forecast object:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="acciddasuite_files/figure-html/plot-forecast-1.png" width="672"></p>
+<p><img src="acciddasuite_files/figure-html/plot-forecast-1.png" class="r-plt" alt="" width="672"></p>
 <p>View forecast evaluation by viewing the <code>score</code> element of
 the object:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">score</span></span>
 <span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
 <span><span class="co">#&gt;    model_id      wis interval_coverage_50 interval_coverage_95</span></span>
@@ -221,7 +257,7 @@ the object:</p>
 them to <code><a href="../reference/get_fcast.html">get_fcast()</a></code>. The models should be compatible with
 the fable framework (see <a href="https://fabletools.tidyverts.org/articles/extension_models.html" class="external-link">fable
 documentation</a> for more information).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fable.tidyverts.org" class="external-link">fable</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pkg.mitchelloharawild.com/fable.prophet/" class="external-link">fable.prophet</a></span><span class="op">)</span></span>
 <span><span class="va">extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -237,17 +273,15 @@ documentation</a> for more information).</p>
 <span>  h <span class="op">=</span> <span class="fl">3</span>, <span class="co"># forecast 3 weeks ahead,</span></span>
 <span>  extra_models <span class="op">=</span> <span class="va">extra</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"extra fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time Series Cross Validation...</span></span>
-<span><span class="co">#&gt; Forecast Generation...</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"extra fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span></code></pre></div>
 <p>You can check how long each step took by calling
 <code><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">pipetime::get_log()</a></code>:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $timing</span></span>
 <span><span class="co">#&gt;             timestamp       label duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-17 11:40:02  base fcast 5.071930 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-17 11:40:08 extra fcast 9.609207 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 2026-03-20 09:09:35  base fcast 3.772738 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-20 09:09:39 extra fcast 7.019480 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -257,7 +291,7 @@ documentation</a> for more information).</p>
 sharing and visualizing respiratory disease forecasts. To submit
 forecasts to RespiLens, you can use <code>to_respilens()</code> to save
 the file in JSON format and upload it to MyRespiLens <a href="https://www.respilens.com/myrespilens" class="external-link">here</a>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">to_respilens</span><span class="op">(</span><span class="va">fcast</span>, <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -271,7 +305,7 @@ the file in JSON format and upload it to MyRespiLens <a href="https://www.respil
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

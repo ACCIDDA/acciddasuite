@@ -20,9 +20,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `acciddasuite` package provides a forecasting pipeline framework for building infectious disease forecasts and relies on the [`fable`](https://fable.tidyverts.org/) modeling framework. This forecasting suite uses time series data (surveillance data) from either national data sets (NHSN & ESSENCE) or local surveillance data. 
-
-The overall goal is to provide public health with an easily adoptable approach to create an ensemble of outputs from statistical models, provide forecast evaluation, and a tool for visualization.   
+The `acciddasuite` package provides tools for building infectious disease forecasts and relies on the [`fable`](https://fable.tidyverts.org/) modeling framework. The overall goal is to provide public health professionals with an easily-adoptable approach to generating an ensemble of outputs from statistical models, evaluating forecasts, and visualizing outputs.   
 
 This vignette demonstrates a basic example of generating, evaluating, and visualizing forecasts following the standard forecasting workflow described by [Hyndman & Athanasopoulos (2021)](https://otexts.com/fpp3/basic-steps.html). 
 
@@ -32,13 +30,15 @@ Updated forecasting package information can be found [here](https://robjhyndman.
 
 ## `Forecast Planning`
 
-**To get more information about how to know whether forecasting is the best approach to answer the information you are seeking or being asked to provide, follow the steps in [this](forecast_planning.html) article.**
+**To get more information about how to know whether forecasting is the best approach for your task, follow the steps in [this](forecast_planning.html) article.**
 
 ## `Time Series Data`
 
+The first step of generating disease forecasts is providing time series/surveillance data; the data that the mdoel will assume has already happened.
+
 **If you would like to load your own surveillance, you can follow [these](external_data.html) steps for formatting.**
 
-For demonstration purposes, we will load surveillance data from the [CDC National Health Safety Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data). The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
+For demonstration purposes, we will load surveillance data from the [CDC National Health Safety Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data)using `acciddasuite`'s `get_data()` function. The data dictionary is available [here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
 
 The `get_data()` function provides a convenient interface to access this data using the [`epidatr`](https://cmu-delphi.github.io/epidatr/) package.
 
@@ -57,7 +57,7 @@ head(df)
 df |> write.csv("example_data.csv", row.names = FALSE)
 ```
 
-To look at what `df` looks like, you can access the example `csv` file here: [example_data.csv](https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv).
+To examine `df` in more detail, you can access the example `csv` file here: [example_data.csv](https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv).
 
 
 ## Time Series Cross-Validation
@@ -68,7 +68,7 @@ We fit models using the data available up to a specific cutoff point (`eval_star
 We visualize the data and decide on the `eval_start_date`.
 
 ```{r, tscv-setup}
-# We ony evaluate on the last 90 days of data for demonstration purposes
+# For demonstration purposes, we only evaluate on the last 90 days of data
 eval_start_date <- max(df$target_end_date) - 90
 ```
 
@@ -137,5 +137,5 @@ get_log()
 [RespiLens](https://www.respilens.com/) is a platform for sharing and visualizing respiratory disease forecasts. To submit forecasts to RespiLens, you can use `to_respilens()` to save the file in JSON format and upload it to MyRespiLens [here](https://www.respilens.com/myrespilens).
 
 ```{r, to-respilens, eval = FALSE}
-to_respilens(fcast, "respilens.json")
+to_respilens(fcast)
 ```
