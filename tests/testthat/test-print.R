@@ -1,5 +1,5 @@
-test_that("print.accida_cast handles accida_cast objects", {
-  # Create a minimal mock accida_cast object
+test_that("print.accidda_cast handles accidda_cast objects", {
+  # Create a minimal mock accidda_cast object
   mock_cast <- list(
     forecast = data.frame(
       target_end_date = as.Date(c("2024-01-01", "2024-01-08")),
@@ -11,10 +11,10 @@ test_that("print.accida_cast handles accida_cast objects", {
     ),
     plot = NULL
   )
-  class(mock_cast) <- "accida_cast"
+  class(mock_cast) <- "accidda_cast"
 
   # Test that print doesn't error
-  expect_output(print(mock_cast), "accida_cast")
+  expect_output(print(mock_cast), "accidda_cast")
   expect_output(print(mock_cast), "Models evaluated")
   expect_output(print(mock_cast), "Forecast horizon")
 })

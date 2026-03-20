@@ -27,7 +27,7 @@ df <- get_data(pathogen = "flu", geo_values = "ny")
 fcast <- df |> 
   get_fcast(eval_start_date = max(df$target_end_date) - 30)
 fcast
-#> <accida_cast>
+#> <accidda_cast>
 #> 
 #> Models evaluated:
 #>  model_id        wis

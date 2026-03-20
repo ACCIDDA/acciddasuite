@@ -30,7 +30,7 @@
 #'
 #'   The name of each list element is used as the model label in the output.
 #'
-#' @return An object of class `accida_cast` containing:
+#' @return An object of class `accidda_cast` containing:
 #'   \describe{
 #'     \item{forecast}{Final `h` week ahead forecasts for all models and the ensemble.}
 #'     \item{score}{Model ranking based on rolling origin WIS.}
@@ -243,6 +243,6 @@ get_fcast <- function(
     score = score,
     plot = plot
   )
-  class(acast) <- "accida_cast"
+  class(acast) <- "accidda_cast"
   return(acast)
 }

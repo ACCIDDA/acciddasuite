@@ -1,13 +1,13 @@
-#' Print an accida_cast object
+#' Print an accidda_cast object
 #'
-#' Displays a concise summary of an \code{accida_cast} object,
+#' Displays a concise summary of an \code{accidda_cast} object,
 #' including model scores, forecast horizon, and hub format contents.
 #'
-#' @param x An object of class \code{accida_cast}.
+#' @param x An object of class \code{accidda_cast}.
 #' @param ... Additional arguments (currently ignored).
 #' @export
-print.accida_cast <- function(x, ...) {
-  cat("<accida_cast>\n\n")
+print.accidda_cast <- function(x, ...) {
+  cat("<accidda_cast>\n\n")
 
   cat("Models evaluated:\n")
   print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)

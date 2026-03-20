@@ -29,7 +29,7 @@ see the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{f
 The name of each list element is used as the model label in the output.}
 }
 \value{
-An object of class \code{accida_cast} containing:
+An object of class \code{accidda_cast} containing:
 \describe{
 \item{forecast}{Final \code{h} week ahead forecasts for all models and the ensemble.}
 \item{score}{Model ranking based on rolling origin WIS.}

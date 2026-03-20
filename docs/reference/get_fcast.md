@@ -49,7 +49,7 @@ get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 
 ## Value
 
-An object of class `accida_cast` containing:
+An object of class `accidda_cast` containing:
 
 - forecast:
 

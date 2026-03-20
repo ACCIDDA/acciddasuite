@@ -8,7 +8,7 @@ template:
     height: 250px
 repo:
   url:
-    home: https://github.com/ACCIDDA/accidasuite
-    issue: https://github.com/ACCIDDA/accidasuite/issues
+    home: https://github.com/ACCIDDA/acciddasuite
+    issue: https://github.com/ACCIDDA/acciddasuite/issues
     user: https://github.com/ACCIDDA
-    source: https://github.com/ACCIDDA/accidasuite/blob/main/
+    source: https://github.com/ACCIDDA/acciddasuite/blob/main/

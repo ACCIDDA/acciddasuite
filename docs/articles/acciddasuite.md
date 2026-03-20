@@ -37,12 +37,12 @@ head(df)
 #> # A tibble: 6 × 5
 #>   as_of      location target            target_end_date observation
 #>   <date>     <chr>    <chr>             <date>                <dbl>
-#> 1 2026-03-01 NY       wk inc covid hosp 2020-08-08              517
-#> 2 2026-03-01 NY       wk inc covid hosp 2020-08-15              490
-#> 3 2026-03-01 NY       wk inc covid hosp 2020-08-22              844
-#> 4 2026-03-01 NY       wk inc covid hosp 2020-08-29              483
-#> 5 2026-03-01 NY       wk inc covid hosp 2020-09-05              479
-#> 6 2026-03-01 NY       wk inc covid hosp 2020-09-12              573
+#> 1 2026-03-08 NY       wk inc covid hosp 2020-08-08              517
+#> 2 2026-03-08 NY       wk inc covid hosp 2020-08-15              490
+#> 3 2026-03-08 NY       wk inc covid hosp 2020-08-22              844
+#> 4 2026-03-08 NY       wk inc covid hosp 2020-08-29              483
+#> 5 2026-03-08 NY       wk inc covid hosp 2020-09-05              479
+#> 6 2026-03-08 NY       wk inc covid hosp 2020-09-12              573
 ```
 
 To look at what `df` looks like, you can access the example `csv` file
@@ -81,20 +81,20 @@ fcast = get_fcast(
   time_pipe("base fcast", log = "timing")
 
 fcast
-#> <accida_cast>
+#> <accidda_cast>
 #> 
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  27.20068
-#>     ARIMA  35.22355
-#>       ETS  41.93945
-#>  ENSEMBLE  53.91791
-#>    SNAIVE 262.42959
+#>     THETA  26.88197
+#>     ARIMA  29.14217
+#>       ETS  31.33395
+#>  ENSEMBLE  52.64632
+#>    SNAIVE 256.25401
 #> 
 #> Forecast horizon:
-#>   From: 2026-01-31 
-#>   To:   2026-03-28 
+#>   From: 2026-02-07 
+#>   To:   2026-04-04 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -145,9 +145,9 @@ You can check how long each step took by calling
 ``` r
 get_log()
 #> $timing
-#>             timestamp       label  duration unit
-#> 1 2026-03-10 15:10:11  base fcast  3.002838 secs
-#> 2 2026-03-10 15:10:14 extra fcast 18.625748 secs
+#>             timestamp       label duration unit
+#> 1 2026-03-18 14:24:26  base fcast 2.417592 secs
+#> 2 2026-03-18 14:24:29 extra fcast 2.867576 secs
 ```
 
 ## Submit to MyRespiLens

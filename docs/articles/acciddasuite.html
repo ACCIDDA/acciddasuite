@@ -48,7 +48,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ACCIDDA/accidasuite" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ACCIDDA/acciddasuite" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -64,7 +64,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>acciddasuite</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ACCIDDA/accidasuite/blob/main/vignettes/acciddasuite.Rmd" class="external-link"><code>vignettes/acciddasuite.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/vignettes/acciddasuite.Rmd" class="external-link"><code>vignettes/acciddasuite.Rmd</code></a></small>
       <div class="d-none name"><code>acciddasuite.Rmd</code></div>
     </div>
 
@@ -100,18 +100,18 @@ package.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cygei.github.io/pipetime/;" class="external-link">pipetime</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ACCIDDA/accidasuite" class="external-link">acciddasuite</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ACCIDDA/acciddasuite" class="external-link">acciddasuite</a></span><span class="op">)</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span>pathogen <span class="op">=</span> <span class="st">"covid"</span>, geo_values <span class="op">=</span> <span class="st">"ny"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   as_of      location target            target_end_date observation</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-01 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-01 NY       wk inc covid hosp 2020-08-15              490</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-01 NY       wk inc covid hosp 2020-08-22              844</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-01 NY       wk inc covid hosp 2020-08-29              483</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-01 NY       wk inc covid hosp 2020-09-05              479</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-01 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-08 NY       wk inc covid hosp 2020-08-08              517</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-08 NY       wk inc covid hosp 2020-08-15              490</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-08 NY       wk inc covid hosp 2020-08-22              844</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-08 NY       wk inc covid hosp 2020-08-29              483</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-08 NY       wk inc covid hosp 2020-09-05              479</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-08 NY       wk inc covid hosp 2020-09-12              573</span></span></code></pre></div>
 <p>To look at what <code>df</code> looks like, you can access the
 example <code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
 </div>
@@ -146,20 +146,20 @@ fit.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"base fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fcast</span></span>
-<span><span class="co">#&gt; &lt;accida_cast&gt;</span></span>
+<span><span class="co">#&gt; &lt;accidda_cast&gt;</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;  model_id       wis</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;     THETA  27.20068</span></span>
-<span><span class="co">#&gt;     ARIMA  35.22355</span></span>
-<span><span class="co">#&gt;       ETS  41.93945</span></span>
-<span><span class="co">#&gt;  ENSEMBLE  53.91791</span></span>
-<span><span class="co">#&gt;    SNAIVE 262.42959</span></span>
+<span><span class="co">#&gt;     THETA  26.88197</span></span>
+<span><span class="co">#&gt;     ARIMA  29.14217</span></span>
+<span><span class="co">#&gt;       ETS  31.33395</span></span>
+<span><span class="co">#&gt;  ENSEMBLE  52.64632</span></span>
+<span><span class="co">#&gt;    SNAIVE 256.25401</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-01-31 </span></span>
-<span><span class="co">#&gt;   To:   2026-03-28 </span></span>
+<span><span class="co">#&gt;   From: 2026-02-07 </span></span>
+<span><span class="co">#&gt;   To:   2026-04-04 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
@@ -200,9 +200,9 @@ documentation</a> for more information).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $timing</span></span>
-<span><span class="co">#&gt;             timestamp       label  duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-10 15:10:11  base fcast  3.002838 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-10 15:10:14 extra fcast 18.625748 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;             timestamp       label duration unit</span></span>
+<span><span class="co">#&gt; 1 2026-03-18 14:24:26  base fcast 2.417592 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-18 14:24:29 extra fcast 2.867576 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

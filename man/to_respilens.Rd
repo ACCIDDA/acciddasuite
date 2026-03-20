@@ -2,12 +2,12 @@
 % Please edit documentation in R/to_respilens.R
 \name{to_respilens}
 \alias{to_respilens}
-\title{Convert accida_cast to RespiLens format}
+\title{Convert accidda_cast to RespiLens format}
 \usage{
-to_respilens(accida_cast, path = NULL)
+to_respilens(accidda_cast, path = NULL)
 }
 \arguments{
-\item{accida_cast}{An object of class \code{accida_cast}, the output of \code{get_fcast()}.}
+\item{accidda_cast}{An object of class \code{accidda_cast}, the output of \code{get_fcast()}.}
 
 \item{path}{Optional file path to write the JSON output to. Must end with \code{.json}.
 If \code{NULL}, the output is not written to disk.}
@@ -16,5 +16,5 @@ If \code{NULL}, the output is not written to disk.}
 A named list with a single metadata JSON structure and one JSON structure per location.
 }
 \description{
-Convert accida_cast to RespiLens format
+Convert accidda_cast to RespiLens format
 }
