@@ -1,16 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# A Framework for Infectious Disease Forecasting <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
+# acciddasuite <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-A suite of tools, models, functions, and information to prepare and
-build a data pipeline to produce and visualize infectious disease
-forecasts. The goal of this suite is to provide a comprehensive guided
-process to easily adopt disease forecasting into routine activities.
+The goal of acciddasuite is to …
 
 ## Installation
 
@@ -24,21 +21,41 @@ You can install the development version of acciddasuite from
 
 ## Example
 
-In this example, the suite uses a function (`get_data()`) to pull in
-surveillance data by designated pathogen and state, then forecasts the
-most recent target date available.
-
 ``` r
 library(acciddasuite)
-
-df <- get_data(pathogen = "flu", geo_values = "nc")
-
+df <- get_data(pathogen = "flu", geo_values = "ny")
 fcast <- df |> 
   get_fcast(eval_start_date = max(df$target_end_date) - 30)
-
 fcast
+#> <accidda_cast>
+#> 
+#> Models evaluated:
+#>  model_id        wis
+#>    <char>      <num>
+#>     ARIMA   85.65125
+#>       ETS  120.98738
+#>  ENSEMBLE  128.35163
+#>     THETA  214.99363
+#>    SNAIVE 1351.92228
+#> 
+#> Forecast horizon:
+#>   From: 2026-01-31 
+#>   To:   2026-03-28 
+#> 
+#> Contents:
+#>   $hubcast   hub forecast object
+#>   $score     model ranking table
+#>   $plot      ggplot2 object
 ```
 
 ``` r
 fcast$plot
+```
+
+<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
+
+Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
+
+``` r
+to_respilens(fcast, path = "example_respilens.json")
 ```
