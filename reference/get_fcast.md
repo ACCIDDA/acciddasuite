@@ -1,8 +1,7 @@
-# Rolling origin epidemic forecasts and model evaluation
+# Forecast and evaluate time series models
 
-Fits multiple time series models to weekly incidence data and evaluates
-short term predictive performance using an expanding window rolling
-origin scheme.
+Selects and evaluates multiple time series models via expanding-window
+cross-validation, then produces a final forward-looking forecast.
 
 ## Usage
 
@@ -14,9 +13,14 @@ get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 
 - df:
 
-  Data frame of weekly observations containing `target_end_date` (Date),
-  `location` (character), `target` (character), and `observation`
-  (numeric).
+  An `accidda_ncast` object from
+  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md),
+  or an `accidda_data` object from
+  [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+  or
+  [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md).
+  If the underlying data frame contains `ncast_lower` and `ncast_upper`
+  columns, nowcast uncertainty propagation is enabled automatically.
 
 - eval_start_date:
 
@@ -49,11 +53,11 @@ get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 
 ## Value
 
-An object of class `accidda_cast` containing:
+An object of class `accidda_fcast` containing:
 
-- forecast:
+- hubcast:
 
-  Final `h` week ahead forecasts for all models and the ensemble.
+  Hub-format forecast object (`model_out_tbl` and `oracle_output`).
 
 - score:
 
@@ -61,18 +65,22 @@ An object of class `accidda_cast` containing:
 
 - plot:
 
-  ggplot object showing forecasts and prediction intervals.
+  ggplot2 object showing forecasts and prediction intervals.
 
 ## Details
 
-From `eval_start_date` onwards, models are repeatedly refitted on all
-data available up to each evaluation time point and used to forecast the
-next `h` weeks.
+**Cross-validation.** From `eval_start_date` onwards, models are
+repeatedly refitted on all data up to each cutoff and used to forecast
+the next `h` weeks. Models are ranked by WIS; the best `top_n` form an
+equal-weight ensemble.
 
-Models are ranked by mean WIS score across evaluation periods. The best
-performing `top_n` models are combined into an equal weight ensemble. A
-final `h` week ahead forecast is then produced by refitting selected
-models using the full dataset.
+**Nowcast uncertainty.** When an `accidda_ncast` object is supplied (or
+an `accidda_data` whose data frame contains `ncast_lower` and
+`ncast_upper` columns), cross-validation runs on the `observation`
+column (the median corrected series). The final forecast is then
+produced three times (from the median, lower 95\\ and the resulting
+distributions are pooled, so prediction intervals reflect both model
+uncertainty and nowcast uncertainty.
 
 ## Examples
 

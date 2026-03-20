@@ -1,102 +1,117 @@
 # acciddasuite
 
-## Introduction
+## Overview
 
-The `acciddasuite` package provides tools for building infectious
-disease forecasts and relies on the
-[`fable`](https://fable.tidyverts.org/) modeling framework. The overall
-goal is to provide public health professionals with an easily-adoptable
-approach to generating an ensemble of outputs from statistical models,
-evaluating forecasts, and visualizing outputs.
+`acciddasuite` builds infectious disease forecasts in three steps:
 
-This vignette demonstrates a basic example of generating, evaluating,
-and visualizing forecasts following the standard forecasting workflow
+1.  **[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)**
+    or
+    **[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)**:
+    fetch or validate surveillance data.
+2.  **[`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)**
+    *(optional)*: correct recent weeks for reporting delays.
+3.  **[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)**:
+    evaluate models via cross-validation and forecast into the future.
+
+The package relies on the [`fable`](https://fable.tidyverts.org/)
+modeling framework and follows the standard forecasting workflow
 described by [Hyndman & Athanasopoulos
-(2021)](https://otexts.com/fpp3/basic-steps.html).
+(2021)](https://otexts.com/fpp3/basic-steps.html). The overall goal is
+to provide public health professionals with an easily-adoptable approach
+to generating an ensemble of outputs from statistical models, evaluating
+forecasts, and visualizing outputs.
 
-Updated forecasting package information can be found
-[here](https://robjhyndman.com/hyndsight/forecast9.html).
-
-## Forecasting Workflow
-
-### `Forecast Planning`
+## Forecast Planning
 
 **To get more information about how to know whether forecasting is the
 best approach for your task, follow the steps in
 [this](https://accidda.github.io/acciddasuite/articles/forecast_planning.md)
 article.**
 
-### `Time Series Data`
+## Step 1: Get data
 
-The first step of generating disease forecasts is providing time
-series/surveillance data; the data that the mdoel will assume has
-already happened.
+We fetch weekly COVID-19 hospital admissions for New York from the [CDC
+NHSN](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data)
+via [`epidatr`](https://cmu-delphi.github.io/epidatr/).
 
-**If you would like to load your own surveillance, you can follow
-[these](https://accidda.github.io/acciddasuite/articles/external_data.md)
-steps for formatting.**
+Setting `revisions = TRUE` retrieves the full revision history (*i.e.*
+all past versions of the data), which is needed for nowcasting.
 
-For demonstration purposes, we will load surveillance data from the [CDC
-National Health Safety
-Network](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data)using
-`acciddasuite`’s
 [`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
-function. The data dictionary is available
-[here](https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr).
-
-The
-[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
-function provides a convenient interface to access this data using the
-[`epidatr`](https://cmu-delphi.github.io/epidatr/) package.
+returns a validated `accidda_data` object:
 
 ``` r
-library(dplyr)
-library(ggplot2)
-library(pipetime)
 library(acciddasuite)
-df <- get_data(pathogen = "covid", geo_values = "nc")
-head(df)
-#> # A tibble: 6 × 5
-#>   as_of      location target            target_end_date observation
-#>   <date>     <chr>    <chr>             <date>                <dbl>
-#> 1 2026-03-15 NC       wk inc covid hosp 2020-08-08             1008
-#> 2 2026-03-15 NC       wk inc covid hosp 2020-08-15              782
-#> 3 2026-03-15 NC       wk inc covid hosp 2020-08-22             1150
-#> 4 2026-03-15 NC       wk inc covid hosp 2020-08-29             2055
-#> 5 2026-03-15 NC       wk inc covid hosp 2020-09-05             1762
-#> 6 2026-03-15 NC       wk inc covid hosp 2020-09-12              941
-
-df <- get_data(pathogen = "flu", geo_values = "ny")
-
-head(df)
-#> # A tibble: 6 × 5
-#>   as_of      location target          target_end_date observation
-#>   <date>     <chr>    <chr>           <date>                <dbl>
-#> 1 2026-03-15 NY       wk inc flu hosp 2020-08-08                0
-#> 2 2026-03-15 NY       wk inc flu hosp 2020-08-15                0
-#> 3 2026-03-15 NY       wk inc flu hosp 2020-08-22                0
-#> 4 2026-03-15 NY       wk inc flu hosp 2020-08-29                0
-#> 5 2026-03-15 NY       wk inc flu hosp 2020-09-05                0
-#> 6 2026-03-15 NY       wk inc flu hosp 2020-09-12                0
+df <- get_data(pathogen = "covid", geo_value = "ny", revisions = TRUE)
+df
+#> <accidda_data>
+#> 
+#> Location: NY 
+#> Target:   wk inc covid hosp 
+#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
+#> History:  TRUE ( 2024-11-17 to 2026-03-15 )
 ```
 
-To examine `df` in more detail, you can access the example `csv` file
-here:
-[example_data.csv](https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv).
+You can also **bring your own data**. Just pass it through
+[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md).
+See
+[`vignette("external_data")`](https://accidda.github.io/acciddasuite/articles/external_data.md)
+for formatting details.
 
-### Time Series Cross-Validation
+## Step 2: Nowcasting (optional)
 
-To evaluate model performance, we employ *time series cross-validation*.
-We fit models using the data available up to a specific cutoff point
-(`eval_start_date`), then forecast `h` weeks ahead with expanding
-windows. The further back in time `eval_start_date` is, the more
-computationally intensive the evaluation step will be.
+The most recent weeks of surveillance data are almost always too low
+because hospitals are still filing late reports (**right truncated**).
+If you feed these raw counts into a forecaster, predictions will be
+biased downward.
 
-We visualize the data and decide on the `eval_start_date`.
+[`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+estimates what the recent counts will look like once all reports arrive.
+With the default `max_delay = 4`, the last 4 weeks are corrected;
+everything before that is left untouched.
 
 ``` r
-# We only evaluate on the last 90 days of data for demonstration purposes
-eval_start_date <- max(df$target_end_date) - 90
+ncast <- get_ncast(df)
+ncast
+#> <accidda_ncast>
+#> 
+#> Nowcasted 4 weeks: 2026-02-21 to 2026-03-14 
+#> 
+#> $data  corrected series (293 rows)
+#> $plot  nowcast visualisation
+```
+
+``` r
+ncast$plot
+```
+
+![](acciddasuite_files/figure-html/plot-nowcast-1.png)
+
+The corrected `ncast$data` contains two extra columns: `ncast_lower` and
+`ncast_upper` (95% CrI) for the corrected weeks.
+[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
+detects these automatically and uses them to propagate nowcasting
+uncertainty into the final forecast.
+
+## Step 3: Forecasting
+
+[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
+does two things:
+
+1.  **Model selection**: time series cross-validation on the full
+    (median corrected) series, starting from `eval_start_date`. Models
+    are ranked by WIS; the best `top_n` form an equal weight ensemble.
+2.  **Final forecast**: projects `h` weeks into the future. When nowcast
+    columns are present, the forecast is produced from three baselines
+    (lower, median, and upper nowcast estimates) and pooled, so
+    prediction intervals reflect both model uncertainty and nowcast
+    uncertainty.
+
+We set `eval_start_date` to mark the start of the evaluation window. At
+least 52 weeks of data must precede this date.
+
+``` r
+eval_start_date <- max(ncast$data$target_end_date) - 28
 ```
 
 Default models are:
@@ -113,28 +128,32 @@ Default models are:
 - `ARIMA`: Learns repeating patterns from past values to predict future
   ones. Auto-configured to find the best fit.
 
+We use
+[`pipetime::time_pipe()`](https://rdrr.io/pkg/pipetime/man/time_pipe.html)
+to log how long the model selection and forecasting steps take.
+
 ``` r
-fcast = get_fcast(
-  df,
+fcast <- get_fcast(
+  ncast,
   eval_start_date = eval_start_date,
-  top_n = 4, # Select top 4 models
-  h = 4 # forecast 4 weeks ahead
-) |>
-  time_pipe("base fcast", log = "timing")
+  top_n = 4,
+  h = 4
+) |> 
+  pipetime::time_pipe("base fcast", log = "log")
 
 fcast
-#> <accidda_cast>
+#> <accidda_fcast>
 #> 
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  641.3733
-#>       ETS  688.2211
-#>  ENSEMBLE  689.7293
-#>    SNAIVE 1036.9490
+#>     THETA  29.60211
+#>       ETS  34.11226
+#>  ENSEMBLE  64.08897
+#>    SNAIVE 240.14106
 #> 
 #> Forecast horizon:
-#>   From: 2025-12-20 
+#>   From: 2026-02-14 
 #>   To:   2026-04-11 
 #> 
 #> Contents:
@@ -142,9 +161,6 @@ fcast
 #>   $score     model ranking table
 #>   $plot      ggplot2 object
 ```
-
-Visualize forecasts by accessing the `plot` element of the forecast
-object:
 
 ``` r
 fcast$plot
@@ -159,26 +175,22 @@ fcast$score
 #> Key: <model_id>
 #>    model_id       wis interval_coverage_50 interval_coverage_95
 #>      <char>     <num>                <num>                <num>
-#> 1:    THETA  641.3733            0.4166667            0.7500000
-#> 2:      ETS  688.2211            0.2500000            0.6666667
-#> 3: ENSEMBLE  689.7293            0.5000000            0.8333333
-#> 4:   SNAIVE 1036.9490            0.1666667            0.9166667
+#> 1:    THETA  29.60211                 1.00                    1
+#> 2:      ETS  34.11226                 1.00                    1
+#> 3: ENSEMBLE  64.08897                 1.00                    1
+#> 4:   SNAIVE 240.14106                 0.25                    1
 #>    wis_relative_skill
 #>                 <num>
-#> 1:          0.8556421
-#> 2:          0.9181408
-#> 3:          0.9201528
-#> 4:          1.3833710
+#> 1:          0.4714677
+#> 2:          0.5433001
+#> 3:          1.0207340
+#> 4:          3.8246854
 ```
 
-### Adding `extra_models`
+### Adding custom models
 
-Additional models can be added by defining them in a list and passing
-them to
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
-The models should be compatible with the fable framework (see [fable
-documentation](https://fabletools.tidyverts.org/articles/extension_models.html)
-for more information).
+Any model compatible with the [`fable`](https://fable.tidyverts.org/)
+framework can be passed via `extra_models`:
 
 ``` r
 library(fable)
@@ -189,35 +201,34 @@ extra <- list(
   EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
 )
 
-fcast = get_fcast(
-  df,
+fcast <- get_fcast(
+  ncast,
   eval_start_date = eval_start_date,
-  top_n = 4, # Select top 4 models
-  h = 3, # forecast 3 weeks ahead,
+  top_n = 4,
+  h = 3,
   extra_models = extra
-) |>
-  time_pipe("extra fcast", log = "timing")
+) |> 
+  pipetime::time_pipe("extra fcast", log = "log")
 ```
 
 You can check how long each step took by calling
 [`pipetime::get_log()`](https://rdrr.io/pkg/pipetime/man/get_log.html):
 
 ``` r
-get_log()
-#> $timing
+pipetime::get_log()
+#> $log
 #>             timestamp       label duration unit
-#> 1 2026-03-20 19:21:27  base fcast 10.16703 secs
-#> 2 2026-03-20 19:21:38 extra fcast 22.30154 secs
+#> 1 2026-03-20 23:18:11  base fcast 19.37087 secs
+#> 2 2026-03-20 23:18:34 extra fcast 26.19091 secs
 ```
 
-## Submit to MyRespiLens
+## Submit to RespiLens
 
-[RespiLens](https://www.respilens.com/) is a platform for sharing and
-visualizing respiratory disease forecasts. To submit forecasts to
-RespiLens, you can use
+[RespiLens](https://www.respilens.com/) is a platform for sharing
+respiratory disease forecasts. Use
 [`to_respilens()`](https://accidda.github.io/acciddasuite/reference/to_respilens.md)
-to save the file in JSON format and upload it to MyRespiLens
-[here](https://www.respilens.com/myrespilens).
+to export the forecast as JSON for upload to
+[MyRespiLens](https://www.respilens.com/myrespilens).
 
 ``` r
 to_respilens(fcast, "respilens.json")

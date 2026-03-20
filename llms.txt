@@ -1,6 +1,12 @@
 # acciddasuite
 
-The goal of acciddasuite is to …
+`acciddasuite` provides a simple pipeline for infectious diseases
+forecasts. It validates input data
+([`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)),
+optionally applies nowcasting to adjust for reporting delays
+([`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)),
+and generates forecasts
+([`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)).
 
 ## Installation
 
@@ -16,41 +22,40 @@ You can install the development version of acciddasuite from
 
 ``` r
 library(acciddasuite)
-df <- get_data(pathogen = "flu", geo_values = "ny")
-fcast <- df |> 
-  get_fcast(eval_start_date = max(df$target_end_date) - 30)
-fcast
-#> <accidda_cast>
-#> 
-#> Models evaluated:
-#>  model_id        wis
-#>    <char>      <num>
-#>     ARIMA   85.65125
-#>       ETS  120.98738
-#>  ENSEMBLE  128.35163
-#>     THETA  214.99363
-#>    SNAIVE 1351.92228
-#> 
-#> Forecast horizon:
-#>   From: 2026-01-31 
-#>   To:   2026-03-28 
-#> 
-#> Contents:
-#>   $hubcast   hub forecast object
-#>   $score     model ranking table
-#>   $plot      ggplot2 object
+head(example_data)
+#> # A tibble: 6 × 5
+#>   as_of      location target            target_end_date observation
+#>   <date>     <chr>    <chr>             <date>                <dbl>
+#> 1 2024-11-17 NY       wk inc covid hosp 2020-08-08              517
+#> 2 2024-11-24 NY       wk inc covid hosp 2020-08-08              517
+#> 3 2024-12-01 NY       wk inc covid hosp 2020-08-08              517
+#> 4 2024-12-08 NY       wk inc covid hosp 2020-08-08              517
+#> 5 2024-12-15 NY       wk inc covid hosp 2020-08-08              517
+#> 6 2024-12-22 NY       wk inc covid hosp 2020-08-08              517
+```
+
+``` r
+fcast <- example_data |>
+  check_data() |> 
+  get_ncast() |> 
+  get_fcast(
+    eval_start_date = max(example_data$target_end_date) - 28,
+    h = 3 # forecast 3 weeks into the future
+  )
+#> ℹ Using max_delay = 12 from data
+#> ℹ Truncating from max_delay = 12 to 4.
 ```
 
 ``` r
 fcast$plot
 ```
 
-![](reference/figures/README-unnamed-chunk-4-1.png)
+![](reference/figures/README-unnamed-chunk-5-1.png)
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 
 ``` r
-to_respilens(fcast, path = "example_respilens.json")
+to_respilens(fcast, path = "respilens.json")
 ```
 
 # Package index
@@ -60,22 +65,34 @@ to_respilens(fcast, path = "example_respilens.json")
 - [`EPIESTIM()`](https://accidda.github.io/acciddasuite/reference/EPIESTIM.md)
   : EpiEstim model for fable
 
+- [`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+  : Validate surveillance data for the acciddasuite pipeline
+
+- [`example_data`](https://accidda.github.io/acciddasuite/reference/example_data.md)
+  : Weekly COVID-19 hospital admissions for New York
+
 - [`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
   : Get hospitalisation data
 
 - [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-  : Rolling origin epidemic forecasts and model evaluation
+  : Forecast and evaluate time series models
+
+- [`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+  : Nowcast right-truncated surveillance data
 
 - [`metadata_key()`](https://accidda.github.io/acciddasuite/reference/metadata_key.md)
   :
 
   Build RespiLens metadata key from `model_out_tbl` data
 
-- [`print(`*`<accidda_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accidda_cast.md)
-  : Print an accidda_cast object
+- [`print(`*`<accidda_fcast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accidda_fcast.md)
+  : Print an accidda_fcast object
+
+- [`print(`*`<accidda_ncast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accidda_ncast.md)
+  : Print an accidda_ncast object
 
 - [`to_respilens()`](https://accidda.github.io/acciddasuite/reference/to_respilens.md)
-  : Convert accidda_cast to RespiLens format
+  : Convert accidda_fcast to RespiLens format
 
 # Articles
 

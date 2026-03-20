@@ -1,13 +1,13 @@
 # Get hospitalisation data
 
-Fetch the most recent confirmed US hospital admissions from the NHSN
-source for COVID-19, influenza, or RSV using
+Fetch confirmed US hospital admissions from the NHSN source for
+COVID-19, influenza, or RSV using
 [pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html).
 
 ## Usage
 
 ``` r
-get_data(pathogen, geo_values = "*")
+get_data(pathogen, geo_value, revisions = FALSE)
 ```
 
 ## Arguments
@@ -16,25 +16,30 @@ get_data(pathogen, geo_values = "*")
 
   Character. One of "covid", "flu" or "rsv".
 
-- geo_values:
+- geo_value:
 
-  Character vector. Geographic values as per
+  Character vector. Geographic value as per
   [pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html)
-  to filter by. Defaults to "\*" (all states).
+  to filter by.
+
+- revisions:
+
+  Logical. If `TRUE`, fetches all available revision history, producing
+  data ready for
+  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
+  Default is `FALSE` (latest version only).
 
 ## Value
 
-A tibble in `hubverse` format with columns:
+An `accidda_data` object (see
+[`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)).
 
-- `as_of`: Date when the data was issued
+## Details
 
-- `location`: State code
-
-- `target`: Target description (e.g., "wk inc covid hosp")
-
-- `target_end_date`: End date of the target week
-
-- `observation`: Observed hospital admissions
+By default the latest version of each observation is returned. Set
+`revisions = TRUE` to retrieve all available revision history, which is
+needed by
+[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
 
 ## See also
 
@@ -45,23 +50,24 @@ https://docs.hubverse.io/en/stable/user-guide/target-data.html
 ## Examples
 
 ``` r
-get_data(pathogen = "covid", geo_values = c("ca", "ny"))
+get_data(pathogen = "covid", geo_value = "ny")
 #> Warning: No API key found. You will be limited to non-complex queries and encounter rate
 #> limits if you proceed.
 #> ℹ See `?save_api_key()` for details on obtaining and setting API keys.
 #> This warning is displayed once every 8 hours.
-#> # A tibble: 586 × 5
-#>    as_of      location target            target_end_date observation
-#>    <date>     <chr>    <chr>             <date>                <dbl>
-#>  1 2026-03-15 CA       wk inc covid hosp 2020-08-08             4836
-#>  2 2026-03-15 NY       wk inc covid hosp 2020-08-08              517
-#>  3 2026-03-15 CA       wk inc covid hosp 2020-08-15             4273
-#>  4 2026-03-15 NY       wk inc covid hosp 2020-08-15              490
-#>  5 2026-03-15 CA       wk inc covid hosp 2020-08-22             3498
-#>  6 2026-03-15 NY       wk inc covid hosp 2020-08-22              844
-#>  7 2026-03-15 CA       wk inc covid hosp 2020-08-29             3100
-#>  8 2026-03-15 NY       wk inc covid hosp 2020-08-29              483
-#>  9 2026-03-15 CA       wk inc covid hosp 2020-09-05             2888
-#> 10 2026-03-15 NY       wk inc covid hosp 2020-09-05              479
-#> # ℹ 576 more rows
+#> <accidda_data>
+#> 
+#> Location: NY 
+#> Target:   wk inc covid hosp 
+#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
+#> History:  FALSE
+
+# Fetch revision history for nowcasting
+get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
+#> <accidda_data>
+#> 
+#> Location: CA 
+#> Target:   wk inc covid hosp 
+#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
+#> History:  TRUE ( 2024-11-17 to 2026-03-15 )
 ```

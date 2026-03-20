@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">acciddasuite</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,34 +71,26 @@
     
     
 <div class="section level2">
-<h2 id="utilizing-external-ground-truth-data">Utilizing external ground truth data<a class="anchor" aria-label="anchor" href="#utilizing-external-ground-truth-data"></a>
+<h2 id="bringing-your-own-data">Bringing your own data<a class="anchor" aria-label="anchor" href="#bringing-your-own-data"></a>
 </h2>
-<p>The <code>acciddasuite</code> supports forecasting of hospitalization
-incidence due to COVID-19, RSV, or influenza based on given ground truth
-data. While you are able to quickly pull state-level
-<code>inc hosp</code> data using <code><a href="../reference/get_data.html">get_data()</a></code>, you may desire
-to use your own hospitalization ground truth data for forecasting (i.e.,
-as the <code>df</code> parameter for modeling in
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>). To do so, you must esnure your data adheres
-to the format described below. Please note that <code><a href="../reference/get_fcast.html">get_fcast()</a></code>
-only processes one location at a time; so if you have multiple
-locations’ ground truth data, you should separate your ground truth
-dataset into one data frame per location and then initiate a
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code> run for each.</p>
-<div class="section level3">
-<h3 id="columns-and-data-types">Columns and data types<a class="anchor" aria-label="anchor" href="#columns-and-data-types"></a>
-</h3>
-<p>Your ground truth data must contain 4 distinct columns:</p>
+<p>You can use any surveillance dataset with <code>acciddasuite</code> —
+just pass it through <code><a href="../reference/check_data.html">check_data()</a></code> to validate and enter the
+pipeline.</p>
+</div>
+<div class="section level2">
+<h2 id="required-columns">Required columns<a class="anchor" aria-label="anchor" href="#required-columns"></a>
+</h2>
+<p>Your data frame must have these 4 columns:</p>
 <table class="table">
 <colgroup>
-<col width="35%">
 <col width="29%">
-<col width="35%">
+<col width="22%">
+<col width="48%">
 </colgroup>
 <thead><tr class="header">
-<th>column name</th>
-<th>data type</th>
-<th>description</th>
+<th>Column</th>
+<th>Type</th>
+<th>Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -109,62 +101,44 @@ dataset into one data frame per location and then initiate a
 <tr class="even">
 <td><code>observation</code></td>
 <td>numeric</td>
-<td>The observed value for a given date</td>
+<td>The observed value</td>
 </tr>
 <tr class="odd">
 <td><code>location</code></td>
 <td>character</td>
-<td>The location for which the data describes. You may use any location
-identifier you like, as long as it is consistent and represented as a
-character.</td>
+<td>A single location identifier</td>
 </tr>
 <tr class="even">
 <td><code>target</code></td>
 <td>character</td>
-<td>The data stream being observed (e.g, “inc hosp influenza” or “inc
-hosp rsv”)</td>
+<td>A single target identifier (e.g., “inc hosp influenza”)</td>
 </tr>
 </tbody>
 </table>
+<p>To enable <strong>nowcasting</strong> (correcting for reporting
+delays), add a 5th column:</p>
+<table class="table">
+<thead><tr class="header">
+<th>Column</th>
+<th>Type</th>
+<th>Description</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><code>as_of</code></td>
+<td>Date</td>
+<td>The date the observation was reported/revised</td>
+</tr></tbody>
+</table>
+<p>With <code>as_of</code>, the same <code>target_end_date</code> can
+appear multiple times (one row per revision). Without it, each
+<code>target_end_date</code> should appear once.</p>
 </div>
-<div class="section level3">
-<h3 id="data-content-restrictions">Data content restrictions<a class="anchor" aria-label="anchor" href="#data-content-restrictions"></a>
-</h3>
-<p>Once your data has <code>target_end_date</code>,
-<code>observation</code>, <code>location</code> and <code>target</code>
-columns, you must ensure the following for successful processing in
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>:</p>
-<ul>
-<li>
-<code>target_end_date</code> values should be unique and have no NAs
-(i.e., there should be no duplicate or missing values in the
-<code>target_end_date</code> column)</li>
-<li>
-<code>target_end_date</code> values should be</li>
-<li>Your data must be on a <strong>weekly</strong> cadence (i.e.,
-<code>target_end_date</code> values should be exactly one week apart,
-<strong>and be continuous from week 1 to end</strong>)</li>
-<li>The <code>target</code> column must contain only one unique value
-(i.e, the same target is recorded for all of your data)</li>
-<li>Your dataset should contain ≥ 52 entries (weeks of observations;
-rows) where the <code>target_end_date</code> is &lt; the
-<code>eval_start_date</code> parameter you pass into
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>. Please note that NA entries in the
-<code>observation</code> column will be filtered out silently, and may
-result in the reduction of number of observations in your dataset. It is
-optimal to ensure that NA values are resolved prior to use in
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>.</li>
-</ul>
-<p>After ensuring compliance with all of the stipulations above, you can
-read your dataset in (either as <code>data.frame</code> or
-<code>tibble</code>) and pass it as the <code>df</code> parameter in
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>.</p>
-</div>
-<div class="section level3">
-<h3 id="final-form-data">Final form data<a class="anchor" aria-label="anchor" href="#final-form-data"></a>
-</h3>
-<p>Properly converted data, for example, your <code>df</code> may
-resemble this:</p>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ACCIDDA/acciddasuite" class="external-link">acciddasuite</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   target_end_date observation location             target</span></span>
 <span><span class="co">## 1      2024-01-01          13       NY inc hosp influenza</span></span>
 <span><span class="co">## 2      2024-01-08          15       NY inc hosp influenza</span></span>
@@ -172,36 +146,22 @@ resemble this:</p>
 <span><span class="co">## 4      2024-01-22          22       NY inc hosp influenza</span></span>
 <span><span class="co">## 5      2024-01-29          25       NY inc hosp influenza</span></span>
 <span><span class="co">## 6      2024-02-05          11       NY inc hosp influenza</span></span></code></pre>
-<p>Data type compliance:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "Date"</span></span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">observation</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "integer"</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">checked</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/check_data.html">check_data</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="va">checked</span></span></code></pre></div>
+<pre><code><span><span class="co">## &lt;accidda_data&gt;</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Location: NY </span></span>
+<span><span class="co">## Target:   inc hosp influenza </span></span>
+<span><span class="co">## Window:   2024-01-01 to 2024-12-23 ( 52 dates )</span></span>
+<span><span class="co">## History:  FALSE</span></span></code></pre>
+<p>The <code><a href="../reference/check_data.html">check_data()</a></code> output tells you whether revision
+history is available. From here you can go directly to forecasting:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span><span class="va">checked</span>, eval_start_date <span class="op">=</span> <span class="st">"2024-11-01"</span>, h <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<p>Or, if your data has revision history, nowcast first:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">location</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "character"</span></span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "character"</span></span></code></pre>
-<p>Which can now be used as the <code>df</code> parameter in
-<code><a href="../reference/get_fcast.html">get_fcast()</a></code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span></span>
-<span>    <span class="va">df</span>,</span>
-<span>    eval_start_date <span class="op">=</span> <span class="st">"2025-01-01"</span>,</span>
-<span>    h <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>    top_n <span class="op">=</span> <span class="fl">5</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>where <code>eval_start_date</code> (<code>2025-01-01</code>) begins
-after 52 consecutive weeks of <code>target_end_date</code> entries:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span> <span class="op">&lt;</span> <span class="va">eval_start_date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 52</span></span></code></pre>
-<p>You can have more than 52 entries preceding your
-<code>eval_start_date</code>, but 52 is the minimum.</p>
-</div>
+<code class="sourceCode R"><span><span class="va">checked</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="st">"2024-11-01"</span>, h <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -210,7 +170,7 @@ after 52 consecutive weeks of <code>target_end_date</code> entries:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Cyril Geismar.</p>
 </div>
 
 <div class="pkgdown-footer-right">

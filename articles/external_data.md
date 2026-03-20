@@ -1,68 +1,40 @@
 # Preparing External Data
 
-## Utilizing external ground truth data
+## Bringing your own data
 
-The `acciddasuite` supports forecasting of hospitalization incidence due
-to COVID-19, RSV, or influenza based on given ground truth data. While
-you are able to quickly pull state-level `inc hosp` data using
-[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md),
-you may desire to use your own hospitalization ground truth data for
-forecasting (i.e., as the `df` parameter for modeling in
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)).
-To do so, you must esnure your data adheres to the format described
-below. Please note that
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-only processes one location at a time; so if you have multiple
-locations’ ground truth data, you should separate your ground truth
-dataset into one data frame per location and then initiate a
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-run for each.
+You can use any surveillance dataset with `acciddasuite` — just pass it
+through
+[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+to validate and enter the pipeline.
 
-### Columns and data types
+## Required columns
 
-Your ground truth data must contain 4 distinct columns:
+Your data frame must have these 4 columns:
 
-| column name       | data type | description                                                                                                                                          |
-|-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `target_end_date` | Date      | The date for which an observation is recorded                                                                                                        |
-| `observation`     | numeric   | The observed value for a given date                                                                                                                  |
-| `location`        | character | The location for which the data describes. You may use any location identifier you like, as long as it is consistent and represented as a character. |
-| `target`          | character | The data stream being observed (e.g, “inc hosp influenza” or “inc hosp rsv”)                                                                         |
+| Column            | Type      | Description                                             |
+|-------------------|-----------|---------------------------------------------------------|
+| `target_end_date` | Date      | The date for which an observation is recorded           |
+| `observation`     | numeric   | The observed value                                      |
+| `location`        | character | A single location identifier                            |
+| `target`          | character | A single target identifier (e.g., “inc hosp influenza”) |
 
-### Data content restrictions
+To enable **nowcasting** (correcting for reporting delays), add a 5th
+column:
 
-Once your data has `target_end_date`, `observation`, `location` and
-`target` columns, you must ensure the following for successful
-processing in
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md):
+| Column  | Type | Description                                   |
+|---------|------|-----------------------------------------------|
+| `as_of` | Date | The date the observation was reported/revised |
 
-- `target_end_date` values should be unique and have no NAs (i.e., there
-  should be no duplicate or missing values in the `target_end_date`
-  column)
-- `target_end_date` values should be
-- Your data must be on a **weekly** cadence (i.e., `target_end_date`
-  values should be exactly one week apart, **and be continuous from week
-  1 to end**)
-- The `target` column must contain only one unique value (i.e, the same
-  target is recorded for all of your data)
-- Your dataset should contain ≥ 52 entries (weeks of observations; rows)
-  where the `target_end_date` is \< the `eval_start_date` parameter you
-  pass into
-  [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
-  Please note that NA entries in the `observation` column will be
-  filtered out silently, and may result in the reduction of number of
-  observations in your dataset. It is optimal to ensure that NA values
-  are resolved prior to use in
-  [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+With `as_of`, the same `target_end_date` can appear multiple times (one
+row per revision). Without it, each `target_end_date` should appear
+once.
 
-After ensuring compliance with all of the stipulations above, you can
-read your dataset in (either as `data.frame` or `tibble`) and pass it as
-the `df` parameter in
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+## Example
 
-### Final form data
-
-Properly converted data, for example, your `df` may resemble this:
+``` r
+library(acciddasuite)
+head(df)
+```
 
     ##   target_end_date observation location             target
     ## 1      2024-01-01          13       NY inc hosp influenza
@@ -72,52 +44,29 @@ Properly converted data, for example, your `df` may resemble this:
     ## 5      2024-01-29          25       NY inc hosp influenza
     ## 6      2024-02-05          11       NY inc hosp influenza
 
-Data type compliance:
-
 ``` r
-class(df$target_end_date)
+checked <- check_data(df)
+checked
 ```
 
-    ## [1] "Date"
+    ## <accidda_data>
+    ## 
+    ## Location: NY 
+    ## Target:   inc hosp influenza 
+    ## Window:   2024-01-01 to 2024-12-23 ( 52 dates )
+    ## History:  FALSE
+
+The
+[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+output tells you whether revision history is available. From here you
+can go directly to forecasting:
 
 ``` r
-class(df$observation)
+get_fcast(checked, eval_start_date = "2024-11-01", h = 4)
 ```
 
-    ## [1] "integer"
+Or, if your data has revision history, nowcast first:
 
 ``` r
-class(df$location)
+checked |> get_ncast() |> get_fcast(eval_start_date = "2024-11-01", h = 4)
 ```
-
-    ## [1] "character"
-
-``` r
-class(df$target)
-```
-
-    ## [1] "character"
-
-Which can now be used as the `df` parameter in
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md):
-
-``` r
-x = get_fcast(
-    df,
-    eval_start_date = "2025-01-01",
-    h = 3,
-    top_n = 5
-)
-```
-
-where `eval_start_date` (`2025-01-01`) begins after 52 consecutive weeks
-of `target_end_date` entries:
-
-``` r
-sum(df$target_end_date < eval_start_date, na.rm = TRUE)
-```
-
-    ## [1] 52
-
-You can have more than 52 entries preceding your `eval_start_date`, but
-52 is the minimum.
