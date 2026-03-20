@@ -58,8 +58,10 @@
 
 
 
-
-<div class="row">
+<link href="forecast_planning_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="forecast_planning_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="forecast_planning_files/d3-3.3.8/d3.min.js"></script><script src="forecast_planning_files/dagre-0.4.0/dagre-d3.min.js"></script><link href="forecast_planning_files/mermaid-0.3.0/dist/mermaid.css" rel="stylesheet">
+<script src="forecast_planning_files/mermaid-0.3.0/dist/mermaid.slim.min.js"></script><link href="forecast_planning_files/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="forecast_planning_files/chromatography-0.1/chromatography.js"></script><script src="forecast_planning_files/DiagrammeR-binding-1.0.11/DiagrammeR.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Disease Forecast Planning for Public Health</h1>
             
@@ -123,9 +125,11 @@ period would require a different approach and models.</p></li>
 </li>
 </ol>
 <p>Answer prior to proceeding:</p>
-<p>Have you defined your forecasting project and approach?</p>
-<p>YES → Proceed to next steps</p>
-<p>NO → Continue defining the approach</p>
+<p><strong>Have you defined your forecasting project and
+approach?</strong></p>
+<pre><code>- YES → Proceed to next steps
+
+- NO  → Continue defining the approach</code></pre>
 </div>
 <div class="section level2">
 <h2 id="step-2-define-your-data">Step 2: Define Your Data<a class="anchor" aria-label="anchor" href="#step-2-define-your-data"></a>
@@ -159,13 +163,13 @@ the data collection steps.</p>
 - COVID-19 Hospitalizations
 - Respiratory disease deaths
 - Emergency Department (ED) visits related to respiratory disease-like illnesses</code></pre>
-<ol start="3" style="list-style-type: decimal">
+<ol start="5" style="list-style-type: decimal">
 <li>What <em>spatial unit</em> will provide the best insight? Are these
 data available at that scale?</li>
 </ol>
 <p>This may include, but are not limited to:</p>
 <pre><code>- State, county, city, health jurisdiction, hospital system, or even facility (e.g., hospital)</code></pre>
-<ol start="4" style="list-style-type: decimal">
+<ol start="6" style="list-style-type: decimal">
 <li>What <em>time resolution</em> is adaquate and available to provide
 the required information for the audience?</li>
 </ol>
@@ -176,112 +180,48 @@ these time steps.</p>
 <p>Some typical forecasting time steps include days, weeks, or even
 months.</p>
 <p>Answer prior to proceeding:</p>
-<p>Have you defined your pathogen, target, spatial unit, and time
-resolution?</p>
-<p>YES → Proceed to next steps</p>
-<p>NO → Continue defining these data elements</p>
+<p><strong>Have you defined your pathogen, target, spatial unit, and
+time resolution?</strong></p>
+<pre><code>- YES → Proceed to next steps
+
+- NO  → Continue defining these data elements</code></pre>
 </div>
 <div class="section level2">
 <h2 id="step-3-data-availability-limitations">Step 3: Data Availability &amp; Limitations<a class="anchor" aria-label="anchor" href="#step-3-data-availability-limitations"></a>
 </h2>
-<p>In this step, you will be asked a series of questions to direct you
-to become familiar with the available forecasting hubs being routinely
-provided for national and state level targets.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Decision Tree Approach to Public Health Forecasting </span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                                ┌───────────────────────────────────────┐</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                                │  Did you choose state<span class="sc">-</span>level forecasts │</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                                │        <span class="cf">for</span> a particular pathogen?     │</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                                └────────────────────┬──────────────────┘</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                                                     │</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                                         ┌───────────────────────┐</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>                                         ▼                       ▼</span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>                                 ┌───────────────┐       ┌───────────────┐</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>                                 │      Yes      │       │       No      │</span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>                                 └───────┬───────┘       └───────┬───────┘</span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>                                         │                       │</span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>                                         ▼                       ▼</span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>          ┌────────────────────────────────────┐            ┌────────────────────────────────────┐</span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>          │  Review available forecasting hubs │            │ Is data available <span class="cf">for</span> the target,  │</span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>          │   providing state<span class="sc">-</span>level forecast.  │     ┌──────│  spatial unit, and time resolution │</span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>          └─────────────────┬──────────────────┘     │      │  you have chosen?                  │</span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>                            │                        │      │  (e.g., weekly flu hosp <span class="cf">in</span> NC)     │</span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>                            │                        │      └──────────────────┬─────────────────┘</span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>                            ▼                        │                         │</span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>              ┌───────────────────────────────┐      │               ┌───────────────────┐</span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a>              │  Did you find the state<span class="sc">-</span>level │      │               ▼                   ▼</span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>              │  forecasting information you  │      │           ┌───────┐           ┌───────┐</span>
-<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>              │  were originally seeking?     │      │           │  YES  │           │  NO   │</span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>              └───────────────┬───────────────┘      │           └───────┘           └───────┘</span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>                              │                      │               │                   │</span>
-<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a>                              │                      │               │                   │</span>
-<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a>                    ┌───────────────────┐            │               │                   │</span>
-<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a>                    ▼                   ▼            │               │                   │</span>
-<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>     ┌───────────────────┐          ┌─────────┐      │               │                   │</span>
-<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>     │  YES → Fantastic<span class="sc">!</span> │          │  NO →   │──────┘               │                   │</span>
-<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>     └───────────────────┘          └────┬────┘                      │                   │</span>
-<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>                                                                     │                   │</span>
-<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>                                                                     ▼                   ▼</span>
-<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>                                        ┌──────────────────────────────┐            ┌─────────────────────────────┐</span>
-<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>                                        │ Is historical data available │            │ Does the data exist, but    │</span>
-<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>                                        │  <span class="cf">for</span> the target of interest? │            │  are not easily accessible? │</span>
-<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>                                        └──────────────┬───────────────┘            └─────────────┬───────────────┘</span>
-<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>                                                       │                                          │</span>
-<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>                          ┌─────────────────────────────────┐                      ┌─────────────────────────────┐</span>
-<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>                          ▼                                 ▼                      ▼                             ▼</span>
-<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>          ┌──────────────────────┐     ┌───────────────────────────┐      ┌────────────────────┐      ┌───────────────────────────┐</span>
-<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>          │         YES →        │     │           NO →            │      │       YES →        │      │           NO →            │</span>
-<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>          │  [Collect and store  │     │     Go back to Step <span class="fl">1.</span>    │      │ [Collect any       │      │   Go back to Step <span class="fl">1.</span>      │ </span>
-<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a>          │  the available data] │     │  Re<span class="sc">-</span>evaluate the project. │      │  available data]   │      │  Re<span class="sc">-</span>evaluate the project. │</span>
-<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a>          └──────────┬───────────┘     └───────────────────────────┘      └──────────┬─────────┘      └───────────────────────────┘</span>
-<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>                     │                                                               │</span>
-<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>                     │                                                               │</span>
-<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>                     └───────────────────────────────┬───────────────────────────────┘</span>
-<span id="cb3-51"><a href="#cb3-51" tabindex="-1"></a>                                                     │</span>
-<span id="cb3-52"><a href="#cb3-52" tabindex="-1"></a>                                                     │</span>
-<span id="cb3-53"><a href="#cb3-53" tabindex="-1"></a>                      ┌──────────────────────────────────────────────────────────────┐</span>
-<span id="cb3-54"><a href="#cb3-54" tabindex="-1"></a>                      │ Are these data reported or available <span class="cf">in</span> a consistent manner? │────────────────┐</span>
-<span id="cb3-55"><a href="#cb3-55" tabindex="-1"></a>                      │  (e.g., same data is available every week on the same day)   │                │</span>
-<span id="cb3-56"><a href="#cb3-56" tabindex="-1"></a>                      └──────────────────────────────┬───────────────────────────────┘                │</span>
-<span id="cb3-57"><a href="#cb3-57" tabindex="-1"></a>                                                     │                                                │</span>
-<span id="cb3-58"><a href="#cb3-58" tabindex="-1"></a>                         ┌────────────────────────────────────────────────────────┐                   │</span>
-<span id="cb3-59"><a href="#cb3-59" tabindex="-1"></a>                         │                                                        │                   │</span>
-<span id="cb3-60"><a href="#cb3-60" tabindex="-1"></a>                         │                                                        │                   │</span>
-<span id="cb3-61"><a href="#cb3-61" tabindex="-1"></a>                         ▼                                                        ▼                   │</span>
-<span id="cb3-62"><a href="#cb3-62" tabindex="-1"></a>           ┌──────────────────────────┐                              ┌──────────────────────────┐     │</span>
-<span id="cb3-63"><a href="#cb3-63" tabindex="-1"></a>           │            YES →         │                              │           NO →           │     │</span>
-<span id="cb3-64"><a href="#cb3-64" tabindex="-1"></a>           │ Establish a reporting    │                              │  Determine the reporting │─────┘</span>
-<span id="cb3-65"><a href="#cb3-65" tabindex="-1"></a>           │ timeline consistnet with │                              │  timeline and look <span class="cf">for</span>   │</span>
-<span id="cb3-66"><a href="#cb3-66" tabindex="-1"></a>           │ resolution.              │                              │  consistencies.          │</span>
-<span id="cb3-67"><a href="#cb3-67" tabindex="-1"></a>           └─────────────┬────────────┘                              └──────────────────────────┘</span>
-<span id="cb3-68"><a href="#cb3-68" tabindex="-1"></a>                         │                    </span>
-<span id="cb3-69"><a href="#cb3-69" tabindex="-1"></a>                         ▼                       </span>
-<span id="cb3-70"><a href="#cb3-70" tabindex="-1"></a>  ┌──────────────────────────────────────────────────────┐</span>
-<span id="cb3-71"><a href="#cb3-71" tabindex="-1"></a>  │   Setup consistent downloads of the entire dataset   │</span>
-<span id="cb3-72"><a href="#cb3-72" tabindex="-1"></a>  │ (not just the <span class="at">ci=</span>urrent week <span class="sc">-</span> e.g., versioned data) │                </span>
-<span id="cb3-73"><a href="#cb3-73" tabindex="-1"></a>  └──────────────────────┬───────────────────────────────┘  </span>
-<span id="cb3-74"><a href="#cb3-74" tabindex="-1"></a>                         │                       </span>
-<span id="cb3-75"><a href="#cb3-75" tabindex="-1"></a>                         │</span>
-<span id="cb3-76"><a href="#cb3-76" tabindex="-1"></a>      ┌─────────────────────────────────────────┐                ┌────────────────────────┐</span>
-<span id="cb3-77"><a href="#cb3-77" tabindex="-1"></a>      │   Does your data have reporting delays  │────────────────│          YES →         │</span>
-<span id="cb3-78"><a href="#cb3-78" tabindex="-1"></a>      │       and completeness issues?          │                │  (Plan <span class="cf">for</span> Nowcasting) │</span>
-<span id="cb3-79"><a href="#cb3-79" tabindex="-1"></a>      └─────────────────────────────────────────┘                └────────────────────────┘</span></code></pre></div>
-<p>National and State Level Forecasting Hubs: FluSight <a href="https://happygitwithr.com/https-pat" class="external-link">guide</a> MetroCast <a href="information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" class="external-link">website</a>
-for more information on creating a GitHub personal access token
-(PAT).</p>
+<p>In this step, we provide a decision tree approach to assist with
+directing you toward a forecasting approach using available data and
+considering the data limitations.</p>
+<div class="section level3">
+<h3 id="forecasting-planning-decision-tree">Forecasting planning decision tree:<a class="anchor" aria-label="anchor" href="#forecasting-planning-decision-tree"></a>
+</h3>
+<p><strong>Figure 1. Initial forecast selection</strong> describes the
+important initial questions needed to use existing forecasting resources
+or prepare to collect data for conducting your forecast.</p>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"diagram":"\ngraph TB\n\n    A[Use state-level forecasts for a pathogen?] --> B{Yes}\n    A --> C{No}\n\n    %% --- STATE-LEVEL FORECAST PATH ---\n    B --> D[Review available state-level forecasting hubs below]\n    D --> F[Did you find the forecast information you need?]\n\n    F --> I{Yes}\n    F --> J{No}\n\n    I --> END1[Done]\n    J --> CONT1[Continue data collection]\n\n    %% --- DATA AVAILABILITY HANDOFF ---\n    C --> E[Is data available for the target, spatial scale, and time resolution?]\n    E --> G{Yes}\n    E --> H{No}\n\n    G --> K[Is historical data available?]\n    H --> L[Does the data exist but is hard to access?]\n\n    K --> Y1{Yes}\n    K --> N1{No}\n\n    L --> Y2{Yes}\n    L --> N2{No}\n\n    Y1 --> HANDOFF[Go to Figure 2: Data collection and reporting workflow]\n    Y2 --> HANDOFF\n\n    N1 --> RESTART1[Return to Step 1 and re-evaluate]\n    N2 --> RESTART2[Return to Step 1 and re-evaluate]\n"},"evals":[],"jsHooks":[]}</script><p><strong>Figure 2. Data collection and reporting workflow</strong>
+describes the process and necessary steps to collect and organize the
+required data to conduct a forecast.</p>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:100%;height:100%;"></div>
+<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"diagram":"\ngraph TB\n\n    START[From Figure 1: Initial forecast selection] --> STEP1[Collect and store available data]\n\n    STEP1 --> CONSIST[Are data reported consistently, such as on the same day each week?]\n\n    CONSIST --> CY{Yes}\n    CONSIST --> CN{No}\n\n    CN --> FIX[Identify reporting patterns and inconsistencies]\n    FIX --> CONSIST\n\n    CY --> TIMELINE[Define a reporting timeline consistent with the data frequency]\n    TIMELINE --> PIPE[Download the full dataset regularly, not only the current period]\n\n    PIPE --> DELAY[Are there reporting delays or completeness issues?]\n    DELAY --> DY{Yes}\n    DELAY --> DN{No}\n\n    DY --> NOWCAST[Plan for nowcasting]\n    DN --> READY[Proceed to data formatting for forecasting]\n"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="section level2">
+<h2 id="national-and-state-level-forecasting-hubs">National and State Level Forecasting Hubs:<a class="anchor" aria-label="anchor" href="#national-and-state-level-forecasting-hubs"></a>
+</h2>
+<p>FluSight <a href="https://happygitwithr.com/https-pat" class="external-link">guide</a></p>
+<p>MetroCast <a href="information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" class="external-link">website</a></p>
 <p>A full list of real-time collaborative public health hubs can be
 found <a href="https://hubverse.io/community/hubs.html#real-time-collaborative-public-health-hubs" class="external-link">here</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="next-steps">Next steps:<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
-<ol style="list-style-type: decimal">
-<li>Pull and manipulating data to use with forecasting models</li>
-<li>Consider Nowcasts</li>
-<li>Run forecasting models</li>
-<li>Ensemble, visualize, and evaluate forecasts</li>
-<li>Share forecasts with stakeholders</li>
-</ol>
+<ul>
+<li>For NHSN data, return to Get Started and use the get_data function
+to run forecasts</li>
+<li>To forecast local surveillance data, follow <a href="external_data.html">these</a> steps for formatting.</li>
+</ul>
 <p>For more information, see the documentation and help pages.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

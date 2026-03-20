@@ -74,27 +74,43 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>The <code>acciddasuite</code> package provides tools for building
-infectious disease forecasts and relies on the <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a>
-framework.</p>
-<p>This vignette demonstrates a basic example of generating and
-evaluating forecasts following the standard forecasting workflow
+infectious disease forecasts and relies on the <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a> modeling
+framework. The overall goal is to provide public health professionals
+with an easily-adoptable approach to generating an ensemble of outputs
+from statistical models, evaluating forecasts, and visualizing
+outputs.</p>
+<p>This vignette demonstrates a basic example of generating, evaluating,
+and visualizing forecasts following the standard forecasting workflow
 described by <a href="https://otexts.com/fpp3/basic-steps.html" class="external-link">Hyndman
 &amp; Athanasopoulos (2021)</a>.</p>
+<p>Updated forecasting package information can be found <a href="https://robjhyndman.com/hyndsight/forecast9.html" class="external-link">here</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="forecasting-workflow">Forecasting Workflow<a class="anchor" aria-label="anchor" href="#forecasting-workflow"></a>
 </h2>
 <div class="section level3">
-<h3 id="get_data">
-<code>get_data</code><a class="anchor" aria-label="anchor" href="#get_data"></a>
+<h3 id="forecast-planning">
+<code>Forecast Planning</code><a class="anchor" aria-label="anchor" href="#forecast-planning"></a>
 </h3>
+<p><strong>To get more information about how to know whether forecasting
+is the best approach for your task, follow the steps in <a href="forecast_planning.html">this</a> article.</strong></p>
+</div>
+<div class="section level3">
+<h3 id="time-series-data">
+<code>Time Series Data</code><a class="anchor" aria-label="anchor" href="#time-series-data"></a>
+</h3>
+<p>The first step of generating disease forecasts is providing time
+series/surveillance data; the data that the mdoel will assume has
+already happened.</p>
 <p><strong>If you would like to load your own surveillance, you can
 follow <a href="external_data.html">these</a> steps for
 formatting.</strong></p>
 <p>For demonstration purposes, we will load surveillance data from the
 <a href="https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data" class="external-link">CDC
-National Health Safety Network</a>. The <code><a href="../reference/get_data.html">get_data()</a></code> function
-provides a convenient interface to access this data using the <a href="https://cmu-delphi.github.io/epidatr/" class="external-link"><code>epidatr</code></a>
+National Health Safety Network</a>using <code>acciddasuite</code>’s
+<code><a href="../reference/get_data.html">get_data()</a></code> function. The data dictionary is available <a href="https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr" class="external-link">here</a>.</p>
+<p>The <code><a href="../reference/get_data.html">get_data()</a></code> function provides a convenient interface
+to access this data using the <a href="https://cmu-delphi.github.io/epidatr/" class="external-link"><code>epidatr</code></a>
 package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -111,9 +127,22 @@ package.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-15 NC       wk inc covid hosp 2020-08-22             <span style="text-decoration: underline;">1</span>150</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-15 NC       wk inc covid hosp 2020-08-29             <span style="text-decoration: underline;">2</span>055</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-15 NC       wk inc covid hosp 2020-09-05             <span style="text-decoration: underline;">1</span>762</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-15 NC       wk inc covid hosp 2020-09-12              941</span></span></code></pre></div>
-<p>To look at what <code>df</code> looks like, you can access the
-example <code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-15 NC       wk inc covid hosp 2020-09-12              941</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_data.html">get_data</a></span><span class="op">(</span>pathogen <span class="op">=</span> <span class="st">"flu"</span>, geo_values <span class="op">=</span> <span class="st">"ny"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   as_of      location target          target_end_date observation</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2026-03-15 NY       wk inc flu hosp 2020-08-08                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2026-03-15 NY       wk inc flu hosp 2020-08-15                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2026-03-15 NY       wk inc flu hosp 2020-08-22                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-15 NY       wk inc flu hosp 2020-08-29                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-15 NY       wk inc flu hosp 2020-09-05                0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-15 NY       wk inc flu hosp 2020-09-12                0</span></span></code></pre></div>
+<p>To examine <code>df</code> in more detail, you can access the example
+<code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="time-series-cross-validation">Time Series Cross-Validation<a class="anchor" aria-label="anchor" href="#time-series-cross-validation"></a>
@@ -129,15 +158,19 @@ the evaluation step will be.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We only evaluate on the last 90 days of data for demonstration purposes</span></span>
 <span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">90</span></span></code></pre></div>
-<p>Default models are:  * <code>SNAIVE</code> (Seasonal Naïve): Assumes
-this week will look like the same week last year. The simplest possible
-baseline. * <code>ETS</code> (Exponential Smoothing): A weighted average
+<p>Default models are:</p>
+<ul>
+<li><p><code>SNAIVE</code> (Seasonal Naïve): Assumes this week will look
+like the same week last year. The simplest possible baseline.</p></li>
+<li><p><code>ETS</code> (Exponential Smoothing): A weighted average
 where recent weeks matter more than older ones. Adapts to trends and
-seasonal patterns. * <code>THETA</code>: Splits the data into a
-long-term trend and short-term fluctuations, forecasts each separately,
-then combines them. * <code>ARIMA</code>: Learns repeating patterns from
-past values to predict future ones. Auto-configured to find the best
-fit.</p>
+seasonal patterns.</p></li>
+<li><p><code>THETA</code>: Splits the data into a long-term trend and
+short-term fluctuations, forecasts each separately, then combines
+them.</p></li>
+<li><p><code>ARIMA</code>: Learns repeating patterns from past values to
+predict future ones. Auto-configured to find the best fit.</p></li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span></span>
 <span>  <span class="va">df</span>,</span>
@@ -153,10 +186,10 @@ fit.</p>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;  model_id       wis</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;     THETA  35.32154</span></span>
-<span><span class="co">#&gt;       ETS  39.75354</span></span>
-<span><span class="co">#&gt;  ENSEMBLE  49.24098</span></span>
-<span><span class="co">#&gt;    SNAIVE 136.40562</span></span>
+<span><span class="co">#&gt;     THETA  641.3733</span></span>
+<span><span class="co">#&gt;       ETS  688.2211</span></span>
+<span><span class="co">#&gt;  ENSEMBLE  689.7293</span></span>
+<span><span class="co">#&gt;    SNAIVE 1036.9490</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
 <span><span class="co">#&gt;   From: 2025-12-20 </span></span>
@@ -171,15 +204,32 @@ forecast object:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
 <p><img src="acciddasuite_files/figure-html/plot-forecast-1.png" class="r-plt" alt="" width="672"></p>
+<p>View forecast evaluation by viewing the <code>score</code> element of
+the object:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">score</span></span>
+<span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
+<span><span class="co">#&gt;    model_id       wis interval_coverage_50 interval_coverage_95</span></span>
+<span><span class="co">#&gt;      &lt;char&gt;     &lt;num&gt;                &lt;num&gt;                &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:    THETA  641.3733            0.4166667            0.7500000</span></span>
+<span><span class="co">#&gt; 2:      ETS  688.2211            0.2500000            0.6666667</span></span>
+<span><span class="co">#&gt; 3: ENSEMBLE  689.7293            0.5000000            0.8333333</span></span>
+<span><span class="co">#&gt; 4:   SNAIVE 1036.9490            0.1666667            0.9166667</span></span>
+<span><span class="co">#&gt;    wis_relative_skill</span></span>
+<span><span class="co">#&gt;                 &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:          0.8556421</span></span>
+<span><span class="co">#&gt; 2:          0.9181408</span></span>
+<span><span class="co">#&gt; 3:          0.9201528</span></span>
+<span><span class="co">#&gt; 4:          1.3833710</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="adding-extra_models">Adding <code>extra_models</code><a class="anchor" aria-label="anchor" href="#adding-extra_models"></a>
 </h3>
-<p>Additonal models can be added by defining them in a list and passing
+<p>Additional models can be added by defining them in a list and passing
 them to <code><a href="../reference/get_fcast.html">get_fcast()</a></code>. The models should be compatible with
 the fable framework (see <a href="https://fabletools.tidyverts.org/articles/extension_models.html" class="external-link">fable
 documentation</a> for more information).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fable.tidyverts.org" class="external-link">fable</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pkg.mitchelloharawild.com/fable.prophet/" class="external-link">fable.prophet</a></span><span class="op">)</span></span>
 <span><span class="va">extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -198,12 +248,12 @@ documentation</a> for more information).</p>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/time_pipe.html" class="external-link">time_pipe</a></span><span class="op">(</span><span class="st">"extra fcast"</span>, log <span class="op">=</span> <span class="st">"timing"</span><span class="op">)</span></span></code></pre></div>
 <p>You can check how long each step took by calling
 <code><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">pipetime::get_log()</a></code>:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $timing</span></span>
-<span><span class="co">#&gt;             timestamp       label  duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-20 19:15:37  base fcast  9.385167 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-20 19:15:48 extra fcast 19.198079 secs</span></span></code></pre></div>
+<span><span class="co">#&gt;             timestamp       label duration unit</span></span>
+<span><span class="co">#&gt; 1 2026-03-20 19:21:27  base fcast 10.16703 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-20 19:21:38 extra fcast 22.30154 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -213,7 +263,7 @@ documentation</a> for more information).</p>
 sharing and visualizing respiratory disease forecasts. To submit
 forecasts to RespiLens, you can use <code><a href="../reference/to_respilens.html">to_respilens()</a></code> to save
 the file in JSON format and upload it to MyRespiLens <a href="https://www.respilens.com/myrespilens" class="external-link">here</a>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

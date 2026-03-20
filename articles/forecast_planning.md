@@ -47,11 +47,11 @@ are a set of questions to consider to begin this process:
 
 Answer prior to proceeding:
 
-Have you defined your forecasting project and approach?
+**Have you defined your forecasting project and approach?**
 
-YES → Proceed to next steps
+    - YES → Proceed to next steps
 
-NO → Continue defining the approach
+    - NO  → Continue defining the approach
 
 ## Step 2: Define Your Data
 
@@ -86,14 +86,14 @@ Some examples of forecasting targets:
     - Respiratory disease deaths
     - Emergency Department (ED) visits related to respiratory disease-like illnesses
 
-3.  What *spatial unit* will provide the best insight? Are these data
+5.  What *spatial unit* will provide the best insight? Are these data
     available at that scale?
 
 This may include, but are not limited to:
 
     - State, county, city, health jurisdiction, hospital system, or even facility (e.g., hospital)
 
-4.  What *time resolution* is adaquate and available to provide the
+6.  What *time resolution* is adaquate and available to provide the
     required information for the audience?
 
 Planning the time steps is important for determining if your data is
@@ -105,115 +105,45 @@ Some typical forecasting time steps include days, weeks, or even months.
 
 Answer prior to proceeding:
 
-Have you defined your pathogen, target, spatial unit, and time
-resolution?
+**Have you defined your pathogen, target, spatial unit, and time
+resolution?**
 
-YES → Proceed to next steps
+    - YES → Proceed to next steps
 
-NO → Continue defining these data elements
+    - NO  → Continue defining these data elements
 
 ## Step 3: Data Availability & Limitations
 
-In this step, you will be asked a series of questions to direct you to
-become familiar with the available forecasting hubs being routinely
-provided for national and state level targets.
+In this step, we provide a decision tree approach to assist with
+directing you toward a forecasting approach using available data and
+considering the data limitations.
 
-``` r
-# Decision Tree Approach to Public Health Forecasting 
+### Forecasting planning decision tree:
 
-                                ┌───────────────────────────────────────┐
-                                │  Did you choose state-level forecasts │
-                                │        for a particular pathogen?     │
-                                └────────────────────┬──────────────────┘
-                                                     │
-                                         ┌───────────────────────┐
-                                         ▼                       ▼
-                                 ┌───────────────┐       ┌───────────────┐
-                                 │      Yes      │       │       No      │
-                                 └───────┬───────┘       └───────┬───────┘
-                                         │                       │
-                                         ▼                       ▼
-          ┌────────────────────────────────────┐            ┌────────────────────────────────────┐
-          │  Review available forecasting hubs │            │ Is data available for the target,  │
-          │   providing state-level forecast.  │     ┌──────│  spatial unit, and time resolution │
-          └─────────────────┬──────────────────┘     │      │  you have chosen?                  │
-                            │                        │      │  (e.g., weekly flu hosp in NC)     │
-                            │                        │      └──────────────────┬─────────────────┘
-                            ▼                        │                         │
-              ┌───────────────────────────────┐      │               ┌───────────────────┐
-              │  Did you find the state-level │      │               ▼                   ▼
-              │  forecasting information you  │      │           ┌───────┐           ┌───────┐
-              │  were originally seeking?     │      │           │  YES  │           │  NO   │
-              └───────────────┬───────────────┘      │           └───────┘           └───────┘
-                              │                      │               │                   │
-                              │                      │               │                   │
-                    ┌───────────────────┐            │               │                   │
-                    ▼                   ▼            │               │                   │
-     ┌───────────────────┐          ┌─────────┐      │               │                   │
-     │  YES → Fantastic! │          │  NO →   │──────┘               │                   │
-     └───────────────────┘          └────┬────┘                      │                   │
-                                                                     │                   │
-                                                                     ▼                   ▼
-                                        ┌──────────────────────────────┐            ┌─────────────────────────────┐
-                                        │ Is historical data available │            │ Does the data exist, but    │
-                                        │  for the target of interest? │            │  are not easily accessible? │
-                                        └──────────────┬───────────────┘            └─────────────┬───────────────┘
-                                                       │                                          │
-                          ┌─────────────────────────────────┐                      ┌─────────────────────────────┐
-                          ▼                                 ▼                      ▼                             ▼
-          ┌──────────────────────┐     ┌───────────────────────────┐      ┌────────────────────┐      ┌───────────────────────────┐
-          │         YES →        │     │           NO →            │      │       YES →        │      │           NO →            │
-          │  [Collect and store  │     │     Go back to Step 1.    │      │ [Collect any       │      │   Go back to Step 1.      │ 
-          │  the available data] │     │  Re-evaluate the project. │      │  available data]   │      │  Re-evaluate the project. │
-          └──────────┬───────────┘     └───────────────────────────┘      └──────────┬─────────┘      └───────────────────────────┘
-                     │                                                               │
-                     │                                                               │
-                     └───────────────────────────────┬───────────────────────────────┘
-                                                     │
-                                                     │
-                      ┌──────────────────────────────────────────────────────────────┐
-                      │ Are these data reported or available in a consistent manner? │────────────────┐
-                      │  (e.g., same data is available every week on the same day)   │                │
-                      └──────────────────────────────┬───────────────────────────────┘                │
-                                                     │                                                │
-                         ┌────────────────────────────────────────────────────────┐                   │
-                         │                                                        │                   │
-                         │                                                        │                   │
-                         ▼                                                        ▼                   │
-           ┌──────────────────────────┐                              ┌──────────────────────────┐     │
-           │            YES →         │                              │           NO →           │     │
-           │ Establish a reporting    │                              │  Determine the reporting │─────┘
-           │ timeline consistnet with │                              │  timeline and look for   │
-           │ resolution.              │                              │  consistencies.          │
-           └─────────────┬────────────┘                              └──────────────────────────┘
-                         │                    
-                         ▼                       
-  ┌──────────────────────────────────────────────────────┐
-  │   Setup consistent downloads of the entire dataset   │
-  │ (not just the ci=urrent week - e.g., versioned data) │                
-  └──────────────────────┬───────────────────────────────┘  
-                         │                       
-                         │
-      ┌─────────────────────────────────────────┐                ┌────────────────────────┐
-      │   Does your data have reporting delays  │────────────────│          YES →         │
-      │       and completeness issues?          │                │  (Plan for Nowcasting) │
-      └─────────────────────────────────────────┘                └────────────────────────┘
-```
+**Figure 1. Initial forecast selection** describes the important initial
+questions needed to use existing forecasting resources or prepare to
+collect data for conducting your forecast.
 
-National and State Level Forecasting Hubs: FluSight
-[guide](https://happygitwithr.com/https-pat) MetroCast
+**Figure 2. Data collection and reporting workflow** describes the
+process and necessary steps to collect and organize the required data to
+conduct a forecast.
+
+## National and State Level Forecasting Hubs:
+
+FluSight [guide](https://happygitwithr.com/https-pat)
+
+MetroCast
 [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-for more information on creating a GitHub personal access token (PAT).
 
 A full list of real-time collaborative public health hubs can be found
 [here](https://hubverse.io/community/hubs.html#real-time-collaborative-public-health-hubs).
 
-## Next steps
+## Next steps:
 
-1.  Pull and manipulating data to use with forecasting models
-2.  Consider Nowcasts
-3.  Run forecasting models
-4.  Ensemble, visualize, and evaluate forecasts
-5.  Share forecasts with stakeholders
+- For NHSN data, return to Get Started and use the get_data function to
+  run forecasts
+- To forecast local surveillance data, follow
+  [these](https://accidda.github.io/acciddasuite/articles/external_data.md)
+  steps for formatting.
 
 For more information, see the documentation and help pages.
