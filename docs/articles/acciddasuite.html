@@ -72,14 +72,12 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>acciddasuite</code> package provides a forecasting pipeline
-framework for building infectious disease forecasts and relies on the <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a> modeling
-framework. This forecasting suite uses time series data (surveillance
-data) from either national data sets (NHSN &amp; ESSENCE) or local
-surveillance data.</p>
-<p>The overall goal is to provide public health with an easily adoptable
-approach to create an ensemble of outputs from statistical models,
-provide forecast evaluation, and a tool for visualization.</p>
+<p>The <code>acciddasuite</code> package provides tools for building
+infectious disease forecasts and relies on the <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a> modeling
+framework. The overall goal is to provide public health professionals
+with an easily-adoptable approach to generating an ensemble of outputs
+from statistical models, evaluating forecasts, and visualizing
+outputs.</p>
 <p>This vignette demonstrates a basic example of generating, evaluating,
 and visualizing forecasts following the standard forecasting workflow
 described by <a href="https://otexts.com/fpp3/basic-steps.html" class="external-link">Hyndman
@@ -94,19 +92,22 @@ described by <a href="https://otexts.com/fpp3/basic-steps.html" class="external-
 <code>Forecast Planning</code><a class="anchor" aria-label="anchor" href="#forecast-planning"></a>
 </h3>
 <p><strong>To get more information about how to know whether forecasting
-is the best approach to answer the information you are seeking or being
-asked to provide, follow the steps in <a href="forecast_planning.html">this</a> article.</strong></p>
+is the best approach for your task, follow the steps in <a href="forecast_planning.html">this</a> article.</strong></p>
 </div>
 <div class="section level3">
 <h3 id="time-series-data">
 <code>Time Series Data</code><a class="anchor" aria-label="anchor" href="#time-series-data"></a>
 </h3>
+<p>The first step of generating disease forecasts is providing time
+series/surveillance data; the data that the mdoel will assume has
+already happened.</p>
 <p><strong>If you would like to load your own surveillance, you can
 follow <a href="external_data.html">these</a> steps for
 formatting.</strong></p>
 <p>For demonstration purposes, we will load surveillance data from the
 <a href="https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data" class="external-link">CDC
-National Health Safety Network</a>. The data dictionary is available <a href="https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr" class="external-link">here</a>.</p>
+National Health Safety Network</a>using <code>acciddasuite</code>’s
+<code><a href="../reference/get_data.html">get_data()</a></code> function. The data dictionary is available <a href="https://dev.socrata.com/foundry/data.cdc.gov/mpgq-jmmr" class="external-link">here</a>.</p>
 <p>The <code><a href="../reference/get_data.html">get_data()</a></code> function provides a convenient interface
 to access this data using the <a href="https://cmu-delphi.github.io/epidatr/" class="external-link"><code>epidatr</code></a>
 package.</p>
@@ -128,8 +129,8 @@ package.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2026-03-08 NC       wk inc flu hosp 2020-08-29               <span style="color: #BB0000;">NA</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2026-03-08 NC       wk inc flu hosp 2020-09-05               <span style="color: #BB0000;">NA</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2026-03-08 NC       wk inc flu hosp 2020-09-12               <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
-<p>To look at what <code>df</code> looks like, you can access the
-example <code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
+<p>To examine <code>df</code> in more detail, you can access the example
+<code>csv</code> file here: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/example_data.csv" class="external-link">example_data.csv</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="time-series-cross-validation">Time Series Cross-Validation<a class="anchor" aria-label="anchor" href="#time-series-cross-validation"></a>
@@ -143,7 +144,7 @@ the evaluation step will be.</p>
 <p>We visualize the data and decide on the
 <code>eval_start_date</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># We ony evaluate on the last 90 days of data for demonstration purposes</span></span>
+<code class="sourceCode R"><span><span class="co"># For demonstration purposes, we only evaluate on the last 90 days of data</span></span>
 <span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">90</span></span></code></pre></div>
 <p>Default models are:</p>
 <ul>
@@ -280,8 +281,8 @@ documentation</a> for more information).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $timing</span></span>
 <span><span class="co">#&gt;             timestamp       label duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-20 09:09:35  base fcast 3.772738 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-20 09:09:39 extra fcast 7.019480 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 2026-03-20 09:32:02  base fcast 3.692525 secs</span></span>
+<span><span class="co">#&gt; 2 2026-03-20 09:32:06 extra fcast 6.627328 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -292,7 +293,7 @@ sharing and visualizing respiratory disease forecasts. To submit
 forecasts to RespiLens, you can use <code>to_respilens()</code> to save
 the file in JSON format and upload it to MyRespiLens <a href="https://www.respilens.com/myrespilens" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">to_respilens</span><span class="op">(</span><span class="va">fcast</span>, <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">to_respilens</span><span class="op">(</span><span class="va">fcast</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
