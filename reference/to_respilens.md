@@ -1,18 +1,18 @@
-# Convert accida_cast to RespiLens format
+# Convert accidda_cast to RespiLens format
 
-Convert accida_cast to RespiLens format
+Convert accidda_cast to RespiLens format
 
 ## Usage
 
 ``` r
-to_respilens(accida_cast, path = NULL)
+to_respilens(accidda_cast, path = NULL)
 ```
 
 ## Arguments
 
-- accida_cast:
+- accidda_cast:
 
-  An object of class `accida_cast`, the output of
+  An object of class `accidda_cast`, the output of
   [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
 
 - path:

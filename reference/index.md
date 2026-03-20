@@ -16,8 +16,8 @@
 
   Build RespiLens metadata key from `model_out_tbl` data
 
-- [`print(`*`<accida_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accida_cast.md)
-  : Print an accida_cast object
+- [`print(`*`<accidda_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accidda_cast.md)
+  : Print an accidda_cast object
 
 - [`to_respilens()`](https://accidda.github.io/acciddasuite/reference/to_respilens.md)
-  : Convert accida_cast to RespiLens format
+  : Convert accidda_cast to RespiLens format

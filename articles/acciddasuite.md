@@ -81,7 +81,7 @@ fcast = get_fcast(
   time_pipe("base fcast", log = "timing")
 
 fcast
-#> <accida_cast>
+#> <accidda_cast>
 #> 
 #> Models evaluated:
 #>  model_id       wis
@@ -145,8 +145,8 @@ You can check how long each step took by calling
 get_log()
 #> $timing
 #>             timestamp       label  duration unit
-#> 1 2026-03-17 16:52:41  base fcast  6.766221 secs
-#> 2 2026-03-17 16:52:49 extra fcast 10.934566 secs
+#> 1 2026-03-20 13:59:51  base fcast  6.808165 secs
+#> 2 2026-03-20 13:59:58 extra fcast 11.041293 secs
 ```
 
 ## Submit to MyRespiLens

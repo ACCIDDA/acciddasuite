@@ -20,7 +20,7 @@ df <- get_data(pathogen = "flu", geo_values = "ny")
 fcast <- df |> 
   get_fcast(eval_start_date = max(df$target_end_date) - 30)
 fcast
-#> <accida_cast>
+#> <accidda_cast>
 #> 
 #> Models evaluated:
 #>  model_id        wis
@@ -71,11 +71,11 @@ to_respilens(fcast, path = "example_respilens.json")
 
   Build RespiLens metadata key from `model_out_tbl` data
 
-- [`print(`*`<accida_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accida_cast.md)
-  : Print an accida_cast object
+- [`print(`*`<accidda_cast>`*`)`](https://accidda.github.io/acciddasuite/reference/print.accidda_cast.md)
+  : Print an accidda_cast object
 
 - [`to_respilens()`](https://accidda.github.io/acciddasuite/reference/to_respilens.md)
-  : Convert accida_cast to RespiLens format
+  : Convert accidda_cast to RespiLens format
 
 # Articles
 
