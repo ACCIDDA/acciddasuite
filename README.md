@@ -7,7 +7,10 @@
 
 <!-- badges: end -->
 
-The goal of acciddasuite is to …
+`acciddasuite` provides a simple pipeline for infectious diseases
+forecasts. It validates input data (`check_data()`), optionally applies
+nowcasting to adjust for reporting delays (`get_ncast()`), and generates
+forecasts (`get_fcast()`).
 
 ## Installation
 
@@ -23,39 +26,38 @@ You can install the development version of acciddasuite from
 
 ``` r
 library(acciddasuite)
-df <- get_data(pathogen = "flu", geo_values = "ny")
-fcast <- df |> 
-  get_fcast(eval_start_date = max(df$target_end_date) - 30)
-fcast
-#> <accidda_cast>
-#> 
-#> Models evaluated:
-#>  model_id        wis
-#>    <char>      <num>
-#>     ARIMA   85.65125
-#>       ETS  120.98738
-#>  ENSEMBLE  128.35163
-#>     THETA  214.99363
-#>    SNAIVE 1351.92228
-#> 
-#> Forecast horizon:
-#>   From: 2026-01-31 
-#>   To:   2026-03-28 
-#> 
-#> Contents:
-#>   $hubcast   hub forecast object
-#>   $score     model ranking table
-#>   $plot      ggplot2 object
+head(example_data)
+#> # A tibble: 6 × 5
+#>   as_of      location target            target_end_date observation
+#>   <date>     <chr>    <chr>             <date>                <dbl>
+#> 1 2024-11-17 NY       wk inc covid hosp 2020-08-08              517
+#> 2 2024-11-24 NY       wk inc covid hosp 2020-08-08              517
+#> 3 2024-12-01 NY       wk inc covid hosp 2020-08-08              517
+#> 4 2024-12-08 NY       wk inc covid hosp 2020-08-08              517
+#> 5 2024-12-15 NY       wk inc covid hosp 2020-08-08              517
+#> 6 2024-12-22 NY       wk inc covid hosp 2020-08-08              517
+```
+
+``` r
+fcast <- example_data |>
+  check_data() |> 
+  get_ncast() |> 
+  get_fcast(
+    eval_start_date = max(example_data$target_end_date) - 28,
+    h = 3 # forecast 3 weeks into the future
+  )
+#> ℹ Using max_delay = 12 from data
+#> ℹ Truncating from max_delay = 12 to 4.
 ```
 
 ``` r
 fcast$plot
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 
 ``` r
-to_respilens(fcast, path = "example_respilens.json")
+to_respilens(fcast, path = "respilens.json")
 ```

@@ -104,7 +104,7 @@ train_epiestim <- function(
   counts_recent <- tail(counts, min(n_keep, n_obs_all))
   n_recent <- length(counts_recent)
 
-  # Drop the last period (potentially right-censored) before estimation
+  # Drop the last period (potentially right-truncated) before estimation
   counts_est <- counts_recent[-n_recent]
 
   # EpiEstim EM algorithm: reconstruct daily incidence from the aggregated

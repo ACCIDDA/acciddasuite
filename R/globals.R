@@ -9,18 +9,15 @@ utils::globalVariables(c(
   "output_type_id",
   "value",
   ".model",
+  ".mean",
+  ".id",
   "target_end_date",
   "issue",
   "geo_value",
   "time_value",
   "lambda_guerrero",
-  ".id",
   "wis",
   "model_id",
-  ".mean",
-  "lower",
-  "upper",
-  "95%",
   # fable_to_hub / forecasts_key
   "reference_date",
   "horizon",
@@ -29,9 +26,28 @@ utils::globalVariables(c(
   "oracle_value",
   # forecasts_key / to_respilens / metadata_key
   "target",
-  # metadata_key (package dataset)
   # get_fcast plot
   "q95",
   "q95_lower",
-  "q95_upper"
+  "q95_upper",
+  # get_ncast
+  "as_of",
+  "confirm",
+  "count",
+  "delta",
+  "ncast_val",
+  "ncast_median",
+  "ncast_lower",
+  "ncast_upper",
+  "corrected",
+  "pred_count",
+  "report_date",
+  "location",
+  "lower",
+  "upper",
+  "q25",
+  "q75",
+  "median",
+  # get_fcast scenario pooling
+  ".scenario"
 ))

@@ -1,9 +1,9 @@
 Package: acciddasuite
 Title: A suite of tools for epidemic forecasting
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Cyril", "Geismar", , "cgeisma1@jh.edu", role = c("aut", "cre"))
+Description: A simple framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -27,7 +27,8 @@ Imports:
     incidence,
     jsonlite
 Suggests:
-    DiagrammeR, 
+    baselinenowcast,
+    DiagrammeR,
     knitr,
     rmarkdown,
     devtools,

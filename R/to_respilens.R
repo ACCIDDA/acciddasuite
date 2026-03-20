@@ -115,21 +115,21 @@ forecasts_key <- function(model_out_tbl) {
 }
 
 
-#' Convert accidda_cast to RespiLens format
-#' @param accidda_cast An object of class `accidda_cast`, the output of `get_fcast()`.
+#' Convert accidda_fcast to RespiLens format
+#' @param accidda_fcast An object of class `accidda_fcast`, the output of `get_fcast()`.
 #' @param path Optional file path to write the JSON output to. Must end with `.json`.
 #' If `NULL`, the output is not written to disk.
 #' @return A named list with a single metadata JSON structure and one JSON structure per location.
 #' @export
 
-to_respilens <- function(accidda_cast, path = NULL) {
-  #check it is of class `accidda_cast`
-  if (!inherits(accidda_cast, "accidda_cast")) {
-    stop("Input must be an object of class 'accidda_cast'.")
+to_respilens <- function(accidda_fcast, path = NULL) {
+  #check it is of class `accidda_fcast`
+  if (!inherits(accidda_fcast, "accidda_fcast")) {
+    stop("Input must be an object of class 'accidda_fcast'.")
   }
 
-  model_out_tbl = accidda_cast$hubcast$model_out_tbl
-  oracle_output = accidda_cast$hubcast$oracle_output
+  model_out_tbl = accidda_fcast$hubcast$model_out_tbl
+  oracle_output = accidda_fcast$hubcast$oracle_output
 
   # Necessary model_out_tbl filtering
   # PATCH: removing 'peaks' keys for now (MyRespiLens doesn't support yet)

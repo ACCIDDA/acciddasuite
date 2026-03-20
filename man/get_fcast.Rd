@@ -2,13 +2,17 @@
 % Please edit documentation in R/get_fcast.R
 \name{get_fcast}
 \alias{get_fcast}
-\title{Rolling origin epidemic forecasts and model evaluation}
+\title{Forecast and evaluate time series models}
 \usage{
 get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
 }
 \arguments{
-\item{df}{Data frame of weekly observations containing
-\code{target_end_date} (Date), \code{location} (character), \code{target} (character), and \code{observation} (numeric).}
+\item{df}{An \code{accidda_ncast} object from
+\code{\link{get_ncast}}, or an \code{accidda_data} object from
+\code{\link{check_data}} or \code{\link{get_data}}.
+If the underlying data frame contains \code{ncast_lower} and
+\code{ncast_upper} columns, nowcast uncertainty propagation
+is enabled automatically.}
 
 \item{eval_start_date}{Date or string coercible to Date. First date at
 which forecasts are evaluated. At least 52 weeks of data must precede
@@ -29,27 +33,31 @@ see the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{f
 The name of each list element is used as the model label in the output.}
 }
 \value{
-An object of class \code{accidda_cast} containing:
+An object of class \code{accidda_fcast} containing:
 \describe{
-\item{forecast}{Final \code{h} week ahead forecasts for all models and the ensemble.}
+\item{hubcast}{Hub-format forecast object (\code{model_out_tbl} and \code{oracle_output}).}
 \item{score}{Model ranking based on rolling origin WIS.}
-\item{plot}{ggplot object showing forecasts and prediction intervals.}
+\item{plot}{ggplot2 object showing forecasts and prediction intervals.}
 }
 }
 \description{
-Fits multiple time series models to weekly incidence data and evaluates
-short term predictive performance using an expanding window rolling
-origin scheme.
+Selects and evaluates multiple time series models via expanding-window
+cross-validation, then produces a final forward-looking forecast.
 }
 \details{
-From \code{eval_start_date} onwards, models are repeatedly refitted on all data
-available up to each evaluation time point and used to forecast the next
-\code{h} weeks.
+\strong{Cross-validation.} From \code{eval_start_date} onwards, models are
+repeatedly refitted on all data up to each cutoff and used to forecast
+the next \code{h} weeks. Models are ranked by WIS; the best \code{top_n}
+form an equal-weight ensemble.
 
-Models are ranked by mean WIS score across evaluation periods. The best
-performing \code{top_n} models are combined into an equal weight ensemble.
-A final \code{h} week ahead forecast is then produced by refitting selected
-models using the full dataset.
+\strong{Nowcast uncertainty.} When an \code{accidda_ncast} object is
+supplied (or an \code{accidda_data} whose data frame contains
+\code{ncast_lower} and \code{ncast_upper} columns),
+cross-validation runs on the \code{observation} column (the median
+corrected series). The final forecast is then produced three times
+(from the median, lower 95\\% CrI, and upper 95\\% CrI baselines)
+and the resulting distributions are pooled, so prediction intervals
+reflect both model uncertainty and nowcast uncertainty.
 }
 \examples{
 \dontrun{

@@ -4,29 +4,35 @@
 \alias{get_data}
 \title{Get hospitalisation data}
 \usage{
-get_data(pathogen, geo_values = "*")
+get_data(pathogen, geo_value, revisions = FALSE)
 }
 \arguments{
 \item{pathogen}{Character. One of "covid", "flu" or "rsv".}
 
-\item{geo_values}{Character vector. Geographic values as per \link[epidatr]{pub_covidcast} to filter by. Defaults to "*" (all states).}
+\item{geo_value}{Character vector. Geographic value as per
+\link[epidatr]{pub_covidcast} to filter by.}
+
+\item{revisions}{Logical. If \code{TRUE}, fetches all available revision
+history, producing data ready for \code{\link{get_ncast}}.
+Default is \code{FALSE} (latest version only).}
 }
 \value{
-A tibble in \code{hubverse} format with columns:
-\itemize{
-\item \code{as_of}: Date when the data was issued
-\item \code{location}: State code
-\item \code{target}: Target description (e.g., "wk inc covid hosp")
-\item \code{target_end_date}: End date of the target week
-\item \code{observation}: Observed hospital admissions
-}
+An \code{accidda_data} object (see \code{\link{check_data}}).
 }
 \description{
-Fetch the most recent confirmed US hospital admissions from the NHSN source
+Fetch confirmed US hospital admissions from the NHSN source
 for COVID-19, influenza, or RSV using \link[epidatr]{pub_covidcast}.
 }
+\details{
+By default the latest version of each observation is returned. Set
+\code{revisions = TRUE} to retrieve all available revision history,
+which is needed by \code{\link{get_ncast}}.
+}
 \examples{
-get_data(pathogen = "covid", geo_values = c("ca", "ny"))
+get_data(pathogen = "covid", geo_value = "ny")
+
+# Fetch revision history for nowcasting
+get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 }
 \seealso{
 \link[epidatr]{pub_covidcast}
