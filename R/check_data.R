@@ -48,16 +48,7 @@ check_data <- function(df) {
   }
 
   # --- Type coercion ---
-  df$target_end_date <- as.Date(df$target_end_date, "%Y-%m-%d")
-
-  invalid_idx <- which(is.na(df$target_end_date))
-
-  if (length(invalid_idx) > 0) {
-    stop(
-      "`target_end_date` contains values that cannot be coerced to Date at row(s): ",
-      paste(invalid_idx, collapse = ", ")
-    )
-  }
+  df$target_end_date <- as.Date(df$target_end_date)
   df$observation <- as.numeric(df$observation)
   df$location <- as.character(df$location)
   df$target <- as.character(df$target)
