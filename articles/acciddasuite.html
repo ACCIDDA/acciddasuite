@@ -118,8 +118,8 @@ object:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Location: NY </span></span>
 <span><span class="co">#&gt; Target:   wk inc covid hosp </span></span>
-<span><span class="co">#&gt; Window:   2020-08-08 to 2026-03-21 ( 294 dates )</span></span>
-<span><span class="co">#&gt; History:  TRUE ( 2024-11-17 to 2026-03-22 )</span></span></code></pre></div>
+<span><span class="co">#&gt; Window:   2020-08-08 to 2026-03-28 ( 295 dates )</span></span>
+<span><span class="co">#&gt; History:  TRUE ( 2024-11-17 to 2026-03-29 )</span></span></code></pre></div>
 <p>You can also <strong>bring your own data</strong>. Just pass it
 through <code><a href="../reference/check_data.html">check_data()</a></code>. See
 <code><a href="../articles/external_data.html">vignette("external_data")</a></code> for formatting details.</p>
@@ -140,9 +140,9 @@ before that is left untouched.</p>
 <span><span class="va">ncast</span></span>
 <span><span class="co">#&gt; &lt;accidda_ncast&gt;</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Nowcasted 4 weeks: 2026-02-28 to 2026-03-21 </span></span>
+<span><span class="co">#&gt; Nowcasted 4 weeks: 2026-03-07 to 2026-03-28 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $data  corrected series (294 rows)</span></span>
+<span><span class="co">#&gt; $data  corrected series (295 rows)</span></span>
 <span><span class="co">#&gt; $plot  nowcast visualisation</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
@@ -204,14 +204,14 @@ selection and forecasting steps take.</p>
 <span><span class="co">#&gt; Models evaluated:</span></span>
 <span><span class="co">#&gt;  model_id       wis</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt;     THETA  32.19275</span></span>
-<span><span class="co">#&gt;       ETS  38.12778</span></span>
-<span><span class="co">#&gt;  ENSEMBLE  62.15294</span></span>
-<span><span class="co">#&gt;    SNAIVE 234.21581</span></span>
+<span><span class="co">#&gt;     THETA  39.34596</span></span>
+<span><span class="co">#&gt;       ETS  77.55883</span></span>
+<span><span class="co">#&gt;  ENSEMBLE  94.74694</span></span>
+<span><span class="co">#&gt;    SNAIVE 245.41487</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-02-21 </span></span>
-<span><span class="co">#&gt;   To:   2026-04-18 </span></span>
+<span><span class="co">#&gt;   From: 2026-02-28 </span></span>
+<span><span class="co">#&gt;   To:   2026-04-25 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hubcast   hub forecast object</span></span>
@@ -227,16 +227,16 @@ the object:</p>
 <span><span class="co">#&gt; Key: &lt;model_id&gt;</span></span>
 <span><span class="co">#&gt;    model_id       wis interval_coverage_50 interval_coverage_95</span></span>
 <span><span class="co">#&gt;      &lt;char&gt;     &lt;num&gt;                &lt;num&gt;                &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:    THETA  32.19275                 0.50                    1</span></span>
-<span><span class="co">#&gt; 2:      ETS  38.12778                 0.50                    1</span></span>
-<span><span class="co">#&gt; 3: ENSEMBLE  62.15294                 1.00                    1</span></span>
-<span><span class="co">#&gt; 4:   SNAIVE 234.21581                 0.25                    1</span></span>
+<span><span class="co">#&gt; 1:    THETA  39.34596                 1.00                    1</span></span>
+<span><span class="co">#&gt; 2:      ETS  77.55883                 0.25                    1</span></span>
+<span><span class="co">#&gt; 3: ENSEMBLE  94.74694                 0.25                    1</span></span>
+<span><span class="co">#&gt; 4:   SNAIVE 245.41487                 0.00                    1</span></span>
 <span><span class="co">#&gt;    wis_relative_skill</span></span>
 <span><span class="co">#&gt;                 &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          0.4951523</span></span>
-<span><span class="co">#&gt; 2:          0.5864380</span></span>
-<span><span class="co">#&gt; 3:          0.9559656</span></span>
-<span><span class="co">#&gt; 4:          3.6024407</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:          0.4286973</span></span>
+<span><span class="co">#&gt; 2:          0.8450490</span></span>
+<span><span class="co">#&gt; 3:          1.0323235</span></span>
+<span><span class="co">#&gt; 4:          2.6739391</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="adding-custom-models">Adding custom models<a class="anchor" aria-label="anchor" href="#adding-custom-models"></a>
 </h3>
@@ -265,8 +265,8 @@ be passed via <code>extra_models</code>:</p>
 <code class="sourceCode R"><span><span class="fu">pipetime</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pipetime/man/get_log.html" class="external-link">get_log</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $log</span></span>
 <span><span class="co">#&gt;             timestamp       label duration unit</span></span>
-<span><span class="co">#&gt; 1 2026-03-31 15:51:11  base fcast 18.93266 secs</span></span>
-<span><span class="co">#&gt; 2 2026-03-31 15:51:34 extra fcast 26.27124 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 2026-04-07 18:45:06  base fcast 18.03962 secs</span></span>
+<span><span class="co">#&gt; 2 2026-04-07 18:45:28 extra fcast 23.81729 secs</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
