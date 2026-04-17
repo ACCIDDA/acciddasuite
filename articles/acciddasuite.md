@@ -48,8 +48,8 @@ df
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-03-28 ( 295 dates )
-#> History:  TRUE ( 2024-11-17 to 2026-03-29 )
+#> Window:   2020-08-08 to 2026-04-04 ( 296 dates )
+#> History:  TRUE ( 2024-11-17 to 2026-04-05 )
 ```
 
 You can also **bring your own data**. Just pass it through
@@ -75,9 +75,9 @@ ncast <- get_ncast(df)
 ncast
 #> <accidda_ncast>
 #> 
-#> Nowcasted 4 weeks: 2026-03-07 to 2026-03-28 
+#> Nowcasted 4 weeks: 2026-03-14 to 2026-04-04 
 #> 
-#> $data  corrected series (295 rows)
+#> $data  corrected series (296 rows)
 #> $plot  nowcast visualisation
 ```
 
@@ -147,14 +147,14 @@ fcast
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  39.34596
-#>       ETS  77.55883
-#>  ENSEMBLE  94.74694
-#>    SNAIVE 245.41487
+#>     THETA  52.41830
+#>       ETS  70.90664
+#>  ENSEMBLE 105.85928
+#>    SNAIVE 290.82444
 #> 
 #> Forecast horizon:
-#>   From: 2026-02-28 
-#>   To:   2026-04-25 
+#>   From: 2026-03-07 
+#>   To:   2026-05-02 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -175,16 +175,16 @@ fcast$score
 #> Key: <model_id>
 #>    model_id       wis interval_coverage_50 interval_coverage_95
 #>      <char>     <num>                <num>                <num>
-#> 1:    THETA  39.34596                 1.00                    1
-#> 2:      ETS  77.55883                 0.25                    1
-#> 3: ENSEMBLE  94.74694                 0.25                    1
-#> 4:   SNAIVE 245.41487                 0.00                    1
+#> 1:    THETA  52.41830                 0.25                    1
+#> 2:      ETS  70.90664                 0.00                    1
+#> 3: ENSEMBLE 105.85928                 0.00                    1
+#> 4:   SNAIVE 290.82444                 0.00                    1
 #>    wis_relative_skill
 #>                 <num>
-#> 1:          0.4286973
-#> 2:          0.8450490
-#> 3:          1.0323235
-#> 4:          2.6739391
+#> 1:          0.5068163
+#> 2:          0.6855742
+#> 3:          1.0235204
+#> 4:          2.8118909
 ```
 
 ### Adding custom models
@@ -218,8 +218,8 @@ You can check how long each step took by calling
 pipetime::get_log()
 #> $log
 #>             timestamp       label duration unit
-#> 1 2026-04-07 18:45:06  base fcast 18.03962 secs
-#> 2 2026-04-07 18:45:28 extra fcast 23.81729 secs
+#> 1 2026-04-17 14:33:35  base fcast 15.17291 secs
+#> 2 2026-04-17 14:33:53 extra fcast 21.63227 secs
 ```
 
 ## Submit to RespiLens
