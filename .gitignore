@@ -13,3 +13,8 @@ docs
 .Ruserdata
 
 **/*.quarto_ipynb
+
+# local test scratch
+draft.R
+respilens.json
+

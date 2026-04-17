@@ -34,6 +34,7 @@ Suggests:
     devtools,
     pipetime,
     fable.prophet,
+    reticulate,
     testthat (>= 3.0.0)
 Remotes:
     hubverse-org/hubEvals
