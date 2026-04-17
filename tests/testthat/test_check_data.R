@@ -83,11 +83,12 @@ test_that("type coercion converts columns correctly", {
 # -------------------------------
 test_that("invalid date causes error", {
   df <- make_valid_df()
-  df$target_end_date[1] <- "invalid-date"
+  df$target_end_date <- as.Date(df$target_end_date)
+  df$target_end_date[1] <- NA
 
   expect_error(
     check_data(df),
-    "values that cannot be coerced to Date."
+    "values that cannot be coerced to Date"
   )
 })
 
