@@ -44,13 +44,8 @@ First, there needs to be a clearly defined project to get started. Here are a se
     - For example, seasonal influenza forecasting typically involves predictions 1 to 4 weeks into the future. Forecasts provide a range of possible trajectories for that time period. Predicting a specific number, such as the number of total hospitalizations during that time period would require a different approach and models.
 
 
-Answer prior to proceeding:
+**Before proceeding, have you defined your forecasting project and approach?**
 
-**Have you defined your forecasting project and approach?**
-
-    - YES → Proceed to next steps
-
-    - NO  → Continue defining the approach
 
 
 ## Step 2: Define Your Data
