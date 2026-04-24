@@ -1,6 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![R-CMD-check](https://github.com/ACCIDDA/acciddasuite/actions/workflows/r.yml/badge.svg)](https://github.com/ACCIDDA/acciddasuite/actions/workflows/r.yml)
+[![codecov](https://codecov.io/gh/ACCIDDA/acciddasuite/graph/badge.svg?token=ZB8FVLI7GN)](https://app.codecov.io/gh/ACCIDDA/acciddasuite)
+[![status](https://tinyverse.netlify.app/badge/acciddasuite)](https://CRAN.R-project.org/package=acciddasuite)
+
+<!-- badges: end -->
+
 # acciddasuite <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
 
 <!-- badges: start -->
@@ -48,6 +54,20 @@ fcast <- example_data |>
   )
 #> ℹ Using max_delay = 12 from data
 #> ℹ Truncating from max_delay = 12 to 4.
+#> Warning: 1 error encountered for ARIMA
+#> [1]
+#> ℹ Some rows containing NA values may be removed. This is fine if not
+#> unexpected.
+#> ℹ Some rows containing NA values may be removed. This is fine if not
+#> unexpected.
+#> Warning: 1 error encountered for ARIMA
+#> [1] 
+#> 
+#> 1 error encountered for ARIMA
+#> [1] 
+#> 
+#> 1 error encountered for ARIMA
+#> [1]
 ```
 
 ``` r
