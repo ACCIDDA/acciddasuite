@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-Disease forecasting is an important tool for public health, however, to maximize the utility of these tools, thoughtful planning is required to clearly define the approach to the problem needing to be addressed. While the *ACCIDDA Forecast Suite* provides a comprehensive toolkit for building infectious disease forecasting pipelines and hubs, discussions and planning prior to starting your forecasting project is important. We provide a series of questions to consider addressing below prior to using this package. This package and suite are still under active development, and we welcome contributions and feedback from the community.
+Disease forecasting is an invaluable tool for the field public health, however, clearly defining the parameters of the problems you want to solve is often more difficult than the forecasting itself. The *acciddasuite* pakcage provides a comprehensive toolkit for generating forecasts with the expectation that users already have a concrete idea of what they would like to forecast. In this vignette, we provide a series of questions to aid forecasters in the discovery of the "why", "what", "where" and "how" for their question. This package and its documentation is still actively under development, and we welcome [contributions and feedback](https://github.com/ACCIDDA/acciddasuite/issues/new) from the community.
 
 
 ## Step 1: Why are we interested in forecasting?
@@ -154,6 +154,13 @@ In this step, we provide a decision tree approach to assist with directing you t
   border-radius: 0.75rem;
   background: #eef6ff;
   color: #28435c;
+}
+
+.planning-flowchart .nodeLabel,
+.planning-flowchart .nodeLabel p,
+.planning-flowchart .label text,
+.planning-flowchart foreignObject div {
+  text-align: center !important;
 }
 </style>
 
