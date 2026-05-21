@@ -102,158 +102,193 @@ Answer prior to proceeding:
 ## Step 3: Data Availability & Limitations
 In this step, we provide a decision tree approach to assist with directing you toward a forecasting approach using available data and considering the data limitations. 
 
-### Forecasting planning decision tree:
+<style>
+.planning-flowchart {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #d9e3ec;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fbfdff 0%, #f4f8fb 100%);
+  box-shadow: 0 10px 30px rgba(22, 40, 59, 0.06);
+}
 
-```{r, echo=FALSE, include=FALSE}
-#| fig.cap: "Forecasting Planning Decision Tree"
-#| fig.width: 14
-#| fig.height: 12
-#| out.width: "100%"
-#| out.height: "100%"
-#| fig.align: "center"
+.planning-lead {
+  margin: 0 0 1rem 0;
+  font-size: 1.05rem;
+  color: #35516b;
+}
 
-DiagrammeR::mermaid("
-graph TB
+.planning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 1.75rem 0;
+}
 
-    A[Use state-level forecasts for a pathogen?] --> B{Yes}
-    A --> C{No}
+.planning-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid #d9e3ec;
+  border-radius: 1rem;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(22, 40, 59, 0.05);
+}
 
-    %% --- STATE FORECAST PATH ---
-    B --> D[Review available state-level forecasting hubs]
-    D --> F[Did you find the forecast information you need?]
+.planning-card h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #17324d;
+}
 
-    F --> I{Yes}
-    F --> J{No}
+.planning-card p:last-child,
+.planning-card ul:last-child {
+  margin-bottom: 0;
+}
 
-    I --> END1[Done]
-    J --> CONT1[Continue data collection]
+.planning-card ul {
+  padding-left: 1.1rem;
+}
 
-    %% --- DATA AVAILABILITY PATH ---
-    C --> E[Is data available at the needed scale and resolution?]
-    E --> G{Yes}
-    E --> H{No}
+.planning-note {
+  padding: 0.9rem 1rem;
+  border-left: 4px solid #0d6efd;
+  border-radius: 0.75rem;
+  background: #eef6ff;
+  color: #28435c;
+}
+</style>
 
-    G --> K[Is historical data available?]
-    H --> L[Does the data exist but hard to access?]
+### Forecasting planning decision tree
 
-    %% --- HISTORICAL DATA ---
-    K --> Y1{Yes}
-    K --> N1{No}
+<div class="planning-note">
+Use the overview below to decide whether an existing forecast already meets your needs or whether you should prepare local data for forecasting.
+</div>
 
-    Y1 --> STEP1[Collect and store available data]
-    N1 --> RESTART1[Return to Step 1 and reassess]
-
-    %% --- ACCESSIBILITY ---
-    L --> Y2{Yes}
-    L --> N2{No}
-
-    Y2 --> STEP2[Collect any accessible data]
-    N2 --> RESTART2[Return to Step 1 and reassess]
-
-    STEP1 --> CONSIST
-    STEP2 --> CONSIST
-
-    %% --- CONSISTENCY ---
-    CONSIST[Are data reported consistently?] --> CY{Yes}
-    CONSIST --> CN{No}
-
-    CN --> FIX[Identify reporting patterns and inconsistencies]
-    FIX --> CONSIST
-
-    %% --- PIPELINE SETUP ---
-    CY --> TIMELINE[Define a reporting timeline]
-    TIMELINE --> PIPE
-
-    PIPE[Download the full dataset regularly--not just current data] --> DELAY
-    DELAY[Are there reporting delays or missing data?] --> DY{Yes}
-    DELAY --> DN{No}
-
-    DY --> NOWCAST[Plan for nowcasting]
-    DN --> READY[Proceed to data formatting for forecasting]
-")
-```
 **Figure 1. Initial forecast selection** describes the important initial questions needed to use existing forecasting resources or prepare to collect data for conducting your forecast. 
+
+<div class="planning-flowchart">
 
 ```{r, echo=FALSE}
 #| fig.width: 18
-#| fig.height: 12
+#| fig.height: 8
 #| out.width: "100%"
-#| out.height: "100%"
 #| fig.align: "center"
 
 DiagrammeR::mermaid("
 graph TB
 
-    A[Use state-level forecasts for a pathogen?] --> B{Yes}
-    A --> C{No}
+    A[Start here:<br/>Do you need a forecast?] --> B{Use an existing<br/>state-level forecast?}
 
-    %% --- STATE-LEVEL FORECAST PATH ---
-    B --> D[Review available state-level forecasting hubs below]
-    D --> F[Did you find the forecast information you need?]
+    B -->|Yes| D[Review state-level<br/>forecasting hubs]
+    B -->|No| E{Are data available for your<br/>target, scale, and timing?}
 
-    F --> I{Yes}
-    F --> J{No}
+    D --> F{Does an existing forecast<br/>meet your needs?}
+    F -->|Yes| I[Use the existing forecast]
+    F -->|No| J[Continue to local<br/>data planning]
 
-    I --> END1[Done]
-    J --> CONT1[Continue data collection]
+    E -->|Yes| G{Historical data available?}
+    E -->|No| H{Data exist but are<br/>hard to access?}
 
-    %% --- DATA AVAILABILITY HANDOFF ---
-    C --> E[Is data available for the target, spatial scale, and time resolution?]
-    E --> G{Yes}
-    E --> H{No}
+    G -->|Yes| K[Move to Figure 2:<br/>Data collection workflow]
+    H -->|Yes| K
+    G -->|No| L[Return to Step 1<br/>and re-evaluate]
+    H -->|No| L
 
-    G --> K[Is historical data available?]
-    H --> L[Does the data exist but is hard to access?]
+    J --> K
 
-    K --> Y1{Yes}
-    K --> N1{No}
-
-    L --> Y2{Yes}
-    L --> N2{No}
-
-    Y1 --> HANDOFF[Go to Figure 2: Data collection and reporting workflow]
-    Y2 --> HANDOFF
-
-    N1 --> RESTART1[Return to Step 1 and re-evaluate]
-    N2 --> RESTART2[Return to Step 1 and re-evaluate]
+    classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;
+    classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;
+    classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;
+    classDef caution fill:#fff0f0,stroke:#c45b5b,color:#6b1f1f,stroke-width:2px;
+    class A,B,E,F,G,H question;
+    class D,J,K action;
+    class I outcome;
+    class L caution;
 ")
 ```
 
+ </div>
+
+<div class="planning-grid">
+  <div class="planning-card">
+    <h4>Path 1: Reuse an existing forecast</h4>
+    <p>Choose this route when a public forecasting hub already covers your pathogen and geography.</p>
+    <ul>
+      <li>Review existing state-level forecast hubs.</li>
+      <li>Check whether the forecast answers your actual planning question.</li>
+      <li>If it does, you can move directly into interpretation and use.</li>
+    </ul>
+  </div>
+  <div class="planning-card">
+    <h4>Path 2: Build a local workflow</h4>
+    <p>Choose this route when you need a custom target, geography, or reporting cadence.</p>
+    <ul>
+      <li>Confirm that data exist for the target, spatial scale, and time resolution you need.</li>
+      <li>Check whether historical data are available or whether access is the main barrier.</li>
+      <li>If data are not available, pause and re-evaluate the project design before modeling.</li>
+    </ul>
+  </div>
+</div>
 
 **Figure 2. Data collection and reporting workflow** describes the process and necessary steps to collect and organize the required data to conduct a forecast.  
 
+<div class="planning-lead">
+After you decide to build a local forecast, the next question is whether your data stream is stable enough to support a repeatable workflow.
+</div>
+
+<div class="planning-flowchart">
+
 ```{r, echo=FALSE}
 #| fig.width: 16
-#| fig.height: 12
+#| fig.height: 8
 #| out.width: "100%"
-#| out.height: "100%"
 #| fig.align: "center"
 
 DiagrammeR::mermaid("
 graph TB
 
-    START[From Figure 1: Initial forecast selection] --> STEP1[Collect and store available data]
+    START[From Figure 1:<br/>Begin local data workflow] --> STEP1[Collect and store<br/>available data]
 
-    STEP1 --> CONSIST[Are data reported consistently, such as on the same day each week?]
+    STEP1 --> CONSIST{Are data reported consistently,<br/>such as on the same day each week?}
 
-    CONSIST --> CY{Yes}
-    CONSIST --> CN{No}
-
-    CN --> FIX[Identify reporting patterns and inconsistencies]
+    CONSIST -->|No| FIX[Identify reporting patterns<br/>and inconsistencies]
     FIX --> CONSIST
 
-    CY --> TIMELINE[Define a reporting timeline consistent with the data frequency]
-    TIMELINE --> PIPE[Download the full dataset regularly, not only the current period]
+    CONSIST -->|Yes| TIMELINE[Define a reporting timeline<br/>that matches the data frequency]
+    TIMELINE --> PIPE[Download the full dataset regularly,<br/>not only the current period]
 
-    PIPE --> DELAY[Are there reporting delays or completeness issues?]
-    DELAY --> DY{Yes}
-    DELAY --> DN{No}
+    PIPE --> DELAY{Are there reporting delays<br/>or completeness issues?}
+    DELAY -->|Yes| NOWCAST[Plan for nowcasting]
+    DELAY -->|No| READY[Proceed to data formatting<br/>for forecasting]
 
-    DY --> NOWCAST[Plan for nowcasting]
-    DN --> READY[Proceed to data formatting for forecasting]
+    classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;
+    classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;
+    classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;
+    class START,STEP1,FIX,TIMELINE,PIPE action;
+    class CONSIST,DELAY question;
+    class NOWCAST,READY outcome;
 ")
 ```
 
+ </div>
+
+<div class="planning-grid">
+  <div class="planning-card">
+    <h4>What to document</h4>
+    <ul>
+      <li>How often the source updates.</li>
+      <li>Whether old records are revised after first publication.</li>
+      <li>Which files or endpoints provide full historical backfill.</li>
+    </ul>
+  </div>
+  <div class="planning-card">
+    <h4>Common warning signs</h4>
+    <ul>
+      <li>Reports arrive on different days from week to week.</li>
+      <li>Only the most recent period is available for download.</li>
+      <li>Recent observations are incomplete and need later revision.</li>
+    </ul>
+  </div>
+</div>
 
 ## National and State Level Forecasting Hubs:
 FluSight [guide](https://happygitwithr.com/https-pat) 
@@ -270,4 +305,3 @@ A full list of real-time collaborative public health hubs can be found [here](ht
 
 
 For more information, see the documentation and help pages.
-
