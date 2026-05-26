@@ -173,32 +173,30 @@ In our context, forecasts are mathematical predictions of a few weeks ahead give
 DiagrammeR::mermaid("
 graph TB
 
-    A[You are here:<br/>Finding your ground truth data] --> B{Are you forecasting respiratory illness at a national, state, <br/>or county/metro area resolution?}
+    A[You are here!] --> B{Are you forecasting<br/>respiratory illness at a<br/>national, state, or<br/>county/metro area resolution?}
 
     B -->|Yes| D[Review the main<br/>forecasting hubs]
-    B -->|No| E{Do you have a ground truth data stream that matches your forecasting question?}
+    B -->|No| E{Do you have a ground truth<br/>data stream that matches<br/>your forecasting question?}
 
-    D --> F{Does an existing forecast hub meet your forecasting needs?}
-    F -->|Yes| I[Use those forecasts! (you need not create your own)]
-    F -->|No| J[Continue with forecast planning!]
+    D --> F{Does an existing forecast hub<br/>meet your forecasting needs?}
+    F -->|Yes| I[Use those forecasts!<br/>You do not need to<br/>create your own.]
+    F -->|No| K
 
-    E -->|Yes| G{Is there enough data to generate forecasts off of?}
-    E -->|No| H{Does the data exist, but you just don't have access to it?}
+    E -->|Yes| G{Is there enough data to<br/>generate forecasts?}
+    E -->|No| H{Does the data exist,<br/>but you just don't<br/>have access to it?}
 
-    G -->|Yes| K[Move to Figure 2:<br/>Data collection workflow]
+    G -->|Yes| K[Proceed to Figure 2:<br/>Data collection workflow]
     H -->|Yes| K
-    G -->|No| L[Return to Step 1<br/>and re-evaluate your forecasting question.]
+    G -->|No| L[Return to Step 1<br/>and re-evaluate your<br/>forecasting question]
     H -->|No| L
-
-    J --> K
 
     classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;
     classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;
     classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;
     classDef caution fill:#fff0f0,stroke:#c45b5b,color:#6b1f1f,stroke-width:2px;
     class A,B,E,F,G,H question;
-    class D,J,K action;
-    class I outcome;
+    class D,I action;
+    class K outcome;
     class L caution;
 ")
 ```
