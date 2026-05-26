@@ -27,80 +27,76 @@ First, there needs to be a clearly defined project to get started. Here are a se
 
 1. What is the question that you are attempting to answer? Or what insights do you hope to gain?
 
-    - Determine what it is you are trying to gain from the forecasting project. Being specific here will be useful in determining your approach.
+    - Determine what you are trying to gain from the forecasting project. Specificity at this stage makes future stages easier!
 
 
-2. Who is the audience or who will benefit from the insights?
+2. Who is the audience, or, who will benefit from the insights?
 
-    - Documenting who will use the forecasts and how will assist in the interpretation of the forecasting output.
+    - Determine who will use the forecasts, and who the interpretation of them will benefit. 
 
 
-3. How far into the future are you interested in forecasting? 
-      How far into the future do these insights need to be to be useful?
-          What aspects of a forecast need to be accurate?
+3. How far into the future are you interested in forecasting? How far into the future do these insights need to be to be useful?
 
-    - Clearly defining what you think is going to be useful information will determine how to approach the problems and if forecasting is the best tool.
+    - <7 days? 1-4 weeks? Full seasonal projections*?
+        - *full seasonsal projections are known as "scenarios" and are different from forecasts. 
+    - The time frame associated with your question determines whether or not forecasting is the best tool. Read more in Step 2...
     
-    - For example, seasonal influenza forecasting typically involves predictions 1 to 4 weeks into the future. Forecasts provide a range of possible trajectories for that time period. Predicting a specific number, such as the number of total hospitalizations during that time period would require a different approach and models.
-
-
-Answer prior to proceeding:
-
-**Have you defined your forecasting project and approach?**
-
-    - YES → Proceed to next steps
-
-    - NO  → Continue defining the approach
-
-
-## Step 2: Define Your Data
-Next, defining what pathogen, the target (time series data), the geographical area, and the time resolution in order to know what data is required for the forecasting project.
-
-1. What *pathogen(s)* are you interested in?
-
-While straight-forward and possibly answered in the step above, ensuring you are clear on which pathogen (e.g., influenza, COVID-19, RSV, etc) is being forecasted is important.
-
-2. What outcomes do you measure for this pathogen?
-
-3. Which of these outcomes is most relevant to the questions, insights, and your audience? 
-
-4. These outcomes are also referred to as the *target*. More importantly, how timely is this target reported?
-
-    - Is the timing of the target adequate enough for updating forecasts and evaluation? 
-
-Determining what is specifically being forecasted will important in the data collection steps. 
-
-Some examples of forecasting targets:
-
-    - Reported cases of influenza
-    - COVID-19 Hospitalizations
-    - Respiratory disease deaths
-    - Emergency Department (ED) visits related to respiratory disease-like illnesses
+<div class="planning-note">
+STOP! Have you defined your forecasting problem using the questions above?
   
-5. What *spatial unit* will provide the best insight? Are these data available at that scale? 
+  - YES → Proceed to next step
+  - NO → Continue defining the approach
+</div>
+    
+    
+## Step 2: Forecast vs. scenario?
+Determine if your central question is strictly a forecast, or if it is more aligned with a scenario projection.
 
-This may include, but are not limited to:
-
-    - State, county, city, health jurisdiction, hospital system, or even facility (e.g., hospital)
+* Forecasts
+    * Forecasts are concerned with what will happen in the future under current conditions/regardless of what interventions take place. From this, we can determine actionables or deploy resources, but our starting point is based off of "real life" and not an assumption (i.e., an unconditional projection).
+    * e.g., I want advanced notice on the influenza hospitalization burden in the coming weeks. 
+    
+* Scenarios
+  * Scenarios are concerned with what will happen if we take action *X*? Or, how will the future differe if *X* happens instead of *Y*? Often, with scenarios, you are comparing different outcomes on the basis of different assumptions (i.e., a conditional projection).  
+  * e.g., I want to know what the predicted burden will be if 50% of the population is vaccinated against flu vs. only 30%.
   
-6. What *time resolution* is adaquate and available to provide the required information for the audience? 
+If you want to produce projections of the future more than a few weeks at a time, your question is likely better suited for a scenario projection rather than a forecast (forecasts give us a look 1-4 weeks ahead of any given start date, scenarios show us entire seasons at a time). For more information on scenario projections, visit the [Scenario Modeling Hub](https://scenariomodelinghub.org/).
 
-Planning the time steps is important for determining if your data is consistently and readily available for that resolution. Also, this will assist in thinking about the reporting delays or lag time for each of these time steps. 
-
-Some typical forecasting time steps include days, weeks, or even months. 
-
-
-Answer prior to proceeding:
-
-**Have you defined your pathogen, target, spatial unit, and time resolution?**
-
-    - YES → Proceed to next steps
-
-    - NO  → Continue defining these data elements
+<div class="planning-note">
+STOP! Have you confirmed that your question is best answered with a forecast?
+  
+  - YES → Proceed to next step
+  - NO → Consider checking out scenario projections instead!
+</div>
 
 
-## Step 3: Data Availability & Limitations
-In this step, we provide a decision tree approach to assist with directing you toward a forecasting approach using available data and considering the data limitations. 
+## Step 3: Define Your Data
+Next, define what **pathogen**, **target** (data stream), and **spatial unit** are involved in forecasting project.
+
+1. What **pathogen** are you interested in forecasting?
+
+    - e.g., influenza, COVID-19, RSV, etc.
+
+2. What data stream are you interested in forecasting (also known as your **target**)? 
+
+    - Examples of common forecasting targets are "incidence of hospitalization" (of patients with a certain hospitalization), "percent of emergency department visits" (attributable to a certain pathogen), "deaths" (due to a certain pathogen), "hospital bed occupancy" (by patients with a certain pathogen). All of these targets are measures of disease burden that give public health professionals an idea of how much disease a population bears at a given time. The most common forecasting target for respiratory illnesses is "incidence of hospitalization", which makes it the easiest to find data on. Presently, *acciddasuite* only forecasts targets "incidence of hospitalization" and "death". 
+  
+3. What **spatial unit** will provide the best insight? Is there data available at that scale? 
+
+    - e.g., national, state, county, city, health jurisdiction, hospital system, or even facility (e.g., hospital). The more granular the spatial unit, the more difficult it is to find data, so there is often a trade-off between data specificity and availability. 
+    
+Note that you can forecast multiple locations (e.g., multiple states or health jurisdictions) at once, but if you want forecast multiple pathogens or targets, it is best to separate those into their own distinct forecasts.
+
+<div class="planning-note">
+STOP! Have you defined your pathogen, target, and spatial unit?
+  
+  - YES → Proceed to next step
+  - NO → Continue defining these data elements
+</div>
+
+
+## Step 4: Data Availability & Limitations
+In our context, forecasts are mathematical predictions of a few weeks ahead given a starting point of "ground truth" data (i.e, information on what has already happened). Because of this, you need to provide forecasting models with ground truth data that matches the resolution of your forecasting question (i.e., same pathogen, same target, same locations). Data availability is often a limiting factor when considering a forecasting question. In this step, we provide a decision tree approach to determine if you can forecast with ground truth data that already exists, if you need to provide specialized data to complete your forecast, or if there is already forecasting infrastructure that answers your forecasting question.
 
 <style>
 .planning-flowchart {
@@ -164,13 +160,7 @@ In this step, we provide a decision tree approach to assist with directing you t
 }
 </style>
 
-### Forecasting planning decision tree
-
-<div class="planning-note">
-Use the overview below to decide whether an existing forecast already meets your needs or whether you should prepare local data for forecasting.
-</div>
-
-**Figure 1. Initial forecast selection** describes the important initial questions needed to use existing forecasting resources or prepare to collect data for conducting your forecast. 
+### Data availability decision tree
 
 <div class="planning-flowchart">
 
@@ -183,21 +173,21 @@ Use the overview below to decide whether an existing forecast already meets your
 DiagrammeR::mermaid("
 graph TB
 
-    A[Start here:<br/>Do you need a forecast?] --> B{Use an existing<br/>state-level forecast?}
+    A[You are here:<br/>Finding your ground truth data] --> B{Are you forecasting respiratory illness at a national, state, <br/>or county/metro area resolution?}
 
-    B -->|Yes| D[Review state-level<br/>forecasting hubs]
-    B -->|No| E{Are data available for your<br/>target, scale, and timing?}
+    B -->|Yes| D[Review the main<br/>forecasting hubs]
+    B -->|No| E{Do you have a ground truth data stream that matches your forecasting question?}
 
-    D --> F{Does an existing forecast<br/>meet your needs?}
-    F -->|Yes| I[Use the existing forecast]
-    F -->|No| J[Continue to local<br/>data planning]
+    D --> F{Does an existing forecast hub meet your forecasting needs?}
+    F -->|Yes| I[Use those forecasts! (you need not create your own)]
+    F -->|No| J[Continue with forecast planning!]
 
-    E -->|Yes| G{Historical data available?}
-    E -->|No| H{Data exist but are<br/>hard to access?}
+    E -->|Yes| G{Is there enough data to generate forecasts off of?}
+    E -->|No| H{Does the data exist, but you just don't have access to it?}
 
     G -->|Yes| K[Move to Figure 2:<br/>Data collection workflow]
     H -->|Yes| K
-    G -->|No| L[Return to Step 1<br/>and re-evaluate]
+    G -->|No| L[Return to Step 1<br/>and re-evaluate your forecasting question.]
     H -->|No| L
 
     J --> K
