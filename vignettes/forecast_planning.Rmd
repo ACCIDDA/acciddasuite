@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-Disease forecasting is an invaluable tool for the field public health, however, clearly defining the parameters of the problems you want to solve is often more difficult than the forecasting itself. The *acciddasuite* pakcage provides a comprehensive toolkit for generating forecasts with the expectation that users already have a concrete idea of what they would like to forecast. In this vignette, we provide a series of questions to aid forecasters in the discovery of the "why", "what", "where" and "how" for their question. This package and its documentation is still actively under development, and we welcome [contributions and feedback](https://github.com/ACCIDDA/acciddasuite/issues/new) from the community.
+Disease forecasting is an invaluable tool for the field public health, however, clearly defining the parameters of the problems you want to solve is often more difficult than the forecasting itself. The `acciddasuite` pakcage provides a comprehensive toolkit for generating forecasts with the expectation that users already have a concrete idea of what they would like to forecast. In this vignette, we provide a series of questions to aid forecasters in the discovery of the "why", "what", "where" and "how" for their question. This package and its documentation is still actively under development, and we welcome [contributions and feedback](https://github.com/ACCIDDA/acciddasuite/issues/new) from the community.
 
 
 ## Step 1: Why are we interested in forecasting?
@@ -79,7 +79,7 @@ Next, define what **pathogen**, **target** (data stream), and **spatial unit** a
 
 2. What data stream are you interested in forecasting (also known as your **target**)? 
 
-    - Examples of common forecasting targets are "incidence of hospitalization" (of patients with a certain hospitalization), "percent of emergency department visits" (attributable to a certain pathogen), "deaths" (due to a certain pathogen), "hospital bed occupancy" (by patients with a certain pathogen). All of these targets are measures of disease burden that give public health professionals an idea of how much disease a population bears at a given time. The most common forecasting target for respiratory illnesses is "incidence of hospitalization", which makes it the easiest to find data on. Presently, *acciddasuite* only forecasts targets "incidence of hospitalization" and "death". 
+    - Examples of common forecasting targets are "incidence of hospitalization" (of patients with a certain hospitalization), "percent of emergency department visits" (attributable to a certain pathogen), "deaths" (due to a certain pathogen), "hospital bed occupancy" (by patients with a certain pathogen). All of these targets are measures of disease burden that give public health professionals an idea of how much disease a population bears at a given time. The most common forecasting target for respiratory illnesses is "incidence of hospitalization", which makes it the easiest to find data on. Presently, `acciddasuite` only forecasts targets "incidence of hospitalization" and "death". 
   
 3. What **spatial unit** will provide the best insight? Is there data available at that scale? 
 
@@ -97,6 +97,16 @@ STOP! Have you defined your pathogen, target, and spatial unit?
 
 ## Step 4: Data Availability & Limitations
 In our context, forecasts are mathematical predictions of a few weeks ahead given a starting point of "ground truth" data (i.e, information on what has already happened). Because of this, you need to provide forecasting models with ground truth data that matches the resolution of your forecasting question (i.e., same pathogen, same target, same locations). Data availability is often a limiting factor when considering a forecasting question. In this step, we provide a decision tree approach to determine if you can forecast with ground truth data that already exists, if you need to provide specialized data to complete your forecast, or if there is already forecasting infrastructure that answers your forecasting question.
+
+An easy way to find either ground truth data or forecasts is via a *forecast hub*. Forecasting hubs (organized by the [hubverse](https://hubverse.io/)) are standardized repositories for disease forecasts and ground truth data where all data follows structured guidelines. Ground truth data found in forecasting hubs is forecast-ready, and in fact, the forecasts themselves may answer your forecasting question(s) without any further action from you. For example, if you are forecasting RSV, COVID-19, or influenza at a U.S. national or state level*, your forecasting question is likely already answered by a forecasting hub:
+
+
+  - RSV: [GitHub repository](https://github.com/CDCgov/rsv-forecast-hub) | [RespiLens visualization](https://www.respilens.com/?view=rsv_forecasts)
+  - COVID-19: [GitHub repository](https://github.com/CDCgov/covid19-forecast-hub) | [RespiLens visualization](https://www.respilens.com/?view=covid_forecasts)
+  - Influenza: [GitHub repository](https://github.com/cdcepi/FluSight-forecast-hub) | [RespiLens visualization](https://www.respilens.com/?view=flu_forecasts)
+    - *There is also a hub for sub-state level influenza forecasts ([GitHub repository](https://github.com/reichlab/flu-metrocast) | [RespiLens visualization](https://www.respilens.com/?view=metrocast_forecasts))
+    
+For a complete list of hubverse forecast hubs, [see here](https://hubverse.io/community/hubs.html).
 
 <style>
 .planning-flowchart {
@@ -160,7 +170,7 @@ In our context, forecasts are mathematical predictions of a few weeks ahead give
 }
 </style>
 
-### Data availability decision tree
+### Finding your data
 
 <div class="planning-flowchart">
 
@@ -185,7 +195,7 @@ graph TB
     E -->|Yes| G{Is there enough data to<br/>generate forecasts?}
     E -->|No| H{Does the data exist,<br/>but you just don't<br/>have access to it?}
 
-    G -->|Yes| K[Proceed to Figure 2:<br/>Data collection workflow]
+    G -->|Yes| K[Proceed to next step:<br/>confirming your data]
     H -->|Yes| K
     G -->|No| L[Return to Step 1<br/>and re-evaluate your<br/>forecasting question]
     H -->|No| L
@@ -203,32 +213,13 @@ graph TB
 
  </div>
 
-<div class="planning-grid">
-  <div class="planning-card">
-    <h4>Path 1: Reuse an existing forecast</h4>
-    <p>Choose this route when a public forecasting hub already covers your pathogen and geography.</p>
-    <ul>
-      <li>Review existing state-level forecast hubs.</li>
-      <li>Check whether the forecast answers your actual planning question.</li>
-      <li>If it does, you can move directly into interpretation and use.</li>
-    </ul>
-  </div>
-  <div class="planning-card">
-    <h4>Path 2: Build a local workflow</h4>
-    <p>Choose this route when you need a custom target, geography, or reporting cadence.</p>
-    <ul>
-      <li>Confirm that data exist for the target, spatial scale, and time resolution you need.</li>
-      <li>Check whether historical data are available or whether access is the main barrier.</li>
-      <li>If data are not available, pause and re-evaluate the project design before modeling.</li>
-    </ul>
-  </div>
-</div>
+After you decide to create your own forecasts and find a suitable ground truth data, you must confirm that your ground truth data stream is stable enough to support a repeatable workflow.
 
-**Figure 2. Data collection and reporting workflow** describes the process and necessary steps to collect and organize the required data to conduct a forecast.  
+If you are pulling ground truth data from a hubverse hub, this data is likely released on a weekly cadence and is mostly complete. You can find this data in the `target-data/` directory of the hub's GitHub repository. Alternatively, `acciddasuite` has a built-in function (**`get_data()`**) that will handle the collection + formatting of state level respiratory data. If you want to use another ground truth data source, you will first have to validate it with **`check_data()`**. Please see the [external data](external_data.html) article for information on external data source formatting. 
 
-<div class="planning-lead">
-After you decide to build a local forecast, the next question is whether your data stream is stable enough to support a repeatable workflow.
-</div>
+If there are reporting delays in your data stream, or inconsistencies that are often fixed later but you cannot wait on, use the **`get_ncast()`** function to correct recent weeks for reporting delays. 
+
+### Confirming your data
 
 <div class="planning-flowchart">
 
@@ -241,62 +232,30 @@ After you decide to build a local forecast, the next question is whether your da
 DiagrammeR::mermaid("
 graph TB
 
-    START[From Figure 1:<br/>Begin local data workflow] --> STEP1[Collect and store<br/>available data]
+    START[You are here!] --> CONSIST{Is the data reported<br/>consistently?<br/>For example, on a regular<br/>reporting cadence?}
 
-    STEP1 --> CONSIST{Are data reported consistently,<br/>such as on the same day each week?}
-
-    CONSIST -->|No| FIX[Identify reporting patterns<br/>and inconsistencies]
+    CONSIST -->|No| FIX[Identify inconsistencies in<br/>reporting patterns]
     FIX --> CONSIST
 
-    CONSIST -->|Yes| TIMELINE[Define a reporting timeline<br/>that matches the data frequency]
-    TIMELINE --> PIPE[Download the full dataset regularly,<br/>not only the current period]
+    CONSIST -->|Yes| TIMELINE[Define a reporting timeline<br/>that best matches the<br/>data frequency]
+    TIMELINE --> PIPE[Download the full dataset<br/>regularly, not only for<br/>the current period]
 
     PIPE --> DELAY{Are there reporting delays<br/>or completeness issues?}
     DELAY -->|Yes| NOWCAST[Plan for nowcasting]
-    DELAY -->|No| READY[Proceed to data formatting<br/>for forecasting]
+    DELAY -->|No| READY[Proceed to using the<br/>acciddasuite for forecasting]
+    NOWCAST --> READY
 
     classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;
     classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;
     classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;
-    class START,STEP1,FIX,TIMELINE,PIPE action;
-    class CONSIST,DELAY question;
-    class NOWCAST,READY outcome;
+    class START,CONSIST,DELAY question;
+    class STEP1,FIX,TIMELINE,PIPE,NOWCAST action;
+    class READY outcome;
 ")
 ```
 
  </div>
 
-<div class="planning-grid">
-  <div class="planning-card">
-    <h4>What to document</h4>
-    <ul>
-      <li>How often the source updates.</li>
-      <li>Whether old records are revised after first publication.</li>
-      <li>Which files or endpoints provide full historical backfill.</li>
-    </ul>
-  </div>
-  <div class="planning-card">
-    <h4>Common warning signs</h4>
-    <ul>
-      <li>Reports arrive on different days from week to week.</li>
-      <li>Only the most recent period is available for download.</li>
-      <li>Recent observations are incomplete and need later revision.</li>
-    </ul>
-  </div>
-</div>
-
-## National and State Level Forecasting Hubs:
-FluSight [guide](https://happygitwithr.com/https-pat) 
-
-MetroCast [website](information.https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-
-A full list of real-time collaborative public health hubs can be found [here](https://hubverse.io/community/hubs.html#real-time-collaborative-public-health-hubs).
-
-
 ## Next steps:
 
-* For NHSN data, return to Get Started and use the get_data function to run forecasts 
-* To forecast local surveillance data, follow [these](external_data.html) steps for formatting.
-
-
-For more information, see the documentation and help pages.
+When you are ready to begin, visit the [**GET STARTED**](acciddasuite.html) page to use `acciddasuite` for your forecasting needs!
