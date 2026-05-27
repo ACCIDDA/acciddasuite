@@ -11,12 +11,12 @@ to validate and enter the pipeline.
 
 Your data frame must have these 4 columns:
 
-| Column            | Type      | Description                                             |
-|-------------------|-----------|---------------------------------------------------------|
-| `target_end_date` | Date      | The date for which an observation is recorded           |
-| `observation`     | numeric   | The observed value                                      |
-| `location`        | character | A single location identifier                            |
-| `target`          | character | A single target identifier (e.g., “inc hosp influenza”) |
+| Column | Type | Description |
+|----|----|----|
+| `target_end_date` | Date | The date for which an observation is recorded |
+| `observation` | numeric | The observed value |
+| `location` | character | A single location identifier |
+| `target` | character | A single target identifier (e.g., “inc hosp influenza”) |
 
 To enable **nowcasting** (correcting for reporting delays), add a 5th
 column:
@@ -32,6 +32,7 @@ once.
 ## Example
 
 ``` r
+
 library(acciddasuite)
 head(df)
 ```
@@ -45,6 +46,7 @@ head(df)
     ## 6      2024-02-05          11       NY inc hosp influenza
 
 ``` r
+
 checked <- check_data(df)
 checked
 ```
@@ -62,11 +64,13 @@ output tells you whether revision history is available. From here you
 can go directly to forecasting:
 
 ``` r
+
 get_fcast(checked, eval_start_date = "2024-11-01", h = 4)
 ```
 
 Or, if your data has revision history, nowcast first:
 
 ``` r
+
 checked |> get_ncast() |> get_fcast(eval_start_date = "2024-11-01", h = 4)
 ```

@@ -41,6 +41,7 @@ all past versions of the data), which is needed for nowcasting.
 returns a validated `accidda_data` object:
 
 ``` r
+
 library(acciddasuite)
 df <- get_data(pathogen = "covid", geo_value = "ny", revisions = TRUE)
 df
@@ -48,8 +49,8 @@ df
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-04-04 ( 296 dates )
-#> History:  TRUE ( 2024-11-17 to 2026-04-05 )
+#> Window:   2020-08-08 to 2026-05-16 ( 302 dates )
+#> History:  TRUE ( 2024-11-17 to 2026-05-17 )
 ```
 
 You can also **bring your own data**. Just pass it through
@@ -71,17 +72,19 @@ With the default `max_delay = 4`, the last 4 weeks are corrected;
 everything before that is left untouched.
 
 ``` r
+
 ncast <- get_ncast(df)
 ncast
 #> <accidda_ncast>
 #> 
-#> Nowcasted 4 weeks: 2026-03-14 to 2026-04-04 
+#> Nowcasted 4 weeks: 2026-04-25 to 2026-05-16 
 #> 
-#> $data  corrected series (296 rows)
+#> $data  corrected series (302 rows)
 #> $plot  nowcast visualisation
 ```
 
 ``` r
+
 ncast$plot
 ```
 
@@ -111,6 +114,7 @@ We set `eval_start_date` to mark the start of the evaluation window. At
 least 52 weeks of data must precede this date.
 
 ``` r
+
 eval_start_date <- max(ncast$data$target_end_date) - 28
 ```
 
@@ -133,6 +137,7 @@ We use
 to log how long the model selection and forecasting steps take.
 
 ``` r
+
 fcast <- get_fcast(
   ncast,
   eval_start_date = eval_start_date,
@@ -147,14 +152,14 @@ fcast
 #> Models evaluated:
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  52.41830
-#>       ETS  70.90664
-#>  ENSEMBLE 105.85928
-#>    SNAIVE 290.82444
+#>       ETS  18.56473
+#>     THETA  23.16149
+#>  ENSEMBLE  59.34012
+#>    SNAIVE 271.61039
 #> 
 #> Forecast horizon:
-#>   From: 2026-03-07 
-#>   To:   2026-05-02 
+#>   From: 2026-04-18 
+#>   To:   2026-06-13 
 #> 
 #> Contents:
 #>   $hubcast   hub forecast object
@@ -163,6 +168,7 @@ fcast
 ```
 
 ``` r
+
 fcast$plot
 ```
 
@@ -171,20 +177,21 @@ fcast$plot
 View forecast evaluation by viewing the `score` element of the object:
 
 ``` r
+
 fcast$score
 #> Key: <model_id>
 #>    model_id       wis interval_coverage_50 interval_coverage_95
 #>      <char>     <num>                <num>                <num>
-#> 1:    THETA  52.41830                 0.25                    1
-#> 2:      ETS  70.90664                 0.00                    1
-#> 3: ENSEMBLE 105.85928                 0.00                    1
-#> 4:   SNAIVE 290.82444                 0.00                    1
+#> 1:      ETS  18.56473                 0.75                    1
+#> 2:    THETA  23.16149                 0.75                    1
+#> 3: ENSEMBLE  59.34012                 0.25                    1
+#> 4:   SNAIVE 271.61039                 0.00                    1
 #>    wis_relative_skill
 #>                 <num>
-#> 1:          0.5068163
-#> 2:          0.6855742
-#> 3:          1.0235204
-#> 4:          2.8118909
+#> 1:          0.3618271
+#> 2:          0.4514181
+#> 3:          1.1565409
+#> 4:          5.2936952
 ```
 
 ### Adding custom models
@@ -193,6 +200,7 @@ Any model compatible with the [`fable`](https://fable.tidyverts.org/)
 framework can be passed via `extra_models`:
 
 ``` r
+
 library(fable)
 library(fable.prophet)
 extra <- list(
@@ -215,11 +223,12 @@ You can check how long each step took by calling
 [`pipetime::get_log()`](https://rdrr.io/pkg/pipetime/man/get_log.html):
 
 ``` r
+
 pipetime::get_log()
 #> $log
 #>             timestamp       label duration unit
-#> 1 2026-04-17 14:33:35  base fcast 15.17291 secs
-#> 2 2026-04-17 14:33:53 extra fcast 21.63227 secs
+#> 1 2026-05-27 14:32:05  base fcast 17.26765 secs
+#> 2 2026-05-27 14:32:26 extra fcast 22.73278 secs
 ```
 
 ## Submit to RespiLens
@@ -231,5 +240,6 @@ to export the forecast as JSON for upload to
 [MyRespiLens](https://www.respilens.com/myrespilens).
 
 ``` r
+
 to_respilens(fcast, "respilens.json")
 ```

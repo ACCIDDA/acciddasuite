@@ -14,6 +14,7 @@ You can install the development version of acciddasuite from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("pak")
 #pak::pak("ACCIDDA/acciddasuite")
 ```
@@ -21,6 +22,7 @@ You can install the development version of acciddasuite from
 ## Example
 
 ``` r
+
 library(acciddasuite)
 head(example_data)
 #> # A tibble: 6 × 5
@@ -35,6 +37,7 @@ head(example_data)
 ```
 
 ``` r
+
 fcast <- example_data |>
   check_data() |> 
   get_ncast() |> 
@@ -47,6 +50,7 @@ fcast <- example_data |>
 ```
 
 ``` r
+
 fcast$plot
 ```
 
@@ -55,6 +59,7 @@ fcast$plot
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 
 ``` r
+
 to_respilens(fcast, path = "respilens.json")
 ```
 
