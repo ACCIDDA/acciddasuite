@@ -1,0 +1,90 @@
+.zoomable-diagram {
+  margin: 1.5rem 0;
+}
+
+.zoomable-diagram.is-ready {
+  border: 1px solid #d9e3ec;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fbfdff 0%, #f4f8fb 100%);
+  box-shadow: 0 10px 30px rgba(22, 40, 59, 0.06);
+  overflow: hidden;
+}
+
+.zoomable-diagram__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #d9e3ec;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.zoomable-diagram__hint {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #35516b;
+}
+
+.zoomable-diagram__controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.zoomable-diagram__controls button {
+  border: 1px solid #b7c6d5;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #17324d;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.zoomable-diagram__controls button:hover,
+.zoomable-diagram__controls button:focus {
+  background: #eef6ff;
+  border-color: #6ea8fe;
+}
+
+.zoomable-diagram__viewport {
+  overflow: auto;
+  max-height: 78vh;
+  padding: 1rem;
+}
+
+.zoomable-diagram__viewport .DiagrammeR,
+.zoomable-diagram__viewport .html-widget {
+  min-width: max-content;
+}
+
+.zoomable-diagram__viewport svg {
+  display: block;
+  transform-origin: top left;
+  transition: transform 120ms ease-out;
+  max-width: none;
+  height: auto;
+}
+
+.zoomable-diagram:fullscreen {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+}
+
+.zoomable-diagram:fullscreen .zoomable-diagram__viewport {
+  max-height: calc(100vh - 72px);
+  padding: 1.25rem;
+}
+
+@media (max-width: 700px) {
+  .zoomable-diagram__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
