@@ -13,3 +13,5 @@ docs
 .Ruserdata
 
 **/*.quarto_ipynb
+.vscode/
+*.html

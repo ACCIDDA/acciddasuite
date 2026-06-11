@@ -4,6 +4,13 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+```{=markdown}
+[![R-CMD-check](https://github.com/ACCIDDA/acciddasuite/actions/workflows/r.yml/badge.svg)](https://github.com/ACCIDDA/acciddasuite/actions/workflows/r.yml)
+[![codecov](https://codecov.io/gh/ACCIDDA/acciddasuite/graph/badge.svg?token=ZB8FVLI7GN)](https://app.codecov.io/gh/ACCIDDA/acciddasuite)
+[![status](https://tinyverse.netlify.app/badge/acciddasuite)](https://CRAN.R-project.org/package=acciddasuite)
+```
+<!-- badges: end -->
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,

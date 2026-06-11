@@ -10,7 +10,9 @@ on:
 
 name: pkgdown.yaml
 
-permissions: read-all
+permissions:
+  read-all:
+  pull-requests: write
 
 jobs:
   pkgdown:
@@ -39,6 +41,23 @@ jobs:
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
+
+      # Upload artifact for PR preview (only for pull requests)
+      - name: Upload PR artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkgdown-site
+          path: docs
+
+      # Post comment with link to artifact on PRs
+      - name: Post artifact link to PR
+        if: github.event_name == 'pull_request'
+        uses: CDCgov/cfa-actions/post-artifact@v1.2.0
+        with:
+          artifact-name: pkgdown-site
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Thank you for your contribution @${{ github.actor }} :rocket:! The pkgdown site preview is ready for review :point_right: [Download here]({ artifact-url }) :point_left:!'
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
