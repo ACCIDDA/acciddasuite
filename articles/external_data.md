@@ -56,21 +56,5 @@ checked
     ## Location: NY 
     ## Target:   inc hosp influenza 
     ## Window:   2024-01-01 to 2024-12-23 ( 52 dates )
+    ## Interval: 7 days
     ## History:  FALSE
-
-The
-[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
-output tells you whether revision history is available. From here you
-can go directly to forecasting:
-
-``` r
-
-get_fcast(checked, eval_start_date = "2024-11-01", h = 4)
-```
-
-Or, if your data has revision history, nowcast first:
-
-``` r
-
-checked |> get_ncast() |> get_fcast(eval_start_date = "2024-11-01", h = 4)
-```

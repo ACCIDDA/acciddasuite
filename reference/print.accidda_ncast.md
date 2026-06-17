@@ -1,6 +1,6 @@
-# Print an accidda_ncast object
+# Print an `accidda_ncast` object
 
-Displays a concise summary of an `accidda_ncast` object.
+Print an `accidda_ncast` object
 
 ## Usage
 
@@ -13,8 +13,8 @@ print(x, ...)
 
 - x:
 
-  An object of class `accidda_ncast`.
+  An `accidda_ncast` object.
 
 - ...:
 
-  Additional arguments (currently ignored).
+  Ignored.

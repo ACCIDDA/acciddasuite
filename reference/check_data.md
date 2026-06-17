@@ -1,63 +1,53 @@
-# Validate surveillance data for the acciddasuite pipeline
+# Validate surveillance data
 
-Checks that a data frame has the required columns and structure for use
-with
-[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
-and
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
-Returns a typed `accidda_data` object that downstream functions can
-accept without repeating validation.
+Validates a surveillance data frame and returns a typed `accidda_data`
+object that the rest of the pipeline accepts without re-validating.
 
 ## Usage
 
 ``` r
-check_data(df)
+check_data(data)
 ```
 
 ## Arguments
 
-- df:
+- data:
 
-  A data frame (or tibble) with at least: `target_end_date` (Date),
-  `observation` (numeric), `location` (character), and `target`
-  (character). An optional `as_of` (Date) column enables nowcasting via
-  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
+  A data frame with `target_end_date` (Date), `observation` (numeric),
+  `location` (character) and `target` (character). An optional `as_of`
+  (Date) column enables nowcasting
+  ([`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)).
+  An existing `accidda_data` is returned unchanged.
 
 ## Value
 
-An `accidda_data` object (a list) with:
+An `accidda_data` object:
 
 - data:
 
-  The validated data frame with coerced date types.
+  Validated data frame with coerced types.
 
-- location:
+- location, target:
 
-  Single location identifier.
-
-- target:
-
-  Single target identifier.
+  Single location / target identifier.
 
 - window:
 
-  Named vector with `from` and `to` dates.
+  Named `from` / `to` dates.
+
+- interval:
+
+  Reporting interval in days (7 = weekly).
 
 - history:
 
-  Logical. `TRUE` if revision history (`as_of`) is present.
+  `TRUE` if revision history (`as_of`) is present.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# From get_data
-df <- get_data("covid", "ny") |> check_data()
-
-# User-provided data
-my_df <- read.csv("my_data.csv") |> check_data()
-
-# Then into the pipeline
-df |> get_fcast(eval_start_date = "2025-01-01")
+x <- get_data("covid", "ny") |> check_data()
+my_x <- read.csv("my_data.csv") |> check_data()
 } # }
 ```

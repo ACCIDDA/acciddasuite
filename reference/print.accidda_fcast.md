@@ -1,7 +1,6 @@
-# Print an accidda_fcast object
+# Print an `accidda_fcast` object
 
-Displays a concise summary of an `accidda_fcast` object, including model
-scores, forecast horizon, and hub format contents.
+Print an `accidda_fcast` object
 
 ## Usage
 
@@ -14,8 +13,8 @@ print(x, ...)
 
 - x:
 
-  An object of class `accidda_fcast`.
+  An `accidda_fcast` object.
 
 - ...:
 
-  Additional arguments (currently ignored).
+  Ignored.

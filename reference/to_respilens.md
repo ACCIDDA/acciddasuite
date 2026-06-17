@@ -1,26 +1,24 @@
-# Convert accidda_fcast to RespiLens format
+# Convert a forecast to RespiLens format
 
-Convert accidda_fcast to RespiLens format
+Convert a forecast to RespiLens format
 
 ## Usage
 
 ``` r
-to_respilens(accidda_fcast, path = NULL)
+to_respilens(x, path = NULL)
 ```
 
 ## Arguments
 
-- accidda_fcast:
+- x:
 
-  An object of class `accidda_fcast`, the output of
-  [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+  An `accidda_fcast` from
+  [`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
 
 - path:
 
-  Optional file path to write the JSON output to. Must end with `.json`.
-  If `NULL`, the output is not written to disk.
+  Optional `.json` path to write to; if `NULL`, nothing is written.
 
 ## Value
 
-A named list with a single metadata JSON structure and one JSON
-structure per location.
+A named list (`metadata`, `ground_truth`, `forecasts`), invisibly.

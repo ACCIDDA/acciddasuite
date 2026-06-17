@@ -68,7 +68,7 @@
 </div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p><code>acciddasuite</code> provides a simple pipeline for infectious diseases forecasts. It validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
+<p><code>acciddasuite</code> provides a simple pipeline for infectious diseases forecasts. It validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), evaluates models by cross-validation (<code><a href="reference/get_cv.html">get_cv()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -94,19 +94,37 @@
 <span><span class="co">#&gt; 6 2024-12-22 NY       wk inc covid hosp 2020-08-08              517</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">&lt;-</span> <span class="va">example_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/check_data.html">check_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="reference/get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="reference/get_fcast.html">get_fcast</a></span><span class="op">(</span></span>
-<span>    eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">28</span>,</span>
-<span>    h <span class="op">=</span> <span class="fl">3</span> <span class="co"># forecast 3 weeks into the future</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ Using max_delay = 12 from data</span></span>
-<span><span class="co">#&gt; ℹ Truncating from max_delay = 12 to 4.</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fcast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" alt="" width="100%"></p>
+<span>  <span class="fu"><a href="reference/check_data.html">check_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">28</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/get_fcast.html">get_fcast</a></span><span class="op">(</span>top_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Using max_delay = 6 from data</span></span>
+<span><span class="co">#&gt; ℹ Truncating from max_delay = 6 to 2.</span></span>
+<span><span class="co">#&gt; [2026-06-17 19:07:08.646] get_cv: +0.7772 secs</span></span>
+<span><span class="co">#&gt; [2026-06-17 19:07:09.427] get_fcast: +2.2583 secs</span></span>
+<span></span>
+<span><span class="va">fcast</span></span>
+<span><span class="co">#&gt; &lt;accidda_fcast&gt;</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Models ranked (cross-validation):</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   model_id   wis</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 THETA     26.3</span></span>
+<span><span class="co">#&gt; 2 ARIMA     28.6</span></span>
+<span><span class="co">#&gt; 3 ETS       30.4</span></span>
+<span><span class="co">#&gt; 4 SNAIVE   256. </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Forecast horizon:</span></span>
+<span><span class="co">#&gt;   From: 2026-03-21 </span></span>
+<span><span class="co">#&gt;   To:   2026-04-11 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Contents:</span></span>
+<span><span class="co">#&gt;   $hub    hub forecast object (model_out_tbl, oracle_output)</span></span>
+<span><span class="co">#&gt;   $score  model ranking table, or NULL</span></span>
+<span><span class="co">#&gt;   $meta   models, top_n, h, location, target, interval, nowcast</span></span></code></pre></div>
 <p>Save to <a href="https://www.respilens.com/myrespilens" class="external-link">myRespiLens</a> format:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, path <span class="op">=</span> <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
