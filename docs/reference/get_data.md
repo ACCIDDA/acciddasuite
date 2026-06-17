@@ -1,7 +1,7 @@
-# Get hospitalisation data
+# Fetch hospitalisation data
 
-Fetch confirmed US hospital admissions from the NHSN source for
-COVID-19, influenza, or RSV using
+Fetch confirmed US hospital admissions (COVID-19, influenza or RSV) from
+NHSN via
 [pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html).
 
 ## Usage
@@ -14,38 +14,23 @@ get_data(pathogen, geo_value, revisions = FALSE)
 
 - pathogen:
 
-  Character. One of "covid", "flu" or "rsv".
+  One of "covid", "flu" or "rsv".
 
 - geo_value:
 
-  Character vector. Geographic value as per
-  [pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html)
-  to filter by.
+  Geographic value(s) to fetch, as per
+  [pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html).
 
 - revisions:
 
-  Logical. If `TRUE`, fetches all available revision history, producing
-  data ready for
+  Logical. If `TRUE`, fetch the full revision history needed by
   [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
-  Default is `FALSE` (latest version only).
+  Default `FALSE` (latest only).
 
 ## Value
 
 An `accidda_data` object (see
 [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)).
-
-## Details
-
-By default the latest version of each observation is returned. Set
-`revisions = TRUE` to retrieve all available revision history, which is
-needed by
-[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
-
-## See also
-
-[pub_covidcast](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html)
-
-https://docs.hubverse.io/en/stable/user-guide/target-data.html
 
 ## Examples
 
@@ -55,15 +40,17 @@ get_data(pathogen = "covid", geo_value = "ny")
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
+#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Interval: 7 days
 #> History:  FALSE
 
-# Fetch revision history for nowcasting
+# Revision history for nowcasting
 get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 #> <accidda_data>
 #> 
 #> Location: CA 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
-#> History:  TRUE ( 2024-11-17 to 2026-03-15 )
+#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Interval: 7 days
+#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
 ```

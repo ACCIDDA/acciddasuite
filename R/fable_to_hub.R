@@ -1,10 +1,15 @@
-#' Convert fable forecast to hub format
-#' Converts a fable object into `model_out_tbl` and `oracle_output` hub format tables.
-#' @param cv A time series cross-validation fable object containing the forecasts with `.id` column.
-#' @param ts A tsibble containing the observed time series data.
-#' @param quantiles Numeric vector. The quantiles to extract from the forecast. Default is c(0.025, 0.25, 0.5, 0.75, 0.975).
-#' @return A list with two elements: `model_out_tbl` and `oracle_output`.
-#' @importFrom dplyr as_tibble mutate reframe
+#' Convert a fable forecast into hub `model_out_tbl` / `oracle_output` tables
+#'
+#' \code{location} and \code{target} are passed in explicitly so gap-filling
+#' never introduces `NA` labels.
+#' @param cv A fable of forecasts with an `.id` origin column.
+#' @param ts A tsibble of the observed series, for the oracle.
+#' @param location,target Single location / target label.
+#' @param interval Reporting interval in days; sets the origin offset and
+#'   horizon unit.
+#' @param quantiles Quantiles to extract. Default c(0.025, 0.25, 0.5, 0.75, 0.975).
+#' @return A list with `model_out_tbl` and `oracle_output`.
+#' @importFrom dplyr as_tibble mutate reframe filter
 #' @importFrom tidyr unnest
 #' @importFrom stats quantile
 #' @keywords internal
@@ -13,15 +18,15 @@
 fable_to_hub <- function(
   cv,
   ts,
+  location,
+  target,
+  interval = 7L,
   quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)
 ) {
-  location <- unique(ts$location)
-  target <- unique(ts$target)
-
   model_out_tbl <- cv |>
     dplyr::as_tibble() |>
     dplyr::mutate(
-      reference_date = min(target_end_date) - 7,
+      reference_date = min(target_end_date) - interval,
       .by = .id
     ) |>
     dplyr::mutate(
@@ -33,10 +38,9 @@ fable_to_hub <- function(
       model_id = .model,
       reference_date,
       target = target,
-      horizon = as.integer(difftime(
-        target_end_date,
-        reference_date,
-        units = "weeks"
+      horizon = as.integer(round(
+        as.numeric(difftime(target_end_date, reference_date, units = "days")) /
+          interval
       )),
       location = location,
       target_end_date,
@@ -47,10 +51,11 @@ fable_to_hub <- function(
 
   oracle_output <- ts |>
     dplyr::as_tibble() |>
+    dplyr::filter(!is.na(observation)) |>
     dplyr::reframe(
-      location,
+      location = location,
       target_end_date,
-      target,
+      target = target,
       output_type = "quantile",
       output_type_id = NA,
       oracle_value = observation

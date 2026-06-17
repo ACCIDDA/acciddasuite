@@ -22,15 +22,9 @@ make_dummy_data <- function() {
     target = "cases"
   )
 
-  structure(
-    list(
-      data = df,
-      location = "test_loc",
-      target = "cases",
-      history = TRUE
-    ),
-    class = "accidda_data"
-  )
+  # Route through check_data() so the fixture carries the same backbone
+  # (window, interval, history) as a real accidda_data object.
+  check_data(df)
 }
 
 # -----------------------------
@@ -183,4 +177,23 @@ test_that("error thrown for invalid max_delay", {
   df <- make_dummy_data()
 
   expect_error(get_ncast(df, max_delay = 0))
+})
+
+# -----------------------------
+# Test 10: non-weekly (e.g. daily) data is rejected
+# -----------------------------
+test_that("get_ncast rejects non-weekly data", {
+  skip_if_not_installed("baselinenowcast")
+  days <- seq(as.Date("2025-01-01"), by = "day", length.out = 20)
+  daily <- data.frame(
+    target_end_date = rep(days, each = 2),
+    as_of = rep(days, each = 2) + c(0L, 3L),
+    observation = rep(c(40, 50), times = 20),
+    location = "NY",
+    target = "daily cases"
+  )
+
+  x <- check_data(daily)
+  expect_equal(x$interval, 1L)
+  expect_error(get_ncast(x), "weekly data only")
 })

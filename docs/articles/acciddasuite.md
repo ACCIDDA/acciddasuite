@@ -2,7 +2,7 @@
 
 ## Overview
 
-`acciddasuite` builds infectious disease forecasts in three steps:
+`acciddasuite` builds infectious disease forecasts in a few steps:
 
 1.  **[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)**
     or
@@ -10,23 +10,24 @@
     fetch or validate surveillance data.
 2.  **[`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)**
     *(optional)*: correct recent weeks for reporting delays.
-3.  **[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)**:
-    evaluate models via cross-validation and forecast into the future.
+3.  **[`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)**
+    *(optional)*: evaluate candidate models by time series
+    cross-validation.
+4.  **[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)**:
+    ensemble the best models into a forward-looking forecast.
 
 The package relies on the [`fable`](https://fable.tidyverts.org/)
 modeling framework and follows the standard forecasting workflow
 described by [Hyndman & Athanasopoulos
 (2021)](https://otexts.com/fpp3/basic-steps.html). The overall goal is
 to provide public health professionals with an easily-adoptable approach
-to generating an ensemble of outputs from statistical models, evaluating
-forecasts, and visualizing outputs.
+to generating, evaluating forecasts, and visualizing infectious disease
+forecasts.
 
-## Forecast Planning
-
-**To get more information about how to know whether forecasting is the
+To get more information about how to know whether forecasting is the
 best approach for your task, follow the steps in
 [this](https://accidda.github.io/acciddasuite/articles/forecast_planning.md)
-article.**
+article.
 
 ## Step 1: Get data
 
@@ -41,6 +42,7 @@ all past versions of the data), which is needed for nowcasting.
 returns a validated `accidda_data` object:
 
 ``` r
+
 library(acciddasuite)
 df <- get_data(pathogen = "covid", geo_value = "ny", revisions = TRUE)
 df
@@ -48,8 +50,9 @@ df
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-03-14 ( 293 dates )
-#> History:  TRUE ( 2024-11-17 to 2026-03-15 )
+#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Interval: 7 days
+#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
 ```
 
 You can also **bring your own data**. Just pass it through
@@ -71,17 +74,21 @@ With the default `max_delay = 4`, the last 4 weeks are corrected;
 everything before that is left untouched.
 
 ``` r
+
 ncast <- get_ncast(df)
 ncast
 #> <accidda_ncast>
 #> 
-#> Nowcasted 4 weeks: 2026-02-21 to 2026-03-14 
+#> Location: NY 
+#> Target:   wk inc covid hosp 
+#> Nowcasted 2 weeks: 2026-05-30 to 2026-06-06 
 #> 
-#> $data  corrected series (293 rows)
+#> $data  corrected series (305 rows)
 #> $plot  nowcast visualisation
 ```
 
 ``` r
+
 ncast$plot
 ```
 
@@ -95,22 +102,24 @@ uncertainty into the final forecast.
 
 ## Step 3: Forecasting
 
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-does two things:
+Forecasting is split into two steps:
 
-1.  **Model selection**: time series cross-validation on the full
+1.  **[`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
+    — model selection**: time series cross-validation on the full
     (median corrected) series, starting from `eval_start_date`. Models
-    are ranked by WIS; the best `top_n` form an equal weight ensemble.
-2.  **Final forecast**: projects `h` weeks into the future. When nowcast
-    columns are present, the forecast is produced from three baselines
-    (lower, median, and upper nowcast estimates) and pooled, so
-    prediction intervals reflect both model uncertainty and nowcast
-    uncertainty.
+    are ranked by WIS and interval coverage.
+2.  **[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
+    — final forecast**: reuses the ranking to ensemble the best `top_n`
+    models and projects `h` weeks into the future. When nowcast columns
+    are present, the forecast is produced from three baselines (lower,
+    median, and upper nowcast estimates) and pooled, so prediction
+    intervals reflect both model uncertainty and nowcast uncertainty.
 
 We set `eval_start_date` to mark the start of the evaluation window. At
 least 52 weeks of data must precede this date.
 
 ``` r
+
 eval_start_date <- max(ncast$data$target_end_date) - 28
 ```
 
@@ -128,101 +137,90 @@ Default models are:
 - `ARIMA`: Learns repeating patterns from past values to predict future
   ones. Auto-configured to find the best fit.
 
-We use
-[`pipetime::time_pipe()`](https://rdrr.io/pkg/pipetime/man/time_pipe.html)
-to log how long the model selection and forecasting steps take.
-
 ``` r
-fcast <- get_fcast(
+
+cv <- get_cv(
   ncast,
   eval_start_date = eval_start_date,
-  top_n = 4,
   h = 4
-) |> 
-  pipetime::time_pipe("base fcast", log = "log")
+)
+cv
+#> <accidda_cv>
+#> 
+#> Models ranked (cross-validation):
+#>  model_id       wis
+#>    <char>     <num>
+#>       ETS  29.43926
+#>     ARIMA  31.71773
+#>     THETA  34.14236
+#>    SNAIVE 160.26634
+#> 
+#> Evaluated from 2026-05-09 | horizon 4 weeks | NY 
+#> 
+#> Contents:
+#>   $forecasts  per-origin forecasts (model_out_tbl)
+#>   $oracle     observed truth (oracle_output)
+#>   $score      model ranking table
+#>   $models     model specifications
+#>   $meta       eval_start_date, h, location, target, interval
+```
 
+``` r
+
+fcast <- get_fcast(cv, top_n = 3)
 fcast
 #> <accidda_fcast>
 #> 
-#> Models evaluated:
+#> Models ranked (cross-validation):
 #>  model_id       wis
 #>    <char>     <num>
-#>     THETA  29.60211
-#>     ARIMA  32.93674
-#>       ETS  34.11226
-#>  ENSEMBLE  56.08355
-#>    SNAIVE 240.14106
+#>       ETS  29.43926
+#>     ARIMA  31.71773
+#>     THETA  34.14236
+#>    SNAIVE 160.26634
 #> 
 #> Forecast horizon:
-#>   From: 2026-02-14 
-#>   To:   2026-04-11 
+#>   From: 2026-06-13 
+#>   To:   2026-07-04 
 #> 
 #> Contents:
-#>   $hubcast   hub forecast object
-#>   $score     model ranking table
-#>   $plot      ggplot2 object
-```
-
-``` r
-fcast$plot
-```
-
-![](acciddasuite_files/figure-html/plot-forecast-1.png)
-
-View forecast evaluation by viewing the `score` element of the object:
-
-``` r
-fcast$score
-#> Key: <model_id>
-#>    model_id       wis interval_coverage_50 interval_coverage_95
-#>      <char>     <num>                <num>                <num>
-#> 1:    THETA  29.60211                 1.00                    1
-#> 2:    ARIMA  32.93674                 1.00                    1
-#> 3:      ETS  34.11226                 1.00                    1
-#> 4: ENSEMBLE  56.08355                 1.00                    1
-#> 5:   SNAIVE 240.14106                 0.25                    1
-#>    wis_relative_skill
-#>                 <num>
-#> 1:          0.5509085
-#> 2:          0.6129676
-#> 3:          0.6348445
-#> 4:          1.0437400
-#> 5:          4.4691332
+#>   $hub    hub forecast object (model_out_tbl, oracle_output)
+#>   $score  model ranking table, or NULL
+#>   $meta   models, top_n, h, location, target, interval, nowcast
 ```
 
 ### Adding custom models
 
 Any model compatible with the [`fable`](https://fable.tidyverts.org/)
-framework can be passed via `extra_models`:
+framework can be passed to
+[`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
+via `models`. Compose with
+[`default_models()`](https://accidda.github.io/acciddasuite/reference/default_models.md)
+to keep the built-ins alongside your own:
 
 ``` r
+
 library(fable)
 library(fable.prophet)
-extra <- list(
-  CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
-  PROPHET = prophet(observation ~ season("year")),
-  EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
+library(EpiEstim)
+library(projections)
+my_models <- c(
+  default_models(),
+  list(
+    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
+    PROPHET = prophet(observation ~ season("year")),
+    EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
+  )
 )
 
-fcast <- get_fcast(
+cv <- get_cv(
   ncast,
   eval_start_date = eval_start_date,
-  top_n = 4,
   h = 3,
-  extra_models = extra
-) |> 
-  pipetime::time_pipe("extra fcast", log = "log")
-```
+  models = my_models
+)
 
-You can check how long each step took by calling
-[`pipetime::get_log()`](https://rdrr.io/pkg/pipetime/man/get_log.html):
-
-``` r
-pipetime::get_log()
-#> $log
-#>             timestamp       label  duration unit
-#> 1 2026-03-20 23:05:21  base fcast  8.926655 secs
-#> 2 2026-03-20 23:05:32 extra fcast 38.929448 secs
+fcast <- get_fcast(cv, top_n = 3)
 ```
 
 ## Submit to RespiLens
@@ -234,5 +232,6 @@ to export the forecast as JSON for upload to
 [MyRespiLens](https://www.respilens.com/myrespilens).
 
 ``` r
+
 to_respilens(fcast, "respilens.json")
 ```

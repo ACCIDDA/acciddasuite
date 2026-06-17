@@ -9,8 +9,9 @@
 
 `acciddasuite` provides a simple pipeline for infectious diseases
 forecasts. It validates input data (`check_data()`), optionally applies
-nowcasting to adjust for reporting delays (`get_ncast()`), and generates
-forecasts (`get_fcast()`).
+nowcasting to adjust for reporting delays (`get_ncast()`), evaluates
+models by cross-validation (`get_cv()`), and generates forecasts
+(`get_fcast()`).
 
 ## Installation
 
@@ -40,21 +41,36 @@ head(example_data)
 
 ``` r
 fcast <- example_data |>
-  check_data() |> 
-  get_ncast() |> 
-  get_fcast(
-    eval_start_date = max(example_data$target_end_date) - 28,
-    h = 3 # forecast 3 weeks into the future
-  )
-#> ℹ Using max_delay = 12 from data
-#> ℹ Truncating from max_delay = 12 to 4.
-```
+  check_data() |>
+  get_ncast() |>
+  get_cv(eval_start_date = max(example_data$target_end_date) - 28) |>
+  get_fcast(top_n = 3)
+#> ℹ Using max_delay = 6 from data
+#> ℹ Truncating from max_delay = 6 to 2.
+#> [2026-06-17 19:07:08.646] get_cv: +0.7772 secs
+#> [2026-06-17 19:07:09.427] get_fcast: +2.2583 secs
 
-``` r
-fcast$plot
+fcast
+#> <accidda_fcast>
+#> 
+#> Models ranked (cross-validation):
+#> # A tibble: 4 × 2
+#>   model_id   wis
+#>   <chr>    <dbl>
+#> 1 THETA     26.3
+#> 2 ARIMA     28.6
+#> 3 ETS       30.4
+#> 4 SNAIVE   256. 
+#> 
+#> Forecast horizon:
+#>   From: 2026-03-21 
+#>   To:   2026-04-11 
+#> 
+#> Contents:
+#>   $hub    hub forecast object (model_out_tbl, oracle_output)
+#>   $score  model ranking table, or NULL
+#>   $meta   models, top_n, h, location, target, interval, nowcast
 ```
-
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 

@@ -14,39 +14,27 @@ EPIESTIM(
 )
 }
 \arguments{
-\item{formula}{Response variable, e.g. \code{observation}. Exogenous regressors
-are not supported.}
+\item{formula}{Response variable, e.g. \code{observation}. Exogenous
+regressors are not supported.}
 
-\item{mean_si}{Mean serial interval in days.}
+\item{mean_si, std_si}{Mean and SD of the serial interval, in days.}
 
-\item{std_si}{Standard deviation of the serial interval in days.}
+\item{rt_window}{Sliding window width (days) for Rt estimation. Smaller
+tracks recent trends; larger is smoother. Default 14.}
 
-\item{rt_window}{Sliding window width in days for Rt estimation (\code{dt_out}
-in EpiEstim). Controls how many recent days inform the current Rt.
-Smaller values track recent trends more closely; larger values give a
-smoother estimate. Defaults to 14 days (~2 weeks).}
+\item{n_sim}{Number of simulated forecast paths. Default 100.}
 
-\item{n_sim}{Number of simulation paths for the forecast distribution.}
-
-\item{R_fix_within}{If \code{TRUE}, Rt is held constant within each simulated
+\item{R_fix_within}{If \code{TRUE}, hold Rt constant within each simulated
 path (recommended for short horizons).}
 }
 \value{
-A model definition for use inside \link[fabletools:model]{model()}.
+A model definition for use inside \link[fabletools]{model}.
 }
 \description{
-Estimates the current reproduction number (Rt) using
-\link[EpiEstim:estimate_R]{EpiEstim} and simulates future incidence using
-\link[projections:project]{projections}. Works with any regular aggregation
-period and integrates into the fable workflow via
-\link[fabletools:model]{model()}.
-}
-\details{
-The aggregation period is detected automatically from the tsibble index.
-Only the most recent data (the \code{rt_window} estimation period plus the serial
-interval period) is passed to EpiEstim's expectation-maximisation
-(EM) algorithm, which reconstructs daily incidence from the aggregated
-counts before estimating Rt on rolling \code{rt_window}-day windows.
-The most recent Rt estimate is then used to project forward via stochastic simulation.
-Forecasts are returned as sample distributions (one per horizon period) drawn from \code{n_sim} epidemic paths.
+A \code{fable} model that estimates the reproduction number Rt with
+\code{EpiEstim::estimate_R()} and projects future incidence with
+\code{projections::project()}, for use inside \link[fabletools]{model}. The
+aggregation period is read from the tsibble index; Rt is estimated on the
+most recent data and used to simulate \code{n_sim} forward paths, returned
+as sample distributions.
 }

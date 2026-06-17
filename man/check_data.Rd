@@ -2,44 +2,35 @@
 % Please edit documentation in R/check_data.R
 \name{check_data}
 \alias{check_data}
-\title{Validate surveillance data for the acciddasuite pipeline}
+\title{Validate surveillance data}
 \usage{
-check_data(df)
+check_data(data)
 }
 \arguments{
-\item{df}{A data frame (or tibble) with at least:
-\code{target_end_date} (Date), \code{observation} (numeric),
-\code{location} (character), and \code{target} (character).
-An optional \code{as_of} (Date) column enables nowcasting via
-\code{\link{get_ncast}}.}
+\item{data}{A data frame with \code{target_end_date} (Date),
+\code{observation} (numeric), \code{location} (character) and
+\code{target} (character). An optional \code{as_of} (Date) column enables
+nowcasting (\code{\link{get_ncast}}). An existing \code{accidda_data} is
+returned unchanged.}
 }
 \value{
-An \code{accidda_data} object (a list) with:
+An \code{accidda_data} object:
 \describe{
-\item{data}{The validated data frame with coerced date types.}
-\item{location}{Single location identifier.}
-\item{target}{Single target identifier.}
-\item{window}{Named vector with \code{from} and \code{to} dates.}
-\item{history}{Logical. \code{TRUE} if revision history
-(\code{as_of}) is present.}
+\item{data}{Validated data frame with coerced types.}
+\item{location, target}{Single location / target identifier.}
+\item{window}{Named \code{from} / \code{to} dates.}
+\item{interval}{Reporting interval in days (7 = weekly).}
+\item{history}{\code{TRUE} if revision history (\code{as_of}) is present.}
 }
 }
 \description{
-Checks that a data frame has the required columns and structure for
-use with \code{\link{get_ncast}} and \code{\link{get_fcast}}.
-Returns a typed \code{accidda_data} object that downstream functions
-can accept without repeating validation.
+Validates a surveillance data frame and returns a typed \code{accidda_data}
+object that the rest of the pipeline accepts without re-validating.
 }
 \examples{
 \dontrun{
-# From get_data
-df <- get_data("covid", "ny") |> check_data()
-
-# User-provided data
-my_df <- read.csv("my_data.csv") |> check_data()
-
-# Then into the pipeline
-df |> get_fcast(eval_start_date = "2025-01-01")
+x <- get_data("covid", "ny") |> check_data()
+my_x <- read.csv("my_data.csv") |> check_data()
 }
 
 }

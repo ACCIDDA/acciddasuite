@@ -49,14 +49,3 @@ checked <- check_data(df)
 checked
 ```
 
-The `check_data()` output tells you whether revision history is available. From here you can go directly to forecasting:
-
-```{r, eval=FALSE}
-get_fcast(checked, eval_start_date = "2024-11-01", h = 4)
-```
-
-Or, if your data has revision history, nowcast first:
-
-```{r, eval=FALSE}
-checked |> get_ncast() |> get_fcast(eval_start_date = "2024-11-01", h = 4)
-```

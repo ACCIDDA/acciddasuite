@@ -27,7 +27,7 @@ test_that("to_respilens throws error if multiple locations are present in either
     transform(model_data, location = "NY") 
   )
   cast_multi_model <- list(
-    hubcast = list(model_out_tbl = bad_model_tbl, oracle_output = gt_data)
+    hub = list(model_out_tbl = bad_model_tbl, oracle_output = gt_data)
   )
   class(cast_multi_model) <- "accidda_fcast"
   expect_error(
@@ -41,7 +41,7 @@ test_that("to_respilens throws error if multiple locations are present in either
     transform(gt_data, location = "NY") 
   )
   cast_multi_oracle <- list(
-    hubcast = list(model_out_tbl = model_data, oracle_output = bad_oracle_tbl)
+    hub = list(model_out_tbl = model_data, oracle_output = bad_oracle_tbl)
   )
   class(cast_multi_oracle) <- "accidda_fcast"
   expect_error(
@@ -73,7 +73,7 @@ test_that("to_respilens creates correctly nested output", {
     oracle_value = 105
   )
   fake_cast <- list(
-    hubcast = list(model_out_tbl = model_data, oracle_output = gt_data)
+    hub = list(model_out_tbl = model_data, oracle_output = gt_data)
   )
   class(fake_cast) <- "accidda_fcast"
 

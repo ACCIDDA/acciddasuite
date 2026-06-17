@@ -2,16 +2,15 @@
 % Please edit documentation in R/print.R
 \name{print.accidda_fcast}
 \alias{print.accidda_fcast}
-\title{Print an accidda_fcast object}
+\title{Print an \code{accidda_fcast} object}
 \usage{
 \method{print}{accidda_fcast}(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{accidda_fcast}.}
+\item{x}{An \code{accidda_fcast} object.}
 
-\item{...}{Additional arguments (currently ignored).}
+\item{...}{Ignored.}
 }
 \description{
-Displays a concise summary of an \code{accidda_fcast} object,
-including model scores, forecast horizon, and hub format contents.
+Print an \code{accidda_fcast} object
 }

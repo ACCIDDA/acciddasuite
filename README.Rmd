@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`acciddasuite` provides a simple pipeline for infectious diseases forecasts. It validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), and generates forecasts (`get_fcast()`).
+`acciddasuite` provides a simple pipeline for infectious diseases forecasts. It validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), evaluates models by cross-validation (`get_cv()`), and generates forecasts (`get_fcast()`).
 
 ## Installation
 
@@ -38,16 +38,12 @@ head(example_data)
 
 ```{r, eval = TRUE}
 fcast <- example_data |>
-  check_data() |> 
-  get_ncast() |> 
-  get_fcast(
-    eval_start_date = max(example_data$target_end_date) - 28,
-    h = 3 # forecast 3 weeks into the future
-  )
-```
+  check_data() |>
+  get_ncast() |>
+  get_cv(eval_start_date = max(example_data$target_end_date) - 28) |>
+  get_fcast(top_n = 3)
 
-```{r, eval = TRUE}
-fcast$plot
+fcast
 ```
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:

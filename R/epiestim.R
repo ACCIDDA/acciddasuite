@@ -6,38 +6,26 @@ specials_epiestim <- fabletools::new_specials(
 
 #' EpiEstim model for fable
 #'
-#' Estimates the current reproduction number (Rt) using
-#' [EpiEstim][EpiEstim::estimate_R] and simulates future incidence using
-#' [projections][projections::project]. Works with any regular aggregation
-#' period and integrates into the fable workflow via
-#' [model()][fabletools::model].
+#' A \code{fable} model that estimates the reproduction number Rt with
+#' \code{EpiEstim::estimate_R()} and projects future incidence with
+#' \code{projections::project()}, for use inside \link[fabletools]{model}. The
+#' aggregation period is read from the tsibble index; Rt is estimated on the
+#' most recent data and used to simulate \code{n_sim} forward paths, returned
+#' as sample distributions.
 #'
-#' The aggregation period is detected automatically from the tsibble index.
-#' Only the most recent data (the `rt_window` estimation period plus the serial
-#' interval period) is passed to EpiEstim's expectation-maximisation
-#' (EM) algorithm, which reconstructs daily incidence from the aggregated
-#' counts before estimating Rt on rolling `rt_window`-day windows.
-#' The most recent Rt estimate is then used to project forward via stochastic simulation.
-#' Forecasts are returned as sample distributions (one per horizon period) drawn from `n_sim` epidemic paths.
-#'
-#' @param formula Response variable, e.g. `observation`. Exogenous regressors
-#'   are not supported.
-#' @param mean_si Mean serial interval in days.
-#' @param std_si Standard deviation of the serial interval in days.
-#' @param rt_window Sliding window width in days for Rt estimation (`dt_out`
-#'   in EpiEstim). Controls how many recent days inform the current Rt.
-#'   Smaller values track recent trends more closely; larger values give a
-#'   smoother estimate. Defaults to 14 days (~2 weeks).
-#' @param n_sim Number of simulation paths for the forecast distribution.
-#' @param R_fix_within If `TRUE`, Rt is held constant within each simulated
+#' @param formula Response variable, e.g. \code{observation}. Exogenous
+#'   regressors are not supported.
+#' @param mean_si,std_si Mean and SD of the serial interval, in days.
+#' @param rt_window Sliding window width (days) for Rt estimation. Smaller
+#'   tracks recent trends; larger is smoother. Default 14.
+#' @param n_sim Number of simulated forecast paths. Default 100.
+#' @param R_fix_within If \code{TRUE}, hold Rt constant within each simulated
 #'   path (recommended for short horizons).
 #'
-#' @return A model definition for use inside [model()][fabletools::model].
+#' @return A model definition for use inside \link[fabletools]{model}.
 #' @export
 #' @importFrom fabletools new_model_class new_model_definition
 #' @importFrom tsibble is_regular measured_vars index_var
-#' @importFrom EpiEstim estimate_R make_config
-#' @importFrom projections project
 #' @importFrom incidence as.incidence
 #' @importFrom distributional dist_sample
 #' @importFrom utils tail
@@ -50,6 +38,16 @@ EPIESTIM <- function(
   n_sim = 100L,
   R_fix_within = TRUE
 ) {
+  for (pkg in c("EpiEstim", "projections")) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      stop(
+        "Package '", pkg, "' is required for EPIESTIM().\n",
+        "Install it with install.packages(\"", pkg, "\").",
+        call. = FALSE
+      )
+    }
+  }
+
   model_epiestim <- fabletools::new_model_class(
     "epiestim",
     train = train_epiestim,

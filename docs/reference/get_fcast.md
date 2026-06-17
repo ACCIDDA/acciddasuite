@@ -1,103 +1,75 @@
-# Forecast and evaluate time series models
+# Produce a forward-looking forecast
 
-Selects and evaluates multiple time series models via expanding-window
-cross-validation, then produces a final forward-looking forecast.
+Refits models on the full series, forecasts `h` steps ahead and combines
+them into an equal-weight ensemble. Accepts either an `accidda_cv` from
+[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md) —
+whose ranking selects the best `top_n` models — or an `accidda_data` /
+`accidda_ncast`, which forecasts every model in `models`.
 
 ## Usage
 
 ``` r
-get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
+get_fcast(x, models = default_models(), h = 4, top_n = 3)
 ```
 
 ## Arguments
 
-- df:
+- x:
 
-  An `accidda_ncast` object from
-  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md),
-  or an `accidda_data` object from
-  [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
-  or
-  [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md).
-  If the underlying data frame contains `ncast_lower` and `ncast_upper`
-  columns, nowcast uncertainty propagation is enabled automatically.
+  An `accidda_cv`
+  ([`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)),
+  `accidda_ncast` or `accidda_data`.
 
-- eval_start_date:
+- models:
 
-  Date or string coercible to Date. First date at which forecasts are
-  evaluated. At least 52 weeks of data must precede this date.
+  Named list of `fable` models. Defaults to
+  [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
+  Ignored when `x` is an `accidda_cv` (its ranked models are reused).
 
 - h:
 
-  Integer. Forecast horizon in weeks. Default is 4.
+  Integer. Forecast horizon, in reporting-interval steps (weeks for
+  weekly data). Default 4; for an `accidda_cv`, defaults to the
+  cross-validation horizon.
 
 - top_n:
 
-  Integer. Number of top ranked models included in the ensemble. Default
-  is 3.
-
-- extra_models:
-
-  Named list of additional forecasting models passed to
-  [`fabletools::model()`](https://fabletools.tidyverts.org/reference/model.html).
-  Each element must reference the `observation` column and be compatible
-  with
-  [`fabletools::forecast()`](https://generics.r-lib.org/reference/forecast.html).
-
-  Custom models can be constructed using the fable modelling framework,
-  see the [fabletools extension_models
-  vignette](https://fabletools.tidyverts.org/articles/extension_models.html).
-
-  The name of each list element is used as the model label in the
-  output.
+  Integer. Number of top-ranked models to ensemble; used only when `x`
+  is an `accidda_cv`. Default 3.
 
 ## Value
 
-An object of class `accidda_fcast` containing:
+An `accidda_fcast` object:
 
-- hubcast:
+- hub:
 
-  Hub-format forecast object (`model_out_tbl` and `oracle_output`).
+  Hub-format forecast (`model_out_tbl`, `oracle_output`).
 
 - score:
 
-  Model ranking based on rolling origin WIS.
+  Model ranking from the `accidda_cv`, or `NULL`.
 
-- plot:
+- meta:
 
-  ggplot2 object showing forecasts and prediction intervals.
+  `models`, `top_n`, `h`, `location`, `target`, `interval`, `nowcast`.
+
+Export with
+[`to_respilens`](https://accidda.github.io/acciddasuite/reference/to_respilens.md).
 
 ## Details
 
-**Cross-validation.** From `eval_start_date` onwards, models are
-repeatedly refitted on all data up to each cutoff and used to forecast
-the next `h` weeks. Models are ranked by WIS; the best `top_n` form an
-equal-weight ensemble.
-
-**Nowcast uncertainty.** When an `accidda_ncast` object is supplied (or
-an `accidda_data` whose data frame contains `ncast_lower` and
-`ncast_upper` columns), cross-validation runs on the `observation`
-column (the median corrected series). The final forecast is then
-produced three times (from the median, lower 95\\ and the resulting
-distributions are pooled, so prediction intervals reflect both model
-uncertainty and nowcast uncertainty.
+If the input carries `ncast_lower` / `ncast_upper` (from
+[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)),
+forecasts are pooled across the nowcast median and 95\\
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-extra_models <- list(
-  CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
-  PROPHET = fable.prophet::PROPHET(observation),
-  EPIESTIM = EPIESTIM(observation, mean_si = 3.96, std_si = 4.75)
-)
+ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
+cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(
-  df,
-  eval_start_date = "2025-01-01",
-  h = 4,
-  top_n = 3,
-  extra_models = extra_models
-)
+get_fcast(cv, top_n = 3)   # reuse the cross-validation ranking
+get_fcast(ncast)           # or forecast the default models directly
 } # }
 ```

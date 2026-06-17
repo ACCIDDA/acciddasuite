@@ -2,40 +2,29 @@
 % Please edit documentation in R/get_data.R
 \name{get_data}
 \alias{get_data}
-\title{Get hospitalisation data}
+\title{Fetch hospitalisation data}
 \usage{
 get_data(pathogen, geo_value, revisions = FALSE)
 }
 \arguments{
-\item{pathogen}{Character. One of "covid", "flu" or "rsv".}
+\item{pathogen}{One of "covid", "flu" or "rsv".}
 
-\item{geo_value}{Character vector. Geographic value as per
-\link[epidatr]{pub_covidcast} to filter by.}
+\item{geo_value}{Geographic value(s) to fetch, as per
+\link[epidatr]{pub_covidcast}.}
 
-\item{revisions}{Logical. If \code{TRUE}, fetches all available revision
-history, producing data ready for \code{\link{get_ncast}}.
-Default is \code{FALSE} (latest version only).}
+\item{revisions}{Logical. If \code{TRUE}, fetch the full revision history
+needed by \code{\link{get_ncast}}. Default \code{FALSE} (latest only).}
 }
 \value{
 An \code{accidda_data} object (see \code{\link{check_data}}).
 }
 \description{
-Fetch confirmed US hospital admissions from the NHSN source
-for COVID-19, influenza, or RSV using \link[epidatr]{pub_covidcast}.
-}
-\details{
-By default the latest version of each observation is returned. Set
-\code{revisions = TRUE} to retrieve all available revision history,
-which is needed by \code{\link{get_ncast}}.
+Fetch confirmed US hospital admissions (COVID-19, influenza or RSV) from
+NHSN via \link[epidatr]{pub_covidcast}.
 }
 \examples{
 get_data(pathogen = "covid", geo_value = "ny")
 
-# Fetch revision history for nowcasting
+# Revision history for nowcasting
 get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
-}
-\seealso{
-\link[epidatr]{pub_covidcast}
-
-\link[hubverse]{https://docs.hubverse.io/en/stable/user-guide/target-data.html}
 }

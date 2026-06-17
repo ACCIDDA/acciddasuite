@@ -4,55 +4,51 @@
 \alias{get_ncast}
 \title{Nowcast right-truncated surveillance data}
 \usage{
-get_ncast(df, max_delay = 4, draws = 1000, prop_delay = 0.5, scale_factor = 3)
+get_ncast(x, max_delay = 2, draws = 1000, prop_delay = 0.5, scale_factor = 3)
 }
 \arguments{
-\item{df}{An \code{accidda_data} object from \code{\link{check_data}} or
-\code{\link{get_data}}. Must have revision history
-(\code{$history == TRUE}); use \code{get_data(revisions = TRUE)}.}
+\item{x}{An \code{accidda_data} (\code{\link{get_data}} /
+\code{\link{check_data}}) with revision history; use
+\code{get_data(revisions = TRUE)}.}
 
-\item{max_delay}{Integer. Maximum reporting delay in weeks. Default 4.}
+\item{max_delay}{Integer. Number of recent weeks treated as
+right-truncated. Default 2.}
 
 \item{draws}{Integer. Number of posterior samples. Default 1000.}
 
-\item{prop_delay}{Numeric 0-1. Proportion of reference times used for
+\item{prop_delay}{Numeric in (0, 1). Proportion of reference times used for
 delay estimation. Default 0.5.}
 
-\item{scale_factor}{Numeric. Multiplicative factor on the maximum delay
-for the estimation window. Default 3.}
+\item{scale_factor}{Numeric. Multiplier on \code{max_delay} for the
+estimation window. Default 3.}
 }
 \value{
-An \code{accidda_ncast} object (a list) with:
+An \code{accidda_ncast} object with the shared backbone
+(\code{location}, \code{target}, \code{window}, \code{interval},
+\code{history}) plus:
 \describe{
-\item{data}{Corrected time series. The \code{observation} column
-contains the nowcast median for the corrected weeks.
-Two extra columns, \code{ncast_lower} and \code{ncast_upper}
-(95\\% CrI), are non-NA only for the corrected weeks. These are
-used by \code{\link{get_fcast}} to propagate nowcast uncertainty.}
-\item{plot}{ggplot2 visualisation of the nowcast correction.}
+\item{data}{Corrected series. \code{observation} holds the nowcast
+median for corrected weeks; \code{ncast_lower} / \code{ncast_upper}
+(95\\% CrI) are non-NA only there, and let \code{\link{get_fcast}}
+propagate nowcast uncertainty.}
+\item{plot}{ggplot of the correction.}
 }
 }
 \description{
-The most recent weeks of surveillance data are almost always incomplete
-because of reporting delays (right truncation). \code{get_ncast} uses
-\href{https://baselinenowcast.epinowcast.org/}{baselinenowcast} to
-estimate what those counts will look like once all reports arrive.
+Recent weeks of surveillance data are incomplete because of reporting
+delays (right truncation). \code{get_ncast} estimates their final counts
+with \href{https://baselinenowcast.epinowcast.org/}{baselinenowcast},
+replacing the last \code{max_delay} weeks and leaving earlier weeks
+untouched.
 }
 \details{
-With the default \code{max_delay = 4}, the last 4 weeks are treated as
-right-truncated and replaced by nowcast estimates. Everything before that
-is left untouched.
-
-The function returns three corrected versions of the full series
-(nowcast median, lower, and upper 95\\% CrI) so that
-\code{\link{get_fcast}} can propagate nowcast uncertainty into the
-final forward-looking forecast.
+Weekly data only; other cadences are rejected (the rest of the pipeline is
+cadence-agnostic).
 }
 \examples{
 \dontrun{
-df    <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
-ncast <- get_ncast(df)
-fcast <- get_fcast(ncast, eval_start_date = "2025-01-01")
+x     <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
+ncast <- get_ncast(x)
 }
 
 }

@@ -2,19 +2,20 @@
 % Please edit documentation in R/to_respilens.R
 \name{to_respilens}
 \alias{to_respilens}
-\title{Convert accidda_fcast to RespiLens format}
+\title{Convert a forecast to RespiLens format}
 \usage{
-to_respilens(accidda_fcast, path = NULL)
+to_respilens(x, path = NULL)
 }
 \arguments{
-\item{accidda_fcast}{An object of class \code{accidda_fcast}, the output of \code{get_fcast()}.}
+\item{x}{An \code{accidda_fcast} from \code{\link{get_fcast}}.}
 
-\item{path}{Optional file path to write the JSON output to. Must end with \code{.json}.
-If \code{NULL}, the output is not written to disk.}
+\item{path}{Optional \code{.json} path to write to; if \code{NULL}, nothing
+is written.}
 }
 \value{
-A named list with a single metadata JSON structure and one JSON structure per location.
+A named list (\code{metadata}, \code{ground_truth},
+\code{forecasts}), invisibly.
 }
 \description{
-Convert accidda_fcast to RespiLens format
+Convert a forecast to RespiLens format
 }

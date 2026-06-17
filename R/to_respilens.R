@@ -1,7 +1,8 @@
-#' Build RespiLens metadata key from `model_out_tbl` data
-#'
-#' @param model_out_tbl Forecast tibble from `get_fcast()`.
-#' @return Named list for RespiLens metadata key
+#' Build the RespiLens `metadata` key
+#' @param model_out_tbl Forecast tibble (`model_out_tbl`).
+#' @return Named list.
+#' @keywords internal
+#' @noRd
 metadata_key <- function(model_out_tbl) {
   # remove peak targets
   df <- model_out_tbl |>
@@ -25,9 +26,10 @@ metadata_key <- function(model_out_tbl) {
 }
 
 
-#' Ground truth key
-#' @param oracle_output Ground truth tibble from `get_fcast()`.
-#' @return JSON-style named list structure to satisfy the RespiLens `ground_truth` key.
+#' Build the RespiLens `ground_truth` key
+#' @param oracle_output Ground-truth tibble (`oracle_output`).
+#' @return Named list.
+#' @keywords internal
 #' @noRd
 ground_truth_key <- function(oracle_output) {
   if (nrow(oracle_output) == 0) {
@@ -55,9 +57,10 @@ ground_truth_key <- function(oracle_output) {
 }
 
 
-#' Forecasts key
-#' @param model_out_tbl Forecast tibble from `get_fcast()`.
-#' @return JSON-style named list structure to satisfy the RespiLens `forecasts` key.
+#' Build the RespiLens `forecasts` key
+#' @param model_out_tbl Forecast tibble (`model_out_tbl`).
+#' @return Nested named list.
+#' @keywords internal
 #' @noRd
 forecasts_key <- function(model_out_tbl) {
   # Build JSON structure with nesting
@@ -115,21 +118,23 @@ forecasts_key <- function(model_out_tbl) {
 }
 
 
-#' Convert accidda_fcast to RespiLens format
-#' @param accidda_fcast An object of class `accidda_fcast`, the output of `get_fcast()`.
-#' @param path Optional file path to write the JSON output to. Must end with `.json`.
-#' If `NULL`, the output is not written to disk.
-#' @return A named list with a single metadata JSON structure and one JSON structure per location.
+#' Convert a forecast to RespiLens format
+#'
+#' @param x An \code{accidda_fcast} from \code{\link{get_fcast}}.
+#' @param path Optional \code{.json} path to write to; if \code{NULL}, nothing
+#'   is written.
+#' @return A named list (\code{metadata}, \code{ground_truth},
+#'   \code{forecasts}), invisibly.
 #' @export
 
-to_respilens <- function(accidda_fcast, path = NULL) {
-  #check it is of class `accidda_fcast`
-  if (!inherits(accidda_fcast, "accidda_fcast")) {
+to_respilens <- function(x, path = NULL) {
+  # check it is of class `accidda_fcast`
+  if (!inherits(x, "accidda_fcast")) {
     stop("Input must be an object of class 'accidda_fcast'.")
   }
 
-  model_out_tbl = accidda_fcast$hubcast$model_out_tbl
-  oracle_output = accidda_fcast$hubcast$oracle_output
+  model_out_tbl <- x$hub$model_out_tbl
+  oracle_output <- x$hub$oracle_output
 
   # Necessary model_out_tbl filtering
   # PATCH: removing 'peaks' keys for now (MyRespiLens doesn't support yet)

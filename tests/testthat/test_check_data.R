@@ -48,7 +48,7 @@ test_that("returns input if already accidda_data", {
 test_that("error if input is not a data frame", {
   expect_error(
     check_data(123),
-    "`df` must be a data frame"
+    "`data` must be a data frame"
   )
 })
 

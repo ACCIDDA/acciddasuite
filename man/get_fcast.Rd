@@ -2,78 +2,54 @@
 % Please edit documentation in R/get_fcast.R
 \name{get_fcast}
 \alias{get_fcast}
-\title{Forecast and evaluate time series models}
+\title{Produce a forward-looking forecast}
 \usage{
-get_fcast(df, eval_start_date, h = 4, top_n = 3, extra_models = NULL)
+get_fcast(x, models = default_models(), h = 4, top_n = 3)
 }
 \arguments{
-\item{df}{An \code{accidda_ncast} object from
-\code{\link{get_ncast}}, or an \code{accidda_data} object from
-\code{\link{check_data}} or \code{\link{get_data}}.
-If the underlying data frame contains \code{ncast_lower} and
-\code{ncast_upper} columns, nowcast uncertainty propagation
-is enabled automatically.}
+\item{x}{An \code{accidda_cv} (\code{\link{get_cv}}), \code{accidda_ncast}
+or \code{accidda_data}.}
 
-\item{eval_start_date}{Date or string coercible to Date. First date at
-which forecasts are evaluated. At least 52 weeks of data must precede
-this date.}
+\item{models}{Named list of \code{fable} models. Defaults to
+\code{\link{default_models}}. Ignored when \code{x} is an
+\code{accidda_cv} (its ranked models are reused).}
 
-\item{h}{Integer. Forecast horizon in weeks. Default is 4.}
+\item{h}{Integer. Forecast horizon, in reporting-interval steps (weeks for
+weekly data). Default 4; for an \code{accidda_cv}, defaults to the
+cross-validation horizon.}
 
-\item{top_n}{Integer. Number of top ranked models included in the
-ensemble. Default is 3.}
-
-\item{extra_models}{Named list of additional forecasting models passed to
-\code{fabletools::model()}. Each element must reference the \code{observation}
-column and be compatible with \code{fabletools::forecast()}.
-
-Custom models can be constructed using the fable modelling framework,
-see the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{fabletools extension_models vignette}.
-
-The name of each list element is used as the model label in the output.}
+\item{top_n}{Integer. Number of top-ranked models to ensemble; used only
+when \code{x} is an \code{accidda_cv}. Default 3.}
 }
 \value{
-An object of class \code{accidda_fcast} containing:
+An \code{accidda_fcast} object:
 \describe{
-\item{hubcast}{Hub-format forecast object (\code{model_out_tbl} and \code{oracle_output}).}
-\item{score}{Model ranking based on rolling origin WIS.}
-\item{plot}{ggplot2 object showing forecasts and prediction intervals.}
+\item{hub}{Hub-format forecast (\code{model_out_tbl}, \code{oracle_output}).}
+\item{score}{Model ranking from the \code{accidda_cv}, or \code{NULL}.}
+\item{meta}{\code{models}, \code{top_n}, \code{h}, \code{location},
+\code{target}, \code{interval}, \code{nowcast}.}
 }
+Export with \code{\link{to_respilens}}.
 }
 \description{
-Selects and evaluates multiple time series models via expanding-window
-cross-validation, then produces a final forward-looking forecast.
+Refits models on the full series, forecasts \code{h} steps ahead and
+combines them into an equal-weight ensemble. Accepts either an
+\code{accidda_cv} from \code{\link{get_cv}} — whose ranking selects the best
+\code{top_n} models — or an \code{accidda_data} / \code{accidda_ncast},
+which forecasts every model in \code{models}.
 }
 \details{
-\strong{Cross-validation.} From \code{eval_start_date} onwards, models are
-repeatedly refitted on all data up to each cutoff and used to forecast
-the next \code{h} weeks. Models are ranked by WIS; the best \code{top_n}
-form an equal-weight ensemble.
-
-\strong{Nowcast uncertainty.} When an \code{accidda_ncast} object is
-supplied (or an \code{accidda_data} whose data frame contains
-\code{ncast_lower} and \code{ncast_upper} columns),
-cross-validation runs on the \code{observation} column (the median
-corrected series). The final forecast is then produced three times
-(from the median, lower 95\\% CrI, and upper 95\\% CrI baselines)
-and the resulting distributions are pooled, so prediction intervals
-reflect both model uncertainty and nowcast uncertainty.
+If the input carries \code{ncast_lower} / \code{ncast_upper} (from
+\code{\link{get_ncast}}), forecasts are pooled across the nowcast median and
+95\\% CrI baselines so the intervals also reflect nowcast uncertainty.
 }
 \examples{
 \dontrun{
-extra_models <- list(
-  CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
-  PROPHET = fable.prophet::PROPHET(observation),
-  EPIESTIM = EPIESTIM(observation, mean_si = 3.96, std_si = 4.75)
-)
+ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
+cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(
-  df,
-  eval_start_date = "2025-01-01",
-  h = 4,
-  top_n = 3,
-  extra_models = extra_models
-)
+get_fcast(cv, top_n = 3)   # reuse the cross-validation ranking
+get_fcast(ncast)           # or forecast the default models directly
 }
 
 }

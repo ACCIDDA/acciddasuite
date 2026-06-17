@@ -2,15 +2,15 @@
 % Please edit documentation in R/print.R
 \name{print.accidda_ncast}
 \alias{print.accidda_ncast}
-\title{Print an accidda_ncast object}
+\title{Print an \code{accidda_ncast} object}
 \usage{
 \method{print}{accidda_ncast}(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{accidda_ncast}.}
+\item{x}{An \code{accidda_ncast} object.}
 
-\item{...}{Additional arguments (currently ignored).}
+\item{...}{Ignored.}
 }
 \description{
-Displays a concise summary of an \code{accidda_ncast} object.
+Print an \code{accidda_ncast} object
 }

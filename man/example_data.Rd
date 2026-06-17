@@ -5,7 +5,7 @@
 \alias{example_data}
 \title{Weekly COVID-19 hospital admissions for New York}
 \format{
-A data frame with 292 rows and 5 columns:
+A data frame with 5 columns:
 \describe{
 \item{as_of}{Date the observation was reported.}
 \item{location}{State abbreviation (\code{"NY"}).}
@@ -21,17 +21,13 @@ CDC NHSN via \code{\link[epidatr]{pub_covidcast}}.
 example_data
 }
 \description{
-Weekly confirmed COVID-19 hospital admissions for New York state
-from the CDC NHSN, fetched via \code{\link{get_data}} with revision
-history. Covers August 2020 through March 2026.
-}
-\details{
-Pass this data frame through \code{\link{check_data}} to use it in
-the acciddasuite pipeline.
+Weekly confirmed COVID-19 hospital admissions for New York (CDC NHSN), with
+revision history, fetched via \code{\link{get_data}}; pass through
+\code{\link{check_data}} to use it. Covers Aug 2020 to Mar 2026.
 }
 \examples{
 \dontrun{
-example_data |> check_data() |> get_fcast(eval_start_date = "2025-01-01")
+example_data |> check_data()
 }
 }
 \keyword{datasets}

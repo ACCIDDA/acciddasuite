@@ -21,17 +21,16 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-`acciddasuite` builds infectious disease forecasts in three steps:
+`acciddasuite` builds infectious disease forecasts in a few steps:
 
 1. **`get_data()`** or **`check_data()`**: fetch or validate surveillance data.
 2. **`get_ncast()`** *(optional)*: correct recent weeks for reporting delays.
-3. **`get_fcast()`**: evaluate models via cross-validation and forecast into the future.
+3. **`get_cv()`** *(optional)*: evaluate candidate models by time series cross-validation.
+4. **`get_fcast()`**: ensemble the best models into a forward-looking forecast.
 
-The package relies on the [`fable`](https://fable.tidyverts.org/) modeling framework and follows the standard forecasting workflow described by [Hyndman & Athanasopoulos (2021)](https://otexts.com/fpp3/basic-steps.html). The overall goal is to provide public health professionals with an easily-adoptable approach to generating an ensemble of outputs from statistical models, evaluating forecasts, and visualizing outputs.
+The package relies on the [`fable`](https://fable.tidyverts.org/) modeling framework and follows the standard forecasting workflow described by [Hyndman & Athanasopoulos (2021)](https://otexts.com/fpp3/basic-steps.html). The overall goal is to provide public health professionals with an easily-adoptable approach to generating, evaluating forecasts, and visualizing infectious disease forecasts.
 
-## Forecast Planning
-
-**To get more information about how to know whether forecasting is the best approach for your task, follow the steps in [this](forecast_planning.html) article.**
+To get more information about how to know whether forecasting is the best approach for your task, follow the steps in [this](forecast_planning.html) article.
 
 ## Step 1: Get data
 
@@ -68,10 +67,10 @@ The corrected `ncast$data` contains two extra columns: `ncast_lower` and `ncast_
 
 ## Step 3: Forecasting
 
-`get_fcast()` does two things:
+Forecasting is split into two steps:
 
-1. **Model selection**: time series cross-validation on the full (median corrected) series, starting from `eval_start_date`. Models are ranked by WIS; the best `top_n` form an equal weight ensemble.
-2. **Final forecast**: projects `h` weeks into the future. When nowcast columns are present, the forecast is produced from three baselines (lower, median, and upper nowcast estimates) and pooled, so prediction intervals reflect both model uncertainty and nowcast uncertainty.
+1. **`get_cv()` — model selection**: time series cross-validation on the full (median corrected) series, starting from `eval_start_date`. Models are ranked by WIS and interval coverage.
+2. **`get_fcast()` — final forecast**: reuses the ranking to ensemble the best `top_n` models and projects `h` weeks into the future. When nowcast columns are present, the forecast is produced from three baselines (lower, median, and upper nowcast estimates) and pooled, so prediction intervals reflect both model uncertainty and nowcast uncertainty.
 
 We set `eval_start_date` to mark the start of the evaluation window. At least 52 weeks of data must precede this date.
 
@@ -89,55 +88,51 @@ Default models are:
 
 * `ARIMA`: Learns repeating patterns from past values to predict future ones. Auto-configured to find the best fit.
 
-We use `pipetime::time_pipe()` to log how long the model selection and forecasting steps take.
-```{r, models}
-fcast <- get_fcast(
+```{r, cross-validation}
+cv <- get_cv(
   ncast,
   eval_start_date = eval_start_date,
-  top_n = 4,
   h = 4
-) |> 
-  pipetime::time_pipe("base fcast", log = "log")
+)
+cv
 
+```
+
+```{r, final-forecast}
+fcast <- get_fcast(cv, top_n = 3)
 fcast
 ```
 
-```{r, plot-forecast}
-fcast$plot
-```
-
-View forecast evaluation by viewing the `score` element of the object:
-```{r, score-forecast}
-fcast$score
-```
 
 ### Adding custom models
 
-Any model compatible with the [`fable`](https://fable.tidyverts.org/) framework can be passed via `extra_models`:
+Any model compatible with the [`fable`](https://fable.tidyverts.org/) framework can be passed to `get_cv()` via `models`. Compose with `default_models()` to keep the built-ins alongside your own:
 
 ```{r, extra-models}
 library(fable)
 library(fable.prophet)
-extra <- list(
-  CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
-  PROPHET = prophet(observation ~ season("year")),
-  EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
+library(EpiEstim)
+library(projections)
+my_models <- c(
+  default_models(),
+  list(
+    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
+    PROPHET = prophet(observation ~ season("year")),
+    EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
+  )
 )
 
-fcast <- get_fcast(
+cv <- get_cv(
   ncast,
   eval_start_date = eval_start_date,
-  top_n = 4,
   h = 3,
-  extra_models = extra
-) |> 
-  pipetime::time_pipe("extra fcast", log = "log")
+  models = my_models
+)
+
+fcast <- get_fcast(cv, top_n = 3)
+
 ```
 
-You can check how long each step took by calling `pipetime::get_log()`:
-```{r, timing}
-pipetime::get_log()
-```
 
 ## Submit to RespiLens
 

@@ -13,26 +13,24 @@ Imports:
     fable,
     fabletools,
     progressr,
-    feasts,
     tsibble,
     dplyr,
     tidyr,
     ggplot2,
     distributional,
     epidatr,
-    rlang,
     hubEvals,
+    incidence,
+    jsonlite,
+    baselinenowcast,
+    pipetime
+Suggests:
     EpiEstim,
     projections,
-    incidence,
-    jsonlite
-Suggests:
-    baselinenowcast,
     DiagrammeR,
     knitr,
     rmarkdown,
     devtools,
-    pipetime,
     fable.prophet,
     testthat (>= 3.0.0)
 Remotes:
