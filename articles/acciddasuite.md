@@ -125,8 +125,8 @@ eval_start_date <- max(ncast$data$target_end_date) - 28
 
 Default models are:
 
-- `SNAIVE` (Seasonal Naïve): Assumes this week will look like the same
-  week last year. The simplest possible baseline.
+- `NAIVE` (Naïve / random walk): Carries the last observed value
+  forward. The simplest possible baseline.
 
 - `ETS` (Exponential Smoothing): A weighted average where recent weeks
   matter more than older ones. Adapts to trends and seasonal patterns.
@@ -153,7 +153,7 @@ cv
 #>   <chr>    <dbl>
 #> 1 ETS       29.4
 #> 2 THETA     34.1
-#> 3 SNAIVE   160. 
+#> 3 NAIVE     35.1
 #> 
 #> Evaluated from 2026-05-09 | horizon 4 weeks | NY 
 #> 
@@ -177,7 +177,7 @@ fcast
 #>   <chr>    <dbl>
 #> 1 ETS       29.4
 #> 2 THETA     34.1
-#> 3 SNAIVE   160. 
+#> 3 NAIVE     35.1
 #> 
 #> Forecast horizon:
 #>   From: 2026-06-13 

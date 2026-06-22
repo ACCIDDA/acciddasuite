@@ -24,7 +24,8 @@ get_fcast(x, models = default_models(), h = 4, top_n = 3)
 
   Named list of `fable` models. Defaults to
   [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
-  Ignored when `x` is an `accidda_cv` (its ranked models are reused).
+  For an `accidda_cv`, leave unset to forecast its `top_n` ranked
+  models, or pass `models` to forecast a set of your own.
 
 - h:
 
@@ -34,8 +35,8 @@ get_fcast(x, models = default_models(), h = 4, top_n = 3)
 
 - top_n:
 
-  Integer. Number of top-ranked models to ensemble; used only when `x`
-  is an `accidda_cv`. Default 3.
+  Integer. Number of top-ranked CV models to ensemble. Used only when
+  `x` is an `accidda_cv` and `models` is unset. Default 3.
 
 ## Value
 
@@ -69,7 +70,8 @@ if (FALSE) { # \dontrun{
 ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
 cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(cv, top_n = 3)   # reuse the cross-validation ranking
-get_fcast(ncast)           # or forecast the default models directly
+get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
+get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
+get_fcast(ncast)                         # or forecast the default models directly
 } # }
 ```

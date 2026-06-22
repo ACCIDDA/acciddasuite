@@ -4,9 +4,9 @@ The built-in model set for
 [`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
 and
 [`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md):
-seasonal naive, ETS, Theta and ARIMA, each fitted on `log(observation)`
-to stabilise count variance (`fable` back-transforms automatically).
-Extend rather than replace by composing, e.g.
+a naive random walk, ETS, Theta and ARIMA, each fitted on
+`log(observation)` to stabilise count variance (`fable` back-transforms
+automatically). Extend rather than replace by composing, e.g.
 `c(default_models(), list(CUSTOM = fable::ARIMA(observation)))`.
 
 ## Usage
@@ -23,7 +23,7 @@ A named list of fable model definitions.
 
 ``` r
 default_models()
-#> $SNAIVE
+#> $NAIVE
 #> <RW model definition>
 #> 
 #> $ETS

@@ -69,8 +69,9 @@ or <code>accidda_data</code>.</p></dd>
 
 <dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
 <dd><p>Named list of <code>fable</code> models. Defaults to
-<code><a href="default_models.html">default_models</a></code>. Ignored when <code>x</code> is an
-<code>accidda_cv</code> (its ranked models are reused).</p></dd>
+<code><a href="default_models.html">default_models</a></code>. For an <code>accidda_cv</code>, leave unset to
+forecast its <code>top_n</code> ranked models, or pass <code>models</code> to forecast
+a set of your own.</p></dd>
 
 
 <dt id="arg-h">h<a class="anchor" aria-label="anchor" href="#arg-h"></a></dt>
@@ -80,8 +81,8 @@ cross-validation horizon.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
-<dd><p>Integer. Number of top-ranked models to ensemble; used only
-when <code>x</code> is an <code>accidda_cv</code>. Default 3.</p></dd>
+<dd><p>Integer. Number of top-ranked CV models to ensemble. Used only
+when <code>x</code> is an <code>accidda_cv</code> and <code>models</code> is unset. Default 3.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -112,8 +113,9 @@ when <code>x</code> is an <code>accidda_cv</code>. Default 3.</p></dd>
 <span class="r-in"><span><span class="va">ncast</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_data.html">get_data</a></span><span class="op">(</span><span class="st">"covid"</span>, <span class="st">"ny"</span>, revisions <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cv</span>    <span class="op">&lt;-</span> <span class="va">ncast</span> <span class="op">|&gt;</span> <span class="fu"><a href="get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="st">"2025-01-01"</span>, h <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">get_fcast</span><span class="op">(</span><span class="va">cv</span>, top_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>   <span class="co"># reuse the cross-validation ranking</span></span></span>
-<span class="r-in"><span><span class="fu">get_fcast</span><span class="op">(</span><span class="va">ncast</span><span class="op">)</span>           <span class="co"># or forecast the default models directly</span></span></span>
+<span class="r-in"><span><span class="fu">get_fcast</span><span class="op">(</span><span class="va">cv</span>, top_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>                 <span class="co"># reuse the cross-validation ranking</span></span></span>
+<span class="r-in"><span><span class="fu">get_fcast</span><span class="op">(</span><span class="va">cv</span>, models <span class="op">=</span> <span class="fu"><a href="default_models.html">default_models</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># forecast a different set; keeps $score</span></span></span>
+<span class="r-in"><span><span class="fu">get_fcast</span><span class="op">(</span><span class="va">ncast</span><span class="op">)</span>                         <span class="co"># or forecast the default models directly</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

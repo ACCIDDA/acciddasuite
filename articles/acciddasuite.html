@@ -179,8 +179,8 @@ evaluation window. At least 52 weeks of data must precede this date.</p>
 <code class="sourceCode R"><span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">ncast</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">28</span></span></code></pre></div>
 <p>Default models are:</p>
 <ul>
-<li><p><code>SNAIVE</code> (Seasonal Naïve): Assumes this week will look
-like the same week last year. The simplest possible baseline.</p></li>
+<li><p><code>NAIVE</code> (Naïve / random walk): Carries the last
+observed value forward. The simplest possible baseline.</p></li>
 <li><p><code>ETS</code> (Exponential Smoothing): A weighted average
 where recent weeks matter more than older ones. Adapts to trends and
 seasonal patterns.</p></li>
@@ -205,7 +205,7 @@ predict future ones. Auto-configured to find the best fit.</p></li>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       29.4</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA     34.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> SNAIVE   160. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE     35.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Evaluated from 2026-05-09 | horizon 4 weeks | NY </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -226,7 +226,7 @@ predict future ones. Auto-configured to find the best fit.</p></li>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       29.4</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA     34.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> SNAIVE   160. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE     35.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
 <span><span class="co">#&gt;   From: 2026-06-13 </span></span>
