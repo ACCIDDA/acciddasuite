@@ -9,13 +9,17 @@
 #' @param x An \code{accidda_ncast} (\code{\link{get_ncast}}) or
 #'   \code{accidda_data} (\code{\link{check_data}} / \code{\link{get_data}}).
 #' @param eval_start_date Date (or string coercible to one). First origin
-#'   evaluated; must lie within the data window with at least one year of data
-#'   before it.
-#' @param h Integer. Forecast horizon (e.g. 1 week for weekly data). Default 4.
+#'   evaluated; must lie within the data window. All observations before it form
+#'   the initial training window.
+#' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
+#'   weekly data, days for daily). Default 4.
 #' @param models Named list of \code{fable} models. Defaults to
 #'   \code{\link{default_models}}; compose with \code{c(default_models(),
 #'   list(...))} to extend. Each element must reference \code{observation}. See
 #'   the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{fabletools extension vignette} for custom models.
+#' @param step Integer. Number of reporting-interval steps the training window
+#'   advances between successive CV origins. Defaults to \code{h}
+#'   (non-overlapping evaluation blocks).
 #'
 #' @return An \code{accidda_cv} object:
 #'   \describe{
@@ -46,7 +50,13 @@
 #' @importFrom hubEvals score_model_out
 #' @importFrom pipetime time_pipe
 #'
-get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
+get_cv <- function(
+  x,
+  eval_start_date,
+  h = 4,
+  models = default_models(),
+  step = h
+) {
   if (!inherits(x, c("accidda_data", "accidda_ncast"))) {
     stop(
       "`x` must be an accidda_data or accidda_ncast object.\n",
@@ -60,6 +70,11 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
   }
   if (!is.numeric(h) || length(h) != 1L || h <= 0) {
     stop("`h` must be a single positive number (number of forecast steps).")
+  }
+  if (!is.numeric(step) || length(step) != 1L || step <= 0) {
+    stop(
+      "`step` must be a single positive number (periods between CV origins)."
+    )
   }
   validate_models(models)
 
@@ -92,7 +107,7 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     # step created after fitting, so it never competes with fable's bar.
     progressr::with_progress({
       fcast <- ts |>
-        make_cv_origins(eval_start_date, h, meta$interval) |>
+        make_cv_origins(eval_start_date, step = step) |>
         fabletools::model(!!!models) |>
         fabletools::forecast(h = h) |>
         dplyr::mutate(observation = truncate_counts(observation))
@@ -168,31 +183,32 @@ extract_series <- function(x) {
 
 #' Build expanding-window cross-validation origins
 #'
-#' Each origin extends the training window by \code{h} steps; the final
-#' incomplete origin is dropped. Requires at least one year of data (derived
-#' from \code{interval}) before \code{eval_start_date}.
+#' All observations before \code{eval_start_date} form the initial training
+#' window; each subsequent origin extends it by \code{step}. The final
+#' incomplete origin is dropped, so \code{eval_start_date} must leave at least
+#' one full evaluation window.
 #' @param ts A tsibble of the observation series.
 #' @param eval_start_date First evaluated origin.
-#' @param h Number of steps between origins.
-#' @param interval Reporting interval in days.
+#' @param step Number of steps between origins.
 #' @return A stretched tsibble keyed by `.id`.
 #' @keywords internal
 #' @noRd
-make_cv_origins <- function(ts, eval_start_date, h, interval) {
+make_cv_origins <- function(ts, eval_start_date, step) {
   init <- ts |>
     dplyr::filter(target_end_date < eval_start_date) |>
     nrow()
 
-  min_obs <- floor(365.25 / interval) # ~1 year of observations
-  if (init < min_obs) {
+  # eval_start_date alone sets the initial training window (all data before it);
+  # only guard the other end, so at least one full fold remains to be scored.
+  if (init > nrow(ts) - step) {
     stop(sprintf(
-      "At least %d periods (~1 year) of data are required before `eval_start_date` (found %d).",
-      min_obs,
-      init
+      "`eval_start_date` leaves too little to score: %d periods after it (need >= %d).",
+      nrow(ts) - init,
+      step
     ))
   }
 
   ts |>
-    tsibble::stretch_tsibble(.init = init, .step = h) |>
+    tsibble::stretch_tsibble(.init = init, .step = step) |>
     dplyr::filter(.id != max(.id))
 }

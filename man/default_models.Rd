@@ -11,8 +11,9 @@ A named list of fable model definitions.
 }
 \description{
 The built-in model set for \code{\link{get_cv}} and \code{\link{get_fcast}}:
-seasonal naive, ETS, Theta and ARIMA, each fitted on \code{log(observation)}
-to stabilise count variance (\code{fable} back-transforms automatically).
+a naive random walk, ETS, Theta and ARIMA, each fitted on
+\code{log(observation)} to stabilise count variance (\code{fable}
+back-transforms automatically).
 Extend rather than replace by composing, e.g.
 \code{c(default_models(), list(CUSTOM = fable::ARIMA(observation)))}.
 }

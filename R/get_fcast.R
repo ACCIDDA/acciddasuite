@@ -13,13 +13,14 @@
 #' @param x An \code{accidda_cv} (\code{\link{get_cv}}), \code{accidda_ncast}
 #'   or \code{accidda_data}.
 #' @param models Named list of \code{fable} models. Defaults to
-#'   \code{\link{default_models}}. Ignored when \code{x} is an
-#'   \code{accidda_cv} (its ranked models are reused).
+#'   \code{\link{default_models}}. For an \code{accidda_cv}, leave unset to
+#'   forecast its \code{top_n} ranked models, or pass \code{models} to forecast
+#'   a set of your own.
 #' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
 #'   weekly data). Default 4; for an \code{accidda_cv}, defaults to the
 #'   cross-validation horizon.
-#' @param top_n Integer. Number of top-ranked models to ensemble; used only
-#'   when \code{x} is an \code{accidda_cv}. Default 3.
+#' @param top_n Integer. Number of top-ranked CV models to ensemble. Used only
+#'   when \code{x} is an \code{accidda_cv} and \code{models} is unset. Default 3.
 #'
 #' @return An \code{accidda_fcast} object:
 #'   \describe{
@@ -35,8 +36,9 @@
 #' ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
 #' cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 #'
-#' get_fcast(cv, top_n = 3)   # reuse the cross-validation ranking
-#' get_fcast(ncast)           # or forecast the default models directly
+#' get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
+#' get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
+#' get_fcast(ncast)                         # or forecast the default models directly
 #' }
 #'
 #' @export
@@ -49,18 +51,25 @@
 #' @importFrom pipetime time_pipe
 #'
 get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
+  # The CV supplies its top_n models unless the caller passes `models`.
+  use_cv_ranking <- inherits(x, "accidda_cv") && missing(models)
+
   if (inherits(x, "accidda_cv")) {
     if (missing(h)) {
       h <- x$meta$h
     }
-    if (!is.numeric(top_n) || length(top_n) != 1L || top_n <= 0) {
-      stop("`top_n` must be a single positive integer.")
+    if (use_cv_ranking) {
+      if (!is.numeric(top_n) || length(top_n) != 1L || top_n <= 0) {
+        stop("`top_n` must be a single positive integer.")
+      }
+      top_ids <- x$score |>
+        dplyr::arrange(wis) |>
+        dplyr::slice_head(n = top_n) |>
+        dplyr::pull(model_id)
+      models <- x$models[top_ids]
+    } else {
+      validate_models(models)
     }
-    top_ids <- x$score |>
-      dplyr::arrange(wis) |>
-      dplyr::slice_head(n = top_n) |>
-      dplyr::pull(model_id)
-    models <- x$models[top_ids]
     df <- x$data
     score <- x$score
     meta <- x$meta
@@ -120,7 +129,7 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
       score = score,
       meta = list(
         models = names(models),
-        top_n = if (inherits(x, "accidda_cv")) top_n else length(models),
+        top_n = if (use_cv_ranking) top_n else length(models),
         h = h,
         location = meta$location,
         target = meta$target,
