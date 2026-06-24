@@ -12,7 +12,7 @@
 #' @return An \code{accidda_data} object:
 #'   \describe{
 #'     \item{data}{Validated data frame with coerced types.}
-#'     \item{location, target}{Single location / target identifier.}
+#'     \item{location, target}{location(s) / target identifier.}
 #'     \item{window}{Named \code{from} / \code{to} dates.}
 #'     \item{interval}{Reporting interval in days (7 = weekly).}
 #'     \item{history}{\code{TRUE} if revision history (\code{as_of}) is present.}
@@ -52,20 +52,10 @@ check_data <- function(data) {
     stop("`target_end_date` contains values that cannot be coerced to Date.")
   }
 
-  # --- Single location / target ---
+  # --- location(s) / target ---
   locations <- unique(data$location)
   targets <- unique(data$target)
 
-  if (length(locations) != 1) {
-    stop(
-      "Data must contain exactly one location (found ",
-      length(locations),
-      ": ",
-      paste(head(locations, 5), collapse = ", "),
-      if (length(locations) > 5) ", ..." else "",
-      "). Filter before calling check_data()."
-    )
-  }
   if (length(targets) != 1) {
     stop(
       "Data must contain exactly one target (found ",

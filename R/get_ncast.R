@@ -52,6 +52,7 @@ get_ncast <- function(
 ) {
   # Accept accidda_data; coerce plain data frames via check_data()
   x <- check_data(x)
+
   if (!x$history) {
     stop(
       "Nowcasting requires revision history (multiple `as_of` dates).\n",
@@ -79,25 +80,100 @@ get_ncast <- function(
 
   df <- x$data
 
-  latest_date <- max(df$target_end_date)
-  # Only a recent window is used for delay estimation.
-  estimation_window <- scale_factor * max_delay * interval # days
+  pieces <- split_by_location(df)
 
-  # Latest known observation per date, over the full history.
-  best_obs <- df |>
+  results <- lapply(pieces, function(df_loc) {
+    run_location_ncast(
+      df_loc = df_loc,
+      max_delay = max_delay,
+      draws = draws,
+      prop_delay = prop_delay,
+      scale_factor = scale_factor
+    )
+  })
+
+  out_df <- dplyr::bind_rows(lapply(results, `[[`, "data"))
+
+  # Keep per-location summaries in meta for plotting or inspection.
+  ncast_meta <- setNames(
+    lapply(results, `[[`, "ncast_summary"),
+    names(results)
+  )
+
+  new_accidda_ncast(
+    data = out_df,
+    locations = names(pieces),
+    target = meta$target,
+    window = c(
+      from = min(out_df$target_end_date),
+      to = max(out_df$target_end_date)
+    ),
+    interval = meta$interval,
+    history = TRUE,
+    meta = list(
+      settings = list(
+        max_delay = max_delay,
+        draws = draws,
+        prop_delay = prop_delay,
+        scale_factor = scale_factor
+      ),
+      ncast_summary = ncast_meta
+    )
+  )
+}
+
+
+#' Round dates to ISO week so reporting delays are always integer weeks
+#' @keywords internal
+#' @noRd
+week_floor <- function(dates) {
+  as.Date(cut(dates, "week"))
+}
+
+
+#' Split into per-location series
+#' @keywords  internal
+split_by_location <- function(df) {
+  if (!"location" %in% names(df)) {
+    stop("`df` must contain a `location` column.")
+  }
+  split(df, df$location, drop = TRUE)
+}
+
+
+#' Run nowcasting over each location
+#' @keywords internal
+#' @noRd
+run_location_ncast <- function(
+    df_loc,
+    max_delay = 2,
+    draws = 1000,
+    prop_delay = 0.5,
+    scale_factor = 3
+) {
+  latest_date <- max(df_loc$target_end_date)
+  interval <- 7L
+
+  # Only a recent window is used for delay estimation.
+  estimation_window <- scale_factor * max_delay * interval  # days
+
+  # Latest known observation per date for this location only,
+  # over the full history.
+  best_obs <- df_loc |>
     dplyr::group_by(target_end_date) |>
     dplyr::filter(as_of == max(as_of)) |>
     dplyr::ungroup() |>
     dplyr::select(target_end_date, location, target, observation)
 
   # Reporting triangle -> posterior nowcast draws -> summary (incl. 95% CrI)
-  triangle <- build_reporting_triangle(df, latest_date, estimation_window)
+  triangle <- build_reporting_triangle(df_loc, latest_date, estimation_window)
 
   rep_tri <- baselinenowcast::as_reporting_triangle(
     triangle,
     delays_unit = "weeks"
   )
   rep_tri <- baselinenowcast::truncate_to_delay(rep_tri, max_delay = max_delay)
+
   draws_tbl <- baselinenowcast::baselinenowcast(
     rep_tri,
     scale_factor = scale_factor,
@@ -109,44 +185,28 @@ get_ncast <- function(
     dplyr::group_by(reference_date) |>
     dplyr::summarise(
       median = stats::median(pred_count),
-      lower = stats::quantile(pred_count, 0.025),
-      upper = stats::quantile(pred_count, 0.975),
-      q25 = stats::quantile(pred_count, 0.25),
-      q75 = stats::quantile(pred_count, 0.75),
+      lower  = stats::quantile(pred_count, 0.025),
+      upper  = stats::quantile(pred_count, 0.975),
+      q25    = stats::quantile(pred_count, 0.25),
+      q75    = stats::quantile(pred_count, 0.75),
       .groups = "drop"
     )
 
   # Replace only the last max_delay weeks (right-truncated) with the nowcast.
   out_df <- build_corrected_series(
-    best_obs,
-    ncast_summary,
-    latest_date,
-    max_delay,
-    interval
+    best_obs = best_obs,
+    ncast_summary = ncast_summary,
+    latest_date = latest_date,
+    max_delay = max_delay,
+    interval = interval
   )
 
-  p <- plot_ncast(ncast_summary, best_obs, latest_date, estimation_window, meta)
-
-  new_accidda_ncast(
+  list(
     data = out_df,
-    location = meta$location,
-    target = meta$target,
-    window = c(
-      from = min(out_df$target_end_date),
-      to = max(out_df$target_end_date)
-    ),
-    interval = interval,
-    history = TRUE,
-    plot = p
+    ncast_summary = ncast_summary,
+    best_obs = best_obs,
+    latest_date = latest_date
   )
-}
-
-
-#' Round dates to ISO week so reporting delays are always integer weeks
-#' @keywords internal
-#' @noRd
-week_floor <- function(dates) {
-  as.Date(cut(dates, "week"))
 }
 
 
@@ -248,52 +308,25 @@ build_corrected_series <- function(
 }
 
 
-#' Visualise the nowcast over the estimation window
-#' @param ncast_summary Per-week nowcast summary (median + 50\%/95\% CrI bounds).
-#' @param best_obs Latest observation per date (one row per `target_end_date`).
-#' @param latest_date The most recent `target_end_date`.
-#' @param estimation_window Width, in days, of the estimation window.
-#' @param meta Metadata backbone (for axis/subtitle labels).
-#' @return A ggplot object.
-#' @keywords internal
-#' @noRd
-plot_ncast <- function(
-  ncast_summary,
-  best_obs,
-  latest_date,
-  estimation_window,
-  meta
+new_accidda_ncast <- function(
+    data,
+    locations,
+    target,
+    window,
+    interval,
+    history = TRUE,
+    meta = list()
 ) {
-  obs_window <- best_obs |>
-    dplyr::filter(target_end_date >= latest_date - estimation_window) |>
-    dplyr::mutate(reference_date = week_floor(target_end_date))
-
-  ggplot2::ggplot(ncast_summary, ggplot2::aes(x = reference_date)) +
-    ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = lower, ymax = upper, fill = "95% CrI"),
-      alpha = 0.2
-    ) +
-    ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q25, ymax = q75, fill = "50% CrI"),
-      alpha = 0.4
-    ) +
-    ggplot2::geom_line(ggplot2::aes(y = median)) +
-    ggplot2::geom_point(
-      data = obs_window,
-      ggplot2::aes(x = reference_date, y = observation),
-      size = 0.7
-    ) +
-    ggplot2::scale_fill_manual(
-      values = c("95% CrI" = "grey30", "50% CrI" = "grey30"),
-      guide = ggplot2::guide_legend(
-        override.aes = list(alpha = c(0.4, 0.2))
-      )
-    ) +
-    ggplot2::labs(
-      x = "Date",
-      y = meta$target,
-      subtitle = meta$location,
-      fill = NULL
-    ) +
-    ggplot2::theme_classic()
+  structure(
+    list(
+      data = data,
+      locations = locations,
+      target = target,
+      window = window,
+      interval = interval,
+      history = history,
+      meta = meta
+    ),
+    class = c("accidda_ncast", "accidda_data")
+  )
 }

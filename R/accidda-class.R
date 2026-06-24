@@ -16,7 +16,7 @@ NULL
 new_accidda_data <- function(data, location, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
-    is.character(location), length(location) == 1L,
+    is.character(location), length(location) >= 1L,
     is.character(target), length(target) == 1L,
     inherits(window, "Date"), length(window) == 2L,
     is.numeric(interval), length(interval) == 1L,
