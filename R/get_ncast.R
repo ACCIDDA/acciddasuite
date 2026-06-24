@@ -308,6 +308,18 @@ build_corrected_series <- function(
 }
 
 
+#' Assemble the typed object
+#'
+#' @param data Corrected series across locations
+#' @param locations Set of locations nowcasted
+#' @param target Target identifier
+#' @param window Width in days of the delay-estimation window
+#' @param interval Reporting interval (time unit)
+#' @param history Revision history
+#' @param meta Settings used plus the per-location CrI summary needed for plotting
+#' @return An accidda_ncast object
+#' @keywords internal
+#' @noRd
 new_accidda_ncast <- function(
     data,
     locations,
@@ -327,6 +339,6 @@ new_accidda_ncast <- function(
       history = history,
       meta = meta
     ),
-    class = c("accidda_ncast", "accidda_data")
+    class = "accidda_ncast"
   )
 }
