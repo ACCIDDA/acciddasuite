@@ -21,14 +21,17 @@
 #'   estimation window. Default 3.
 #'
 #' @return An \code{accidda_ncast} object with the shared backbone
-#'   (\code{location}, \code{target}, \code{window}, \code{interval},
-#'   \code{history}) plus:
+#'   (\code{locations}, \code{target}, \code{window},
+#'   \code{interval}, \code{history}) plus:
 #'   \describe{
 #'     \item{data}{Corrected series. \code{observation} holds the nowcast
 #'       median for corrected weeks; \code{ncast_lower} / \code{ncast_upper}
 #'       (95\% CrI) are non-NA only there, and let \code{\link{get_fcast}}
 #'       propagate nowcast uncertainty.}
-#'     \item{plot}{ggplot of the correction.}
+#'     \item{meta}{List. \code{settings} is a list which holds the parameters
+#'       used for nowcasting - \code{max_delay}, \code{draws}, \code{prop_delay},
+#'       \code {scale_factor} - and the now_cast summary for each location,
+#'       \code{ncast_summary}}
 #'   }
 #'
 #' @examples
@@ -66,7 +69,7 @@ get_ncast <- function(
   meta <- accidda_meta(x)
   interval <- meta$interval
 
-  # Nowcasting is weekly-only.
+  # Nowcasting is weekly only.
   if (interval != 7L) {
     stop(
       "get_ncast() currently supports weekly data only ",
@@ -80,8 +83,10 @@ get_ncast <- function(
 
   df <- x$data
 
+  # Split data frame into per-location series.
   pieces <- split_by_location(df)
 
+  # Run nowcasting over each location.
   results <- lapply(pieces, function(df_loc) {
     run_location_ncast(
       df_loc = df_loc,
@@ -92,6 +97,7 @@ get_ncast <- function(
     )
   })
 
+  # Extract the data component from every location and stack them vertically.
   out_df <- dplyr::bind_rows(lapply(results, `[[`, "data"))
 
   # Keep per-location summaries in meta for plotting or inspection.
@@ -131,8 +137,14 @@ week_floor <- function(dates) {
 }
 
 
-#' Split into per-location series
+#' Split data frame into per-location series.
+#'
+#' @param df A data frame containing one or more locations.
+#' @return A named list of data frames, with one element per unique
+#'   \code{location}. Each element contains the rows of \code{df}
+#'   corresponding to a single location.
 #' @keywords  internal
+#' @noRd
 split_by_location <- function(df) {
   if (!"location" %in% names(df)) {
     stop("`df` must contain a `location` column.")
@@ -141,7 +153,26 @@ split_by_location <- function(df) {
 }
 
 
-#' Run nowcasting over each location
+#' Run nowcasting over one location.
+#'
+#' @param df_loc A data frame for a single location containing revision history.
+#' @param max_delay Integer. Number of recent weeks treated as right-truncated.
+#'   Default 2.
+#' @param draws Integer. Number of posterior samples. Default 1000.
+#' @param prop_delay Numeric in (0, 1). Proportion of reference times used for
+#'   delay estimation. Default 0.5.
+#' @param scale_factor Numeric. Multiplier on \code{max_delay} for the estimation
+#'   window. Default 3.
+#'
+#' @return A list with:
+#' \describe{
+#'  \item{data}{Corrected series for the location. \code{observation} holds
+#'     the nowcast median for corrected weeks; \code{ncast_lower} and
+#'     \code{ncast_upper} hold the 95\% CrI for those weeks.}
+#'  \item{ncast_summary}{Per-week nowcast summary including median and
+#'     credible interval bounds.}
+#' }
+#'
 #' @keywords internal
 #' @noRd
 run_location_ncast <- function(
@@ -203,9 +234,7 @@ run_location_ncast <- function(
 
   list(
     data = out_df,
-    ncast_summary = ncast_summary,
-    best_obs = best_obs,
-    latest_date = latest_date
+    ncast_summary = ncast_summary
   )
 }
 
@@ -316,7 +345,8 @@ build_corrected_series <- function(
 #' @param window Width in days of the delay-estimation window
 #' @param interval Reporting interval (time unit)
 #' @param history Revision history
-#' @param meta Settings used plus the per-location CrI summary needed for plotting
+#' @param meta Settings used plus the per-location CrI summary needed for
+#'   plotting
 #' @return An accidda_ncast object
 #' @keywords internal
 #' @noRd
