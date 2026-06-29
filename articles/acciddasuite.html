@@ -117,9 +117,9 @@ object:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Location: NY </span></span>
 <span><span class="co">#&gt; Target:   wk inc covid hosp </span></span>
-<span><span class="co">#&gt; Window:   2020-08-08 to 2026-06-06 ( 305 dates )</span></span>
+<span><span class="co">#&gt; Window:   2020-08-08 to 2026-06-20 ( 307 dates )</span></span>
 <span><span class="co">#&gt; Interval: 7 days</span></span>
-<span><span class="co">#&gt; History:  TRUE ( 2024-11-17 to 2026-06-07 )</span></span></code></pre></div>
+<span><span class="co">#&gt; History:  TRUE ( 2024-11-17 to 2026-06-21 )</span></span></code></pre></div>
 <p>You can also <strong>bring your own data</strong>. Just pass it
 through <code><a href="../reference/check_data.html">check_data()</a></code>. See
 <code><a href="../articles/external_data.html">vignette("external_data")</a></code> for formatting details.</p>
@@ -142,9 +142,9 @@ before that is left untouched.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Location: NY </span></span>
 <span><span class="co">#&gt; Target:   wk inc covid hosp </span></span>
-<span><span class="co">#&gt; Nowcasted 2 weeks: 2026-05-30 to 2026-06-06 </span></span>
+<span><span class="co">#&gt; Nowcasted 2 weeks: 2026-06-13 to 2026-06-20 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $data  corrected series (305 rows)</span></span>
+<span><span class="co">#&gt; $data  corrected series (307 rows)</span></span>
 <span><span class="co">#&gt; $plot  nowcast visualisation</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncast</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
@@ -203,11 +203,11 @@ predict future ones. Auto-configured to find the best fit.</p></li>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
 <span><span class="co">#&gt;   model_id   wis</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       29.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA     34.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE     35.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       8.72</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA    17.3 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE    17.9 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Evaluated from 2026-05-09 | horizon 4 weeks | NY </span></span>
+<span><span class="co">#&gt; Evaluated from 2026-05-23 | horizon 4 weeks | NY </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $forecasts  per-origin forecasts (model_out_tbl)</span></span>
@@ -224,13 +224,13 @@ predict future ones. Auto-configured to find the best fit.</p></li>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
 <span><span class="co">#&gt;   model_id   wis</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       29.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA     34.1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE     35.1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ETS       8.72</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> THETA    17.3 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NAIVE    17.9 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-06-13 </span></span>
-<span><span class="co">#&gt;   To:   2026-07-04 </span></span>
+<span><span class="co">#&gt;   From: 2026-06-27 </span></span>
+<span><span class="co">#&gt;   To:   2026-07-18 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Contents:</span></span>
 <span><span class="co">#&gt;   $hub    hub forecast object (model_out_tbl, oracle_output)</span></span>

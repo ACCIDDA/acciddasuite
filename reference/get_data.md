@@ -44,7 +44,7 @@ get_data(pathogen = "covid", geo_value = "ny")
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Window:   2020-08-08 to 2026-06-20 ( 307 dates )
 #> Interval: 7 days
 #> History:  FALSE
 
@@ -54,7 +54,7 @@ get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 #> 
 #> Location: CA 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Window:   2020-08-08 to 2026-06-20 ( 307 dates )
 #> Interval: 7 days
-#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
+#> History:  TRUE ( 2024-11-17 to 2026-06-21 )
 ```

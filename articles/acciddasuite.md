@@ -50,9 +50,9 @@ df
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
+#> Window:   2020-08-08 to 2026-06-20 ( 307 dates )
 #> Interval: 7 days
-#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
+#> History:  TRUE ( 2024-11-17 to 2026-06-21 )
 ```
 
 You can also **bring your own data**. Just pass it through
@@ -81,9 +81,9 @@ ncast
 #> 
 #> Location: NY 
 #> Target:   wk inc covid hosp 
-#> Nowcasted 2 weeks: 2026-05-30 to 2026-06-06 
+#> Nowcasted 2 weeks: 2026-06-13 to 2026-06-20 
 #> 
-#> $data  corrected series (305 rows)
+#> $data  corrected series (307 rows)
 #> $plot  nowcast visualisation
 ```
 
@@ -151,11 +151,11 @@ cv
 #> # A tibble: 3 × 2
 #>   model_id   wis
 #>   <chr>    <dbl>
-#> 1 ETS       29.4
-#> 2 THETA     34.1
-#> 3 NAIVE     35.1
+#> 1 ETS       8.72
+#> 2 THETA    17.3 
+#> 3 NAIVE    17.9 
 #> 
-#> Evaluated from 2026-05-09 | horizon 4 weeks | NY 
+#> Evaluated from 2026-05-23 | horizon 4 weeks | NY 
 #> 
 #> Contents:
 #>   $forecasts  per-origin forecasts (model_out_tbl)
@@ -175,13 +175,13 @@ fcast
 #> # A tibble: 3 × 2
 #>   model_id   wis
 #>   <chr>    <dbl>
-#> 1 ETS       29.4
-#> 2 THETA     34.1
-#> 3 NAIVE     35.1
+#> 1 ETS       8.72
+#> 2 THETA    17.3 
+#> 3 NAIVE    17.9 
 #> 
 #> Forecast horizon:
-#>   From: 2026-06-13 
-#>   To:   2026-07-04 
+#>   From: 2026-06-27 
+#>   To:   2026-07-18 
 #> 
 #> Contents:
 #>   $hub    hub forecast object (model_out_tbl, oracle_output)

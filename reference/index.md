@@ -5,6 +5,9 @@
 - [`EPIESTIM()`](https://accidda.github.io/acciddasuite/reference/EPIESTIM.md)
   : EpiEstim model for fable
 
+- [`FOUNDATION()`](https://accidda.github.io/acciddasuite/reference/FOUNDATION.md)
+  : Forecast with a pretrained ("foundation") time-series model
+
 - [`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
   : Validate surveillance data
 
