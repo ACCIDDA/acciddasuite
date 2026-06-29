@@ -1,5 +1,5 @@
 library(tidyverse)
-
+devtools::load_all()
 ebola <- read.csv(
   "https://raw.githubusercontent.com/scc-usc/ebola2026/refs/heads/main/hubverse_observed_data.csv"
 ) |>
@@ -24,27 +24,29 @@ ebola |>
   geom_point() +
   geom_line()
 
-
-devtools::load_all()
-# pak::pak("ACCIDDA/acciddasuite")
-
-fc <- check_data(ebola) |>
+library(fable.prophet)
+cv <- check_data(ebola) |>
   get_cv(
     eval_start_date = "2026-06-01",
     h = 7,
-    step = 1
-  ) |>
-  get_fcast(
-    h = 7,
-    models = c(
+    step = 7,
+    models = models <- c(
       default_models(),
       list(
-        PROPHET = fable.prophet::prophet(log(observation)),
-        NNETAR = fable::NNETAR(log(observation))
+        CHRONOS = FOUNDATION(log(observation), "chronos"),
+        TIMESFM = FOUNDATION(log(observation), "timesfm"),
+        SUNDIAL = FOUNDATION(log(observation), "sundial"),
+        MOIRAI = FOUNDATION(log(observation), "moirai")
       )
     )
   )
+# saveRDS(cv, "ebola_cv.rds")
 
+cv
+
+
+fc <- cv |>
+  get_fcast(h = 7, top_n = 10)
 
 # Quantiles arrive long (one row per level); pivot wide to ymin/ymax columns.
 fc_wide <- fc$hub$model_out_tbl |>
