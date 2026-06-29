@@ -81,66 +81,120 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     )
   }
 
-  # Time the cross-validation (fit + score) with pipetime.
-  {
-    # Build the regular tsibble from the (median-corrected) observation series.
-    ts <- as_model_ts(df)
+  locations <- unique(df$location)
+  pieces <- split(df, df$location, drop = TRUE)
 
-    # One progress session spans the two slow phases. Model fitting emits
-    # fable's own per-origin progressr bar; scoring is not progressr-instrumented
-    # (hubEvals/scoringutils don't use it), so we announce it with an explicit
-    # step created after fitting, so it never competes with fable's bar.
-    progressr::with_progress({
-      fcast <- ts |>
-        make_cv_origins(eval_start_date, h, meta$interval) |>
-        fabletools::model(!!!models) |>
-        fabletools::forecast(h = h) |>
-        dplyr::mutate(observation = truncate_counts(observation))
-
-      # Build the hub once; reused for both the stored forecasts and the score.
-      hub <- fable_to_hub(
-        fcast,
-        ts,
-        location = meta$location,
-        target = meta$target,
-        interval = meta$interval
-      )
-
-      p <- progressr::progressor(steps = 1)
-      p(message = "Scoring forecasts")
-      score <- hubEvals::score_model_out(
-        model_out_tbl = hub$model_out_tbl,
-        oracle_output = hub$oracle_output,
-        metrics = c("wis", "interval_coverage_50", "interval_coverage_95"),
-        relative_metrics = "wis",
-        by = "model_id"
-      ) |>
-        dplyr::arrange(wis)
-    })
-
-    new_accidda_cv(
-      forecasts = hub$model_out_tbl,
-      oracle = hub$oracle_output,
-      score = score,
+  results <- lapply(pieces, function(df_loc) {
+    run_location_cv(
+      df_loc = df_loc,
+      eval_start_date = eval_start_date,
+      h = h,
       models = models,
-      meta = list(
-        eval_start_date = eval_start_date,
-        h = h,
-        location = meta$location,
-        target = meta$target,
-        interval = meta$interval
-      ),
-      data = df
+      interval = meta$interval,
+      target = meta$target
     )
-  } |>
+  })
+
+  forecasts <- dplyr::bind_rows(lapply(results, `[[`, "forecasts"))
+  oracle <- dplyr::bind_rows(lapply(results, `[[`, "oracle"))
+  score <- dplyr::bind_rows(lapply(results, `[[`, "score")) |>
+    dplyr::arrange(location, wis)
+
+  new_accidda_cv(
+    forecasts = forecasts,
+    oracle = oracle,
+    score = score,
+    models = models,
+    meta = list(
+      eval_start_date = eval_start_date,
+      h = h,
+      location = locations,
+      lambda = meta$lambda
+    )
+  ) |>
+    # Time the cross-validation (fit + score) with pipetime.
     pipetime::time_pipe("get_cv")
+}
+
+
+#' Run cross validation over one location.
+#'
+#' @param df_loc A data frame for a single location.
+#' @param eval_start_date First evaluated origin. At least 52 weeks must
+#'  precede it.
+#' @param h Horizon in weeks; also the step between origins.
+#' @param models Specifications evaluated, for get_fcast() to refit the chosen
+#'  subset.
+#' @param interval Reporting interval in days.
+#' @param target Target identifier
+#'
+#' @return A list with:
+#' \describe{
+#'  \item{forecasts} A tibble of per-origin, per-model forecasts in
+#'    \code{model_out_tbl} format.
+#'  \item{oracle} A tibble of observed truth in \code{oracle_output} format.
+#'    \item{score} A tibble ranking models by weighted interval score (WIS) and
+#'      interval coverage.
+#' }
+#'
+#' @keywords internal
+#' @noRd
+run_location_cv <- function(
+    df_loc,
+    eval_start_date,
+    h,
+    models,
+    interval,
+    target
+) {
+    # Build the regular tsibble from the (median-corrected) observation series.
+  ts <- as_model_ts(df_loc)
+
+  # One progress session spans the two slow phases. Model fitting emits
+  # fable's own per-origin progressr bar; scoring is not progressr-instrumented
+  # (hubEvals/scoringutils don't use it), so we announce it with an explicit
+  # step created after fitting, so it never competes with fable's bar.
+  progressr::with_progress({
+    fcast <- ts |>
+      make_cv_origins(eval_start_date, h, interval) |>
+      fabletools::model(!!!models) |>
+      fabletools::forecast(h = h) |>
+      dplyr::mutate(observation = truncate_counts(observation))
+
+    # Build the hub once; reused for both the stored forecasts and the score.
+    hub <- fable_to_hub(
+      fcast,
+      ts,
+      location = unique(df_loc$location),
+      target = target,
+      interval = interval
+    )
+
+    p <- progressr::progressor(steps = 1)
+    p(message = "Scoring forecasts")
+    score <- hubEvals::score_model_out(
+      model_out_tbl = hub$model_out_tbl,
+      oracle_output = hub$oracle_output,
+      metrics = c("wis", "interval_coverage_50", "interval_coverage_95"),
+      relative_metrics = "wis",
+      by = "model_id"
+    ) |>
+      dplyr::arrange(wis) |>
+      dplyr::mutate(location = unique(df_loc$location))
+  })
+
+  list(
+    forecasts = hub$model_out_tbl,
+    oracle = hub$oracle_output,
+    score = score
+  )
 }
 
 
 #' Forecast-ready data frame from a typed object
 #'
 #' Returns the data frame, keeping the latest revision per
-#' \code{target_end_date} when revision history is present.
+#' \code{target_end_date} and location when revision history is present.
 #' @param x An \code{accidda_data} or \code{accidda_ncast} object.
 #' @return A data frame, one row per \code{target_end_date}.
 #' @keywords internal
@@ -157,7 +211,7 @@ extract_series <- function(x) {
 
   if ("as_of" %in% names(df)) {
     df <- df |>
-      dplyr::group_by(target_end_date) |>
+      dplyr::group_by(location, target_end_date) |>
       dplyr::filter(as_of == max(as_of)) |>
       dplyr::ungroup() |>
       dplyr::select(-as_of)
@@ -195,4 +249,37 @@ make_cv_origins <- function(ts, eval_start_date, h, interval) {
   ts |>
     tsibble::stretch_tsibble(.init = init, .step = h) |>
     dplyr::filter(.id != max(.id))
+}
+
+
+#' Assemble the new_accidda_cv object
+#'
+#' @param forecasts A tibble of per-origin, per-model forecasts in
+#'   \code{model_out_tbl} format.
+#' @param oracle A tibble of observed truth in \code{oracle_output} format.
+#' @param score A tibble ranking models by WIS and interval coverage.
+#' @param models Specifications evaluated, for get_fcast() to refit the chosen
+#'  subset.
+#' @param meta eval_start_date, h, locations, Box-Cox lambda.
+#'
+#' @return A accidda_cv object
+#' @keywords internal
+#' @noRd
+new_accidda_cv <- function(
+    forecasts,
+    oracle,
+    score,
+    models,
+    meta = list()
+) {
+  structure(
+    list(
+      forecasts = forecasts,
+      oracle = oracle,
+      score = score,
+      models = models,
+      meta = meta
+    ),
+    class = "accidda_cv"
+  )
 }
