@@ -13,10 +13,10 @@ NULL
 
 #' @keywords internal
 #' @noRd
-new_accidda_data <- function(data, location, target, window, interval, history) {
+new_accidda_data <- function(data, locations, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
-    is.character(location), length(location) >= 1L,
+    is.character(locations), length(locations) >= 1L,
     is.character(target), length(target) == 1L,
     inherits(window, "Date"), length(window) == 2L,
     is.numeric(interval), length(interval) == 1L,
@@ -25,7 +25,7 @@ new_accidda_data <- function(data, location, target, window, interval, history) 
   structure(
     list(
       data = data,
-      location = location,
+      locations = locations,
       target = target,
       window = window,
       interval = as.integer(interval),
@@ -40,28 +40,25 @@ new_accidda_data <- function(data, location, target, window, interval, history) 
 #' @noRd
 new_accidda_ncast <- function(
   data,
-  location,
+  locations,
   target,
   window,
   interval,
-  history,
-  plot
+  history
 ) {
   stopifnot(
     is.data.frame(data),
-    is.character(location), length(location) == 1L,
-    is.character(target), length(target) == 1L,
-    inherits(plot, "ggplot")
+    is.character(locations), length(locations) == 1L,
+    is.character(target), length(target) == 1L
   )
   structure(
     list(
       data = data,
-      location = location,
+      locations = locations,
       target = target,
       window = window,
       interval = as.integer(interval),
-      history = history,
-      plot = plot
+      history = history
     ),
     class = "accidda_ncast"
   )
@@ -99,7 +96,7 @@ new_accidda_fcast <- function(hub, score, meta) {
 
 #' Read the shared metadata backbone from any pipeline object
 #'
-#' Returns \code{location}, \code{target}, \code{interval} (plus \code{window}
+#' Returns \code{locations}, \code{target}, \code{interval} (plus \code{window}
 #' and \code{history} for dataset objects), whichever stage produced \code{x}.
 #' @param x An \code{accidda_data}, \code{accidda_ncast} or \code{accidda_cv}.
 #' @return A named list.
@@ -111,7 +108,7 @@ accidda_meta <- function(x) {
   }
   if (inherits(x, c("accidda_data", "accidda_ncast"))) {
     return(list(
-      location = x$location,
+      locations = x$locations,
       target = x$target,
       window = x$window,
       interval = x$interval,
