@@ -74,7 +74,7 @@ print.accidda_cv <- function(x, ...) {
   cat("  $oracle     observed truth (oracle_output)\n")
   cat("  $score      model ranking table\n")
   cat("  $models     model specifications\n")
-  cat("  $meta       eval_start_date, h, location, target, interval\n")
+  cat("  $meta       eval_start_date, h, locations, target, interval\n")
 
   invisible(x)
 }

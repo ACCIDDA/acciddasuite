@@ -69,16 +69,24 @@ new_accidda_ncast <- function(
 
 #' @keywords internal
 #' @noRd
-new_accidda_cv <- function(forecasts, oracle, score, models, meta, data) {
-  stopifnot(is.list(models), is.list(meta), is.data.frame(data))
+new_accidda_cv <- function(
+    forecasts,
+    oracle,
+    score,
+    models,
+    meta = list()
+) {
+  stopifnot(
+    is.list(models),
+    is.list(meta)
+    )
   structure(
     list(
       forecasts = forecasts,
       oracle = oracle,
       score = score,
       models = models,
-      meta = meta,
-      data = data
+      meta = meta
     ),
     class = "accidda_cv"
   )

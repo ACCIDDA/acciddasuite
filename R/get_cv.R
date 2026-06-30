@@ -83,6 +83,8 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
 
   locations <- unique(df$location)
   pieces <- split(df, df$location, drop = TRUE)
+  target <- meta$target
+  interval <- meta$interval
 
   results <- lapply(pieces, function(df_loc) {
     run_location_cv(
@@ -90,8 +92,8 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
       eval_start_date = eval_start_date,
       h = h,
       models = models,
-      interval = meta$interval,
-      target = meta$target
+      interval = interval,
+      target = target
     )
   })
 
@@ -108,8 +110,10 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     meta = list(
       eval_start_date = eval_start_date,
       h = h,
-      location = locations,
-      lambda = meta$lambda
+      locations = locations,
+      target = target,
+      interval = interval,
+      lambda = meta$lambda  # TODO: get lambda value
     )
   ) |>
     # Time the cross-validation (fit + score) with pipetime.
@@ -249,37 +253,4 @@ make_cv_origins <- function(ts, eval_start_date, h, interval) {
   ts |>
     tsibble::stretch_tsibble(.init = init, .step = h) |>
     dplyr::filter(.id != max(.id))
-}
-
-
-#' Assemble the new_accidda_cv object
-#'
-#' @param forecasts A tibble of per-origin, per-model forecasts in
-#'   \code{model_out_tbl} format.
-#' @param oracle A tibble of observed truth in \code{oracle_output} format.
-#' @param score A tibble ranking models by WIS and interval coverage.
-#' @param models Specifications evaluated, for get_fcast() to refit the chosen
-#'  subset.
-#' @param meta eval_start_date, h, locations, Box-Cox lambda.
-#'
-#' @return A accidda_cv object
-#' @keywords internal
-#' @noRd
-new_accidda_cv <- function(
-    forecasts,
-    oracle,
-    score,
-    models,
-    meta = list()
-) {
-  structure(
-    list(
-      forecasts = forecasts,
-      oracle = oracle,
-      score = score,
-      models = models,
-      meta = meta
-    ),
-    class = "accidda_cv"
-  )
 }
