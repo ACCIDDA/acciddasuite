@@ -108,7 +108,7 @@ get_ncast <- function(
 
   new_accidda_ncast(
     data = out_df,
-    locations = names(pieces),
+    locations = unique(df$location),
     target = meta$target,
     window = c(
       from = min(out_df$target_end_date),
@@ -334,41 +334,4 @@ build_corrected_series <- function(
       ncast_upper
     ) |>
     dplyr::arrange(target_end_date)
-}
-
-
-#' Assemble the typed object
-#'
-#' @param data Corrected series across locations
-#' @param locations Set of locations nowcasted
-#' @param target Target identifier
-#' @param window Width in days of the delay-estimation window
-#' @param interval Reporting interval (time unit)
-#' @param history Revision history
-#' @param meta Settings used plus the per-location CrI summary needed for
-#'   plotting
-#' @return An accidda_ncast object
-#' @keywords internal
-#' @noRd
-new_accidda_ncast <- function(
-    data,
-    locations,
-    target,
-    window,
-    interval,
-    history = TRUE,
-    meta = list()
-) {
-  structure(
-    list(
-      data = data,
-      locations = locations,
-      target = target,
-      window = window,
-      interval = interval,
-      history = history,
-      meta = meta
-    ),
-    class = "accidda_ncast"
-  )
 }

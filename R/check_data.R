@@ -85,7 +85,7 @@ check_data <- function(data) {
 
   new_accidda_data(
     data = data,
-    location = locations,
+    locations = locations,
     target = targets,
     window = window,
     interval = interval,

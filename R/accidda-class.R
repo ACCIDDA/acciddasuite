@@ -16,7 +16,7 @@ NULL
 new_accidda_data <- function(data, locations, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
-    is.character(locations), length(locations) >= 1L,
+    is.character(locations), length(locations) > 0L,
     is.character(target), length(target) == 1L,
     inherits(window, "Date"), length(window) == 2L,
     is.numeric(interval), length(interval) == 1L,
@@ -39,16 +39,17 @@ new_accidda_data <- function(data, locations, target, window, interval, history)
 #' @keywords internal
 #' @noRd
 new_accidda_ncast <- function(
-  data,
-  locations,
-  target,
-  window,
-  interval,
-  history
+    data,
+    locations,
+    target,
+    window,
+    interval,
+    history = TRUE,
+    meta = list()
 ) {
   stopifnot(
     is.data.frame(data),
-    is.character(locations), length(locations) == 1L,
+    is.character(locations), length(locations) > 0L,
     is.character(target), length(target) == 1L
   )
   structure(
@@ -58,7 +59,8 @@ new_accidda_ncast <- function(
       target = target,
       window = window,
       interval = as.integer(interval),
-      history = history
+      history = history,
+      meta = meta
     ),
     class = "accidda_ncast"
   )

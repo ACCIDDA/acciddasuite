@@ -4,7 +4,7 @@
 #' @export
 print.accidda_data <- function(x, ...) {
   cat("<accidda_data>\n\n")
-  cat("Location:", x$location, "\n")
+  cat("Location:", x$locations, "\n")
   cat("Target:  ", x$target, "\n")
   cat(
     "Window:  ",
@@ -38,7 +38,7 @@ print.accidda_data <- function(x, ...) {
 #' @export
 print.accidda_ncast <- function(x, ...) {
   cat("<accidda_ncast>\n\n")
-  cat("Location:", x$location, "\n")
+  cat("Locations:", paste(x$locations, collapse = ", "), "\n")
   cat("Target:  ", x$target, "\n")
 
   corrected <- !is.na(x$data$ncast_lower)
@@ -50,7 +50,6 @@ print.accidda_ncast <- function(x, ...) {
   )
 
   cat("\n$data  corrected series (", nrow(x$data), " rows)\n", sep = "")
-  cat("$plot  nowcast visualisation\n")
 
   invisible(x)
 }
