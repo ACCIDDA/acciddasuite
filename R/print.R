@@ -95,10 +95,15 @@ print.accidda_fcast <- function(x, ...) {
   }
 
   # TODO: do we want to print forecast horizon for all locations?
-  # cat("\nForecast horizon:\n")
-  # rng <- range(x$hub$model_out_tbl$target_end_date)
-  # cat("  From:", as.character(rng[1]), "\n")
-  # cat("  To:  ", as.character(rng[2]), "\n")
+  cat("\nForecast horizon:\n")
+  for (loc in names(fcast$hub)){
+    rng <- range(x$hub[[loc]]$model_out_tbl$target_end_date)
+    # cat("For", loc, ":\n") # TODO remove if we want the forecast horizon for more than one location
+    cat("  From:", as.character(rng[1]), "\n")
+    cat("  To:  ", as.character(rng[2]), "\n")
+
+    break # TODO remove if we want the forecast horizon for more than one location
+  }
 
   cat("\nContents:\n")
   cat("  $hub    hub forecast object (model_out_tbl, oracle_output)\n")
