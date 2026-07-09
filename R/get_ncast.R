@@ -21,7 +21,7 @@
 #'   estimation window. Default 3.
 #'
 #' @return An \code{accidda_ncast} object with the shared backbone
-#'   (\code{locations}, \code{target}, \code{window},
+#'   (\code{location}, \code{target}, \code{window},
 #'   \code{interval}, \code{history}) plus:
 #'   \describe{
 #'     \item{data}{Corrected series. \code{observation} holds the nowcast
@@ -108,7 +108,7 @@ get_ncast <- function(
 
   new_accidda_ncast(
     data = out_df,
-    locations = unique(df$location),
+    location = unique(df$location),
     target = meta$target,
     window = c(
       from = min(out_df$target_end_date),
@@ -134,22 +134,6 @@ get_ncast <- function(
 #' @noRd
 week_floor <- function(dates) {
   as.Date(cut(dates, "week"))
-}
-
-
-#' Split data frame into per-location series.
-#'
-#' @param df A data frame containing one or more locations.
-#' @return A named list of data frames, with one element per unique
-#'   \code{location}. Each element contains the rows of \code{df}
-#'   corresponding to a single location.
-#' @keywords  internal
-#' @noRd
-split_by_location <- function(df) {
-  if (!"location" %in% names(df)) {
-    stop("`df` must contain a `location` column.")
-  }
-  split(df, df$location, drop = TRUE)
 }
 
 

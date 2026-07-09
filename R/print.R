@@ -4,7 +4,7 @@
 #' @export
 print.accidda_data <- function(x, ...) {
   cat("<accidda_data>\n\n")
-  cat("Location:", x$locations, "\n")
+  cat("Location:", x$location, "\n")
   cat("Target:  ", x$target, "\n")
   cat(
     "Window:  ",
@@ -38,7 +38,7 @@ print.accidda_data <- function(x, ...) {
 #' @export
 print.accidda_ncast <- function(x, ...) {
   cat("<accidda_ncast>\n\n")
-  cat("Locations:", paste(x$locations, collapse = ", "), "\n")
+  cat("Locations:", paste(x$location, collapse = ", "), "\n")
   cat("Target:  ", x$target, "\n")
 
   corrected <- !is.na(x$data$ncast_lower)
@@ -70,11 +70,12 @@ print.accidda_cv <- function(x, ...) {
   )
 
   cat("\nContents:\n")
+  cat("  $data       surveillance data\n")
   cat("  $forecasts  per-origin forecasts (model_out_tbl)\n")
   cat("  $oracle     observed truth (oracle_output)\n")
   cat("  $score      model ranking table\n")
   cat("  $models     model specifications\n")
-  cat("  $meta       eval_start_date, h, locations, target, interval\n")
+  cat("  $meta       eval_start_date, h, location, target, interval\n")
 
   invisible(x)
 }
@@ -93,10 +94,11 @@ print.accidda_fcast <- function(x, ...) {
     print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)
   }
 
-  cat("\nForecast horizon:\n")
-  rng <- range(x$hub$model_out_tbl$target_end_date)
-  cat("  From:", as.character(rng[1]), "\n")
-  cat("  To:  ", as.character(rng[2]), "\n")
+  # TODO: do we want to print forecast horizon for all locations?
+  # cat("\nForecast horizon:\n")
+  # rng <- range(x$hub$model_out_tbl$target_end_date)
+  # cat("  From:", as.character(rng[1]), "\n")
+  # cat("  To:  ", as.character(rng[2]), "\n")
 
   cat("\nContents:\n")
   cat("  $hub    hub forecast object (model_out_tbl, oracle_output)\n")

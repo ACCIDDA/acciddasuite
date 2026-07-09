@@ -53,7 +53,7 @@ check_data <- function(data) {
   }
 
   # --- location(s) / target ---
-  locations <- unique(data$location)
+  location <- unique(data$location)
   targets <- unique(data$target)
 
   if (length(targets) != 1) {
@@ -85,7 +85,7 @@ check_data <- function(data) {
 
   new_accidda_data(
     data = data,
-    locations = locations,
+    location = location,
     target = targets,
     window = window,
     interval = interval,

@@ -13,10 +13,10 @@ NULL
 
 #' @keywords internal
 #' @noRd
-new_accidda_data <- function(data, locations, target, window, interval, history) {
+new_accidda_data <- function(data, location, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
-    is.character(locations), length(locations) > 0L,
+    is.character(location), length(location) > 0L,
     is.character(target), length(target) == 1L,
     inherits(window, "Date"), length(window) == 2L,
     is.numeric(interval), length(interval) == 1L,
@@ -25,7 +25,7 @@ new_accidda_data <- function(data, locations, target, window, interval, history)
   structure(
     list(
       data = data,
-      locations = locations,
+      location = location,
       target = target,
       window = window,
       interval = as.integer(interval),
@@ -40,7 +40,7 @@ new_accidda_data <- function(data, locations, target, window, interval, history)
 #' @noRd
 new_accidda_ncast <- function(
     data,
-    locations,
+    location,
     target,
     window,
     interval,
@@ -49,13 +49,13 @@ new_accidda_ncast <- function(
 ) {
   stopifnot(
     is.data.frame(data),
-    is.character(locations), length(locations) > 0L,
+    is.character(location), length(location) > 0L,
     is.character(target), length(target) == 1L
   )
   structure(
     list(
       data = data,
-      locations = locations,
+      location = location,
       target = target,
       window = window,
       interval = as.integer(interval),
@@ -70,6 +70,7 @@ new_accidda_ncast <- function(
 #' @keywords internal
 #' @noRd
 new_accidda_cv <- function(
+    data,
     forecasts,
     oracle,
     score,
@@ -82,6 +83,7 @@ new_accidda_cv <- function(
     )
   structure(
     list(
+      data = data,
       forecasts = forecasts,
       oracle = oracle,
       score = score,
@@ -95,10 +97,18 @@ new_accidda_cv <- function(
 
 #' @keywords internal
 #' @noRd
-new_accidda_fcast <- function(hub, score, meta) {
+new_accidda_fcast <- function(
+    hub=list(),
+    score,
+    meta=list()
+    ) {
   stopifnot(is.list(hub), is.list(meta))
   structure(
-    list(hub = hub, score = score, meta = meta),
+    list(
+      hub = hub,
+      score = score,
+      meta = meta
+    ),
     class = "accidda_fcast"
   )
 }
@@ -106,7 +116,7 @@ new_accidda_fcast <- function(hub, score, meta) {
 
 #' Read the shared metadata backbone from any pipeline object
 #'
-#' Returns \code{locations}, \code{target}, \code{interval} (plus \code{window}
+#' Returns \code{location}, \code{target}, \code{interval} (plus \code{window}
 #' and \code{history} for dataset objects), whichever stage produced \code{x}.
 #' @param x An \code{accidda_data}, \code{accidda_ncast} or \code{accidda_cv}.
 #' @return A named list.
@@ -118,7 +128,7 @@ accidda_meta <- function(x) {
   }
   if (inherits(x, c("accidda_data", "accidda_ncast"))) {
     return(list(
-      locations = x$locations,
+      location = x$location,
       target = x$target,
       window = x$window,
       interval = x$interval,

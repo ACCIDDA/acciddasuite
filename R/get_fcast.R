@@ -49,21 +49,36 @@
 #' @importFrom pipetime time_pipe
 #'
 get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
-  if (inherits(x, "accidda_cv")) {
+
+  validate_models(models)
+  if (!is.numeric(h) || length(h) != 1L || h <= 0) {
+    stop("`h` must be a single positive number (number of forecast steps).")
+  }
+
+  inherits_cv <- inherits(x, "accidda_cv")
+
+  # If cross validation has been performed, compute the top model IDs for
+  # each location
+  if (inherits_cv) {
     if (missing(h)) {
       h <- x$meta$h
     }
     if (!is.numeric(top_n) || length(top_n) != 1L || top_n <= 0) {
       stop("`top_n` must be a single positive integer.")
     }
-    top_ids <- x$score |>
-      dplyr::arrange(wis) |>
-      dplyr::slice_head(n = top_n) |>
-      dplyr::pull(model_id)
-    models <- x$models[top_ids]
-    df <- x$data
+
     score <- x$score
     meta <- x$meta
+    df <- x$data
+    location = unique(df$location)
+
+    models_by_location <- setNames(
+      lapply(location, function(loc) {
+        select_location_models(x$models, loc, score, top_n)
+      }),
+      location
+    )
+
   } else {
     if (!inherits(x, c("accidda_data", "accidda_ncast"))) {
       stop(
@@ -71,26 +86,88 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
         "Run check_data() on your data frame first."
       )
     }
-    validate_models(models)
-    df <- extract_series(x)
     score <- NULL
     meta <- accidda_meta(x)
+    df <- extract_series(x)
+
+    location <- unique(df$location)
+    models_by_location <- setNames(
+      rep(list(models), length(location)),
+      location
+    )
   }
 
-  if (!is.numeric(h) || length(h) != 1L || h <= 0) {
-    stop("`h` must be a single positive number (number of forecast steps).")
-  }
+  pieces <- split_by_location(df)
 
+  target <- meta$target
+  interval <- meta$interval
+
+  # Run forecasting over each location.
+  results <- lapply(names(pieces), function(loc) {
+    run_location_fcast(
+      df_loc = pieces[[loc]],
+      models = models_by_location[[loc]],
+      h = h,
+      target = target,
+      interval = interval
+    )
+  })
+  names(results) <- location
+
+  hubs <- lapply(results, `[[`, "hub")
+  ncasts <- lapply(results, `[[`, "has_nowcast")
+
+  new_accidda_fcast(
+    hub = hubs,
+    score = score,
+    meta = list(
+      models = if (inherits_cv) models_by_location else names(models),
+      top_n = if (inherits_cv) top_n else length(models),
+      h = h,
+      location = location,
+      target = target,
+      interval = interval,
+      nowcast = ncasts,
+      eval_start_date = if (inherits_cv) x$meta$eval_start_date else NULL
+    )
+  )
+}
+
+
+#' Run forecasting over one location.
+#'
+#' @param df_loc A data frame for a single location.
+#' @param models Named list of \code{fable} models.
+#' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
+#'   weekly data).
+#' @param target
+#' @param interval
+#'
+#' @return A list with:
+#' \describe{
+#'  \item{fcast}{A data frame containing the per-location forecast.}
+#'  \item{hub}
+#' }
+#'
+#' @keywords internal
+#' @noRd
+run_location_fcast <- function(
+    df_loc,
+    models,
+    h,
+    target,
+    interval
+) {
   # Nowcast columns (present when df came from get_ncast)
-  has_nowcast <- all(c("ncast_lower", "ncast_upper") %in% names(df))
+  has_nowcast <- all(c("ncast_lower", "ncast_upper") %in% names(df_loc))
 
   # Time the forecast with pipetime.
   {
     # --------- Forecast each model on the full series ---------
     model_fcast <- if (has_nowcast) {
-      pool_nowcast_scenarios(df, models, h)
+      pool_nowcast_scenarios(df_loc, models, h)
     } else {
-      forecast_final(df, models, h)
+      forecast_final(df_loc, models, h)
     }
 
     # --------- Equal-weight ensemble of the chosen models ---------
@@ -107,34 +184,39 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
       dplyr::mutate(.id = 1L)
 
     # Observed series, for the hub oracle.
-    ts <- as_model_ts(df)
+    ts <- as_model_ts(df_loc)
 
-    new_accidda_fcast(
-      hub = fable_to_hub(
-        fcast,
-        ts,
-        location = meta$location,
-        target = meta$target,
-        interval = meta$interval
-      ),
-      score = score,
-      meta = list(
-        models = names(models),
-        top_n = if (inherits(x, "accidda_cv")) top_n else length(models),
-        h = h,
-        location = meta$location,
-        target = meta$target,
-        interval = meta$interval,
-        nowcast = has_nowcast,
-        eval_start_date = if (inherits(x, "accidda_cv")) {
-          x$meta$eval_start_date
-        } else {
-          NULL
-        }
-      )
+    # Build the hub once; reused for both the stored forecasts and the score.
+    hub <- fable_to_hub(
+      fcast,
+      ts,
+      location = unique(df_loc$location),
+      target = target,
+      interval = interval
     )
+
   } |>
     pipetime::time_pipe("get_fcast")
+
+  list(
+    fcast = fcast,
+    hub = hub,
+    has_nowcast = has_nowcast
+  )
+}
+
+
+#' Compute the best models for a location
+#' @keywords internal
+#' @noRd
+select_location_models <- function(models, single_loc, score, top_n) {
+  top_ids <- score |>
+    dplyr::filter(location == single_loc) |>
+    dplyr::arrange(wis, model_id) |>
+    dplyr::slice_head(n = top_n) |>
+    dplyr::pull(model_id)
+
+  models[top_ids]
 }
 
 

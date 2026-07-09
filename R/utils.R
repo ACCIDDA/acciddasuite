@@ -31,6 +31,35 @@ detect_interval <- function(dates) {
 }
 
 
+#' Forecast-ready data frame from a typed object
+#'
+#' Returns the data frame, keeping the latest revision per
+#' \code{target_end_date} and location when revision history is present.
+#' @param x An \code{accidda_data} or \code{accidda_ncast} object.
+#' @return A data frame, one row per \code{target_end_date}.
+#' @keywords internal
+#' @noRd
+extract_series <- function(x) {
+  if (inherits(x, "accidda_ncast") || inherits(x, "accidda_data")) {
+    df <- x$data
+  } else {
+    stop(
+      "`x` must be an accidda_data or accidda_ncast object.\n",
+      "Run check_data() on your data frame first."
+    )
+  }
+
+  if ("as_of" %in% names(df)) {
+    df <- df |>
+      dplyr::group_by(location, target_end_date) |>
+      dplyr::filter(as_of == max(as_of)) |>
+      dplyr::ungroup() |>
+      dplyr::select(-as_of)
+  }
+  df
+}
+
+
 #' Build the regular tsibble that models are fitted on
 #'
 #' A \code{target_end_date} / \code{observation} tsibble with missing rows
@@ -74,6 +103,22 @@ mix_equally <- function(dists) {
     distributional::dist_mixture,
     c(dists, list(weights = rep(1 / n, n)))
   )
+}
+
+
+#' Split data frame into per-location series.
+#'
+#' @param df A data frame containing one or more locations.
+#' @return A named list of data frames, with one element per unique
+#'   \code{location}. Each element contains the rows of \code{df}
+#'   corresponding to a single location.
+#' @keywords  internal
+#' @noRd
+split_by_location <- function(df) {
+  if (!"location" %in% names(df)) {
+    stop("`df` must contain a `location` column.")
+  }
+  split(df, df$location, drop = TRUE)
 }
 
 

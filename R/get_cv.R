@@ -81,7 +81,7 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     )
   }
 
-  locations <- unique(df$location)
+  location <- unique(df$location)
   pieces <- split(df, df$location, drop = TRUE)
   target <- meta$target
   interval <- meta$interval
@@ -103,6 +103,7 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     dplyr::arrange(location, wis)
 
   new_accidda_cv(
+    data = df,
     forecasts = forecasts,
     oracle = oracle,
     score = score,
@@ -110,7 +111,7 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     meta = list(
       eval_start_date = eval_start_date,
       h = h,
-      locations = locations,
+      location = location,
       target = target,
       interval = interval,
       lambda = meta$lambda  # TODO: get lambda value
@@ -192,35 +193,6 @@ run_location_cv <- function(
     oracle = hub$oracle_output,
     score = score
   )
-}
-
-
-#' Forecast-ready data frame from a typed object
-#'
-#' Returns the data frame, keeping the latest revision per
-#' \code{target_end_date} and location when revision history is present.
-#' @param x An \code{accidda_data} or \code{accidda_ncast} object.
-#' @return A data frame, one row per \code{target_end_date}.
-#' @keywords internal
-#' @noRd
-extract_series <- function(x) {
-  if (inherits(x, "accidda_ncast") || inherits(x, "accidda_data")) {
-    df <- x$data
-  } else {
-    stop(
-      "`x` must be an accidda_data or accidda_ncast object.\n",
-      "Run check_data() on your data frame first."
-    )
-  }
-
-  if ("as_of" %in% names(df)) {
-    df <- df |>
-      dplyr::group_by(location, target_end_date) |>
-      dplyr::filter(as_of == max(as_of)) |>
-      dplyr::ungroup() |>
-      dplyr::select(-as_of)
-  }
-  df
 }
 
 
