@@ -97,14 +97,15 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
     )
   }
 
-  pieces <- split_by_location(df)
+  # Split data frame into per-location series.
+  pieces <- split(df, df$location, drop = TRUE)
 
   target <- meta$target
   interval <- meta$interval
 
   # Run forecasting over each location.
   results <- lapply(names(pieces), function(loc) {
-    run_location_fcast(
+    run_fcast(
       df_loc = pieces[[loc]],
       models = models_by_location[[loc]],
       h = h,
@@ -136,7 +137,7 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
 
 #' Run forecasting over one location.
 #'
-#' @param df_loc A data frame for a single location.
+#' @param df A data frame for a single location.
 #' @param models Named list of \code{fable} models.
 #' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
 #'   weekly data).
@@ -151,23 +152,23 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
 #'
 #' @keywords internal
 #' @noRd
-run_location_fcast <- function(
-    df_loc,
+run_fcast <- function(
+    df,
     models,
     h,
     target,
     interval
 ) {
   # Nowcast columns (present when df came from get_ncast)
-  has_nowcast <- all(c("ncast_lower", "ncast_upper") %in% names(df_loc))
+  has_nowcast <- all(c("ncast_lower", "ncast_upper") %in% names(df))
 
   # Time the forecast with pipetime.
   {
     # --------- Forecast each model on the full series ---------
     model_fcast <- if (has_nowcast) {
-      pool_nowcast_scenarios(df_loc, models, h)
+      pool_nowcast_scenarios(df, models, h)
     } else {
-      forecast_final(df_loc, models, h)
+      forecast_final(df, models, h)
     }
 
     # --------- Equal-weight ensemble of the chosen models ---------
@@ -184,13 +185,13 @@ run_location_fcast <- function(
       dplyr::mutate(.id = 1L)
 
     # Observed series, for the hub oracle.
-    ts <- as_model_ts(df_loc)
+    ts <- as_model_ts(df)
 
     # Build the hub once; reused for both the stored forecasts and the score.
     hub <- fable_to_hub(
       fcast,
       ts,
-      location = unique(df_loc$location),
+      location = unique(df$location),
       target = target,
       interval = interval
     )
