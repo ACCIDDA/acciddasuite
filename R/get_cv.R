@@ -81,13 +81,15 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
     )
   }
 
+  # Split data frame into per-location series.
   location <- unique(df$location)
   pieces <- split(df, df$location, drop = TRUE)
+
   target <- meta$target
   interval <- meta$interval
 
   results <- lapply(pieces, function(df_loc) {
-    run_location_cv(
+    run_cv(
       df_loc = df_loc,
       eval_start_date = eval_start_date,
       h = h,
@@ -124,7 +126,7 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
 
 #' Run cross validation over one location.
 #'
-#' @param df_loc A data frame for a single location.
+#' @param df A data frame for a single location.
 #' @param eval_start_date First evaluated origin. At least 52 weeks must
 #'  precede it.
 #' @param h Horizon in weeks; also the step between origins.
@@ -144,8 +146,8 @@ get_cv <- function(x, eval_start_date, h = 4, models = default_models()) {
 #'
 #' @keywords internal
 #' @noRd
-run_location_cv <- function(
-    df_loc,
+run_cv <- function(
+    df,
     eval_start_date,
     h,
     models,
@@ -153,7 +155,7 @@ run_location_cv <- function(
     target
 ) {
     # Build the regular tsibble from the (median-corrected) observation series.
-  ts <- as_model_ts(df_loc)
+  ts <- as_model_ts(df)
 
   # One progress session spans the two slow phases. Model fitting emits
   # fable's own per-origin progressr bar; scoring is not progressr-instrumented
@@ -170,7 +172,7 @@ run_location_cv <- function(
     hub <- fable_to_hub(
       fcast,
       ts,
-      location = unique(df_loc$location),
+      location = unique(df$location),
       target = target,
       interval = interval
     )
@@ -185,7 +187,7 @@ run_location_cv <- function(
       by = "model_id"
     ) |>
       dplyr::arrange(wis) |>
-      dplyr::mutate(location = unique(df_loc$location))
+      dplyr::mutate(location = unique(df$location))
   })
 
   list(
