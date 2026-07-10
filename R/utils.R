@@ -106,22 +106,6 @@ mix_equally <- function(dists) {
 }
 
 
-#' Split data frame into per-location series.
-#'
-#' @param df A data frame containing one or more locations.
-#' @return A named list of data frames, with one element per unique
-#'   \code{location}. Each element contains the rows of \code{df}
-#'   corresponding to a single location.
-#' @keywords  internal
-#' @noRd
-split_by_location <- function(df) {
-  if (!"location" %in% names(df)) {
-    stop("`df` must contain a `location` column.")
-  }
-  split(df, df$location, drop = TRUE)
-}
-
-
 #' Error unless \code{models} is a non-empty, uniquely named list
 #' @param models A named list of fable model definitions.
 #' @return \code{models}, invisibly.

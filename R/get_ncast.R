@@ -84,11 +84,11 @@ get_ncast <- function(
   df <- x$data
 
   # Split data frame into per-location series.
-  pieces <- split_by_location(df)
+  pieces <- split(df, df$location, drop = TRUE)
 
   # Run nowcasting over each location.
   results <- lapply(pieces, function(df_loc) {
-    run_location_ncast(
+    run_ncast(
       df_loc = df_loc,
       max_delay = max_delay,
       draws = draws,
@@ -159,7 +159,7 @@ week_floor <- function(dates) {
 #'
 #' @keywords internal
 #' @noRd
-run_location_ncast <- function(
+run_ncast <- function(
     df_loc,
     max_delay = 2,
     draws = 1000,
