@@ -11,15 +11,16 @@ get_fcast(x, models = default_models(), h = 4, top_n = 3)
 or \code{accidda_data}.}
 
 \item{models}{Named list of \code{fable} models. Defaults to
-\code{\link{default_models}}. Ignored when \code{x} is an
-\code{accidda_cv} (its ranked models are reused).}
+\code{\link{default_models}}. For an \code{accidda_cv}, leave unset to
+forecast its \code{top_n} ranked models, or pass \code{models} to forecast
+a set of your own.}
 
 \item{h}{Integer. Forecast horizon, in reporting-interval steps (weeks for
 weekly data). Default 4; for an \code{accidda_cv}, defaults to the
 cross-validation horizon.}
 
-\item{top_n}{Integer. Number of top-ranked models to ensemble; used only
-when \code{x} is an \code{accidda_cv}. Default 3.}
+\item{top_n}{Integer. Number of top-ranked CV models to ensemble. Used only
+when \code{x} is an \code{accidda_cv} and \code{models} is unset. Default 3.}
 }
 \value{
 An \code{accidda_fcast} object:
@@ -48,8 +49,9 @@ If the input carries \code{ncast_lower} / \code{ncast_upper} (from
 ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
 cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(cv, top_n = 3)   # reuse the cross-validation ranking
-get_fcast(ncast)           # or forecast the default models directly
+get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
+get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
+get_fcast(ncast)                         # or forecast the default models directly
 }
 
 }

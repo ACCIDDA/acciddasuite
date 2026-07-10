@@ -4,22 +4,27 @@
 \alias{get_cv}
 \title{Cross-validate forecasting models}
 \usage{
-get_cv(x, eval_start_date, h = 4, models = default_models())
+get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 }
 \arguments{
 \item{x}{An \code{accidda_ncast} (\code{\link{get_ncast}}) or
 \code{accidda_data} (\code{\link{check_data}} / \code{\link{get_data}}).}
 
 \item{eval_start_date}{Date (or string coercible to one). First origin
-evaluated; must lie within the data window with at least one year of data
-before it.}
+evaluated; must lie within the data window. All observations before it form
+the initial training window.}
 
-\item{h}{Integer. Forecast horizon (e.g. 1 week for weekly data). Default 4.}
+\item{h}{Integer. Forecast horizon, in reporting-interval steps (weeks for
+weekly data, days for daily). Default 4.}
 
 \item{models}{Named list of \code{fable} models. Defaults to
 \code{\link{default_models}}; compose with \code{c(default_models(),
   list(...))} to extend. Each element must reference \code{observation}. See
 the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{fabletools extension vignette} for custom models.}
+
+\item{step}{Integer. Number of reporting-interval steps the training window
+advances between successive CV origins. Defaults to \code{h}
+(non-overlapping evaluation blocks).}
 }
 \value{
 An \code{accidda_cv} object:
