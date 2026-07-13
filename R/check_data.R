@@ -77,11 +77,34 @@ check_data <- function(data) {
   # Detected once here so downstream stages derive their time-based constants
   # (e.g. the 1-year minimum in get_cv, the weekly horizon in fable_to_hub)
   # instead of hard-coding them.
-  interval <- detect_interval(data$target_end_date)
+  intervals <- detect_interval(df)
   window <- c(
     from = min(data$target_end_date),
     to = max(data$target_end_date)
   )
+
+  if (length(unique(intervals)) != 1L) {
+    stop(
+      "\n\n",
+      paste(
+        names(intervals),
+        intervals,
+        sep = ": ",
+        collapse = "\n"
+      )
+    )
+  }
+
+  if (length(intervals) != 1) {
+    stop(
+      "Locations have inconsistent reporting intervals. ",
+      length(interval),
+      " intervals detected: ",
+      paste(head(intervals, 5), collapse = ", "),
+      if (length(intervals) > 5) ", ..." else "",
+      "). Filter before calling check_data()."
+    )
+  }
 
   new_accidda_data(
     data = data,

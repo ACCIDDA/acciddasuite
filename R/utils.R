@@ -5,15 +5,15 @@
 NULL
 
 
-#' Detect the reporting interval in days (7 = weekly)
+#' Determine the dominant reporting interval.
+#' Checks that there are no mixed cadences and that the dominant reporting
+#' interval is positive.
 #'
-#' Modal day-spacing between consecutive distinct \code{target_end_date}s,
-#' recorded by \code{\link{check_data}}.
-#' @param dates A Date vector (duplicates allowed).
+#' @param dates A Date vector.
 #' @return A single positive integer (days).
 #' @keywords internal
 #' @noRd
-detect_interval <- function(dates) {
+detect_interval_stratum <- function(dates) {
   u <- sort(unique(dates))
   if (length(u) < 2L) {
     stop(
@@ -23,11 +23,46 @@ detect_interval <- function(dates) {
   }
   diffs <- as.integer(diff(u))
   tab <- table(diffs)
+
   interval <- as.integer(names(tab)[which.max(tab)])
   if (interval <= 0L) {
     stop("Could not determine a positive reporting interval from the dates.")
   }
+
+  # Allow missing periods, but not mixed cadences.
+  if (any(diffs %% interval != 0L)) {
+    stop(
+      "Detected mixed reporting intervals.\n\n",
+      paste(capture.output(print(tab)), collapse = "\n")
+    )
+  }
+
   interval
+}
+
+
+#' Detect the reporting interval in days (7 = weekly)
+#' Checks that every location has the same dominant reporting cadence while
+#' allowing for some missing data points.
+#' Duplicate dates are allowed.
+#'
+#' Modal day-spacing between consecutive distinct \code{target_end_date}s,
+#' recorded by \code{\link{check_data}}.
+#' @param df A data frame containing the data to forecast.
+#' @return A list, positive integers corresponding to detected reporting
+#' intervals per data stratum.
+#' @keywords internal
+#' @noRd
+detect_intervals <- function(df) {
+  pieces <- split(df$target_end_date, df$location)
+
+  intervals <- vapply(
+    pieces,
+    detect_interval_stratum,
+    integer(1)
+  )
+
+  intervals
 }
 
 
