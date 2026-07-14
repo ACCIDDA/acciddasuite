@@ -5,10 +5,11 @@ library(testthat)
 # -------------------------------
 make_valid_df <- function() {
   data.frame(
-    target_end_date = c("2025-01-01", "2025-01-08", "2025-01-15"),
-    observation     = c(10, 20, 15),
-    location        = c("NY", "NY", "NY"),
-    target          = c("cases", "cases", "cases"),
+    target_end_date = c("2025-01-01", "2025-01-08", "2025-01-15",
+                        "2025-01-01", "2025-01-08", "2025-01-15"),
+    observation     = c(10, 20, 15, 10, 20, 20),
+    location        = c("NY", "NY", "NY", "CA", "CA", "CA"),
+    target          = c("cases", "cases", "cases", "cases", "cases", "cases"),
     stringsAsFactors = FALSE
   )
 }
@@ -22,7 +23,7 @@ test_that("check_data works on valid input", {
   result <- check_data(df)
 
   expect_s3_class(result, "accidda_data")
-  expect_equal(result$location, "NY")
+  expect_equal(result$location, c("NY", "CA"))
   expect_equal(result$target, "cases")
   expect_false(result$history)
 
@@ -93,20 +94,7 @@ test_that("invalid date causes error", {
 })
 
 # -------------------------------
-# 7. Multiple locations should fail
-# -------------------------------
-test_that("multiple locations cause error", {
-  df <- make_valid_df()
-  df$location[2] <- "CA"
-
-  expect_error(
-    check_data(df),
-    "exactly one location"
-  )
-})
-
-# -------------------------------
-# 8. Multiple targets should fail
+# 7. Multiple targets should fail
 # -------------------------------
 test_that("multiple targets cause error", {
   df <- make_valid_df()
@@ -115,6 +103,30 @@ test_that("multiple targets cause error", {
   expect_error(
     check_data(df),
     "exactly one target"
+  )
+})
+
+# -------------------------------
+# 8. Multiple reporting intervals should fail
+# -------------------------------
+test_that("multiple reporting intervals cause error", {
+  df <- make_valid_df()
+  df$target_end_date[5:6] <- c("2025-01-16", "2025-01-31")
+  expect_error(
+    check_data(df),
+    "inconsistent reporting intervals"
+  )
+
+  df$target_end_date[6] <- "2025-02-05"
+  expect_error(
+    check_data(df),
+    "mixed reporting intervals"
+  )
+
+  df <- head(df, -2)
+  expect_error(
+    check_data(df),
+    "at least two distinct `target_end_date` values"
   )
 })
 

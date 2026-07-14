@@ -36,7 +36,6 @@ detect_interval_stratum <- function(dates) {
       paste(capture.output(print(tab)), collapse = "\n")
     )
   }
-
   interval
 }
 
@@ -54,6 +53,7 @@ detect_interval_stratum <- function(dates) {
 #' @keywords internal
 #' @noRd
 detect_intervals <- function(df) {
+
   pieces <- split(df$target_end_date, df$location)
 
   intervals <- vapply(

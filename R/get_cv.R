@@ -105,7 +105,7 @@ get_cv <- function(
 
   results <- lapply(pieces, function(df_loc) {
     run_cv(
-      df_loc = df_loc,
+      df = df_loc,
       eval_start_date = eval_start_date,
       h = h,
       models = models,

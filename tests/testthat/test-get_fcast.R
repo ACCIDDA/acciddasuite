@@ -18,7 +18,7 @@ test_that("get_fcast builds a hub forecast and ensemble without cross-validation
     target_end_date = seq(as.Date("2020-01-01"), by = "week", length.out = 60),
     observation = 50 + 10 * sin(2 * pi * seq_len(60) / 8),
     target = "wk inc covid hosp",
-    location = "NY"
+    location = c("NY", "CA")
   ))
   fcast <- get_fcast(
     df,
@@ -41,7 +41,7 @@ test_that("get_fcast reuses the cv's top_n models when models is not supplied", 
     target_end_date = seq(as.Date("2023-01-01"), by = "week", length.out = 40),
     observation = 100 + 5 * sin(2 * pi * seq_len(40) / 8) + rnorm(40, 0, 2),
     target = "wk inc covid hosp",
-    location = "NY"
+    location = c("NY", "CA")
   ))
   cv <- get_cv(
     df,
@@ -62,7 +62,7 @@ test_that("get_fcast uses explicit models over the cv ranking when supplied", {
     target_end_date = seq(as.Date("2023-01-01"), by = "week", length.out = 40),
     observation = 100 + 5 * sin(2 * pi * seq_len(40) / 8) + rnorm(40, 0, 2),
     target = "wk inc covid hosp",
-    location = "NY"
+    location = c("NY", "CA")
   ))
   cv <- get_cv(
     df,
@@ -94,8 +94,55 @@ test_that("get_fcast validates h parameter", {
     target_end_date = seq(as.Date("2020-01-01"), by = "week", length.out = 80),
     observation = rpois(80, lambda = 100),
     target = "wk inc covid hosp",
-    location = "NY"
+    location = c("NY", "CA")
   ))
   expect_error(get_fcast(df, h = -1))
   expect_error(get_fcast(df, h = c(1, 2)))
+})
+
+test_that("get_fcast returns expected structure", {
+  df <- check_data(data.frame(
+    target_end_date = as.Date(c(
+      "2025-01-01", "2025-01-01", "2025-01-01",
+      "2025-01-08", "2025-01-08",
+      "2025-01-15",
+      "2025-01-22", "2025-01-22", "2025-01-22",
+      "2025-01-29", "2025-01-29",
+      "2025-01-01", "2025-01-01", "2025-01-01",
+      "2025-01-08", "2025-01-08",
+      "2025-01-15",
+      "2025-01-22", "2025-01-22", "2025-01-22",
+      "2025-01-29", "2025-01-29"
+    )),
+    as_of = as.Date(c(
+      "2025-01-01", "2025-01-08", "2025-01-15",
+      "2025-01-08", "2025-01-15",
+      "2025-01-15",
+      "2025-01-22", "2025-01-29", "2025-02-05",
+      "2025-01-29", "2025-02-05",
+      "2025-01-01", "2025-01-08", "2025-01-15",
+      "2025-01-08", "2025-01-15",
+      "2025-01-15",
+      "2025-01-22", "2025-01-29", "2025-02-05",
+      "2025-01-29", "2025-02-05"
+    )),
+    observation = c(100, 120, 130, 80, 110, 50, 40, 100, 160, 20, 70,
+                    110, 130, 130, 90, 100, 60, 80, 110, 160, 30, 80),
+    location = c("test_loc1", "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc1", "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc2", "test_loc2", "test_loc2", "test_loc2",
+                 "test_loc2", "test_loc2", "test_loc2", "test_loc2",
+                 "test_loc2", "test_loc2", "test_loc2"),
+    target = "wk inc covid hosp"
+  ))
+
+  print(df)
+
+  result <- get_fcast(df)
+
+  expect_s3_class(result, "accidda_fcast")
+  expect_equal(names(result$hub), c("test_loc1", "test_loc2"))
+  expect_equal(result$meta$location, c("test_loc1", "test_loc2"))
+  expect_equal(names(result$meta$nowcast), c("test_loc1", "test_loc2"))
 })

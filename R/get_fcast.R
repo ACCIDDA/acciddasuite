@@ -114,7 +114,7 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
   # Run forecasting over each location.
   results <- lapply(names(pieces), function(loc) {
     run_fcast(
-      df_loc = pieces[[loc]],
+      df = pieces[[loc]],
       models = models_by_location[[loc]],
       h = h,
       target = target,

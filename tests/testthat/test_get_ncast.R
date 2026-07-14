@@ -8,6 +8,11 @@ make_dummy_data <- function() {
       "2025-01-08", "2025-01-08",
       "2025-01-15",
       "2025-01-22", "2025-01-22", "2025-01-22",
+      "2025-01-29", "2025-01-29",
+      "2025-01-01", "2025-01-01", "2025-01-01",
+      "2025-01-08", "2025-01-08",
+      "2025-01-15",
+      "2025-01-22", "2025-01-22", "2025-01-22",
       "2025-01-29", "2025-01-29"
     )),
     as_of = as.Date(c(
@@ -15,10 +20,21 @@ make_dummy_data <- function() {
       "2025-01-08", "2025-01-15",
       "2025-01-15",
       "2025-01-22", "2025-01-29", "2025-02-05",
+      "2025-01-29", "2025-02-05",
+      "2025-01-01", "2025-01-08", "2025-01-15",
+      "2025-01-08", "2025-01-15",
+      "2025-01-15",
+      "2025-01-22", "2025-01-29", "2025-02-05",
       "2025-01-29", "2025-02-05"
     )),
-    observation = c(100, 120, 130, 80, 110, 50, 40, 100, 160, 20, 70),
-    location = "test_loc",
+    observation = c(100, 120, 130, 80, 110, 50, 40, 100, 160, 20, 70,
+                    110, 130, 130, 90, 100, 60, 80, 110, 160, 30, 80),
+    location = c("test_loc1", "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc1", "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc1", "test_loc1", "test_loc1",
+                 "test_loc2", "test_loc2", "test_loc2", "test_loc2",
+                 "test_loc2", "test_loc2", "test_loc2", "test_loc2",
+                 "test_loc2", "test_loc2", "test_loc2"),
     target = "cases"
   )
 
@@ -136,8 +152,9 @@ test_that("get_ncast returns expected structure", {
   result <- get_ncast(df, max_delay = 2, draws = 100, prop_delay = 0.5, scale_factor = 2)
 
   expect_true("data" %in% names(result))
-  expect_true("plot" %in% names(result))
   expect_s3_class(result, "accidda_ncast")
+  expect_equal(result$location, c("test_loc1", "test_loc2"))
+  expect_equal(unique(result$data$location), c("test_loc1", "test_loc2"))
 })
 
 # -----------------------------
