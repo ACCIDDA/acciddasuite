@@ -49,8 +49,8 @@ fcast <- example_data |>
 #> ℹ Truncating from max_delay = 6 to 2.
 #> ℹ Using max_delay = 6 from data
 #> ℹ Truncating from max_delay = 6 to 2.
-#> [2026-07-27 12:27:44.342] get_cv: +1.0240 secs
-#> [2026-07-27 12:27:45.380] get_fcast: +5.0982 secs
+#> [2026-07-27 13:39:59.502] get_cv: +1.0134 secs
+#> [2026-07-27 13:40:00.526] get_fcast: +4.9910 secs
 
 fcast
 #> <accidda_fcast>
