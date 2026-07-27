@@ -7,3 +7,11 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^PR82\.md$
+^draft\.R$
+^ebola\.R$
+^logo\.png$
+^respi\.json$
+^respilens\.json$
+^LICENSE\.md$
+^data-raw$

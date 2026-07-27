@@ -3,8 +3,10 @@
 #' Recent weeks of surveillance data are incomplete because of reporting
 #' delays (right truncation). \code{get_ncast} estimates their final counts
 #' with \href{https://baselinenowcast.epinowcast.org/}{baselinenowcast},
-#' replacing the last \code{max_delay} weeks and leaving earlier weeks
-#' untouched.
+#' replacing the last \code{max_delay} weeks of every series and leaving
+#' earlier weeks untouched. Downward revisions are redistributed across
+#' earlier delays via
+#' \code{\link[baselinenowcast]{preprocess_negative_values}}.
 #'
 #' Weekly data only; other cadences are rejected (the rest of the pipeline is
 #' cadence-agnostic).
@@ -21,28 +23,28 @@
 #'   estimation window. Default 3.
 #'
 #' @return An \code{accidda_ncast} object with the shared backbone
-#'   (\code{location}, \code{target}, \code{window}, \code{interval},
+#'   (\code{key}, \code{target}, \code{window}, \code{interval},
 #'   \code{history}) plus:
 #'   \describe{
 #'     \item{data}{Corrected series. \code{observation} holds the nowcast
 #'       median for corrected weeks; \code{ncast_lower} / \code{ncast_upper}
 #'       (95\% CrI) are non-NA only there, and let \code{\link{get_fcast}}
 #'       propagate nowcast uncertainty.}
-#'     \item{plot}{ggplot of the correction.}
+#'     \item{meta}{The nowcast settings (\code{max_delay}, \code{draws},
+#'       \code{prop_delay}, \code{scale_factor}) and \code{ncast_summary},
+#'       one tidy table of per-series weekly nowcasts (median, CrI bounds and
+#'       the reported-so-far \code{observed} count) plotted by
+#'       \code{\link[ggplot2]{autoplot}}.}
 #'   }
 #'
 #' @examples
 #' \dontrun{
-#' x     <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
+#' x <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 #' ncast <- get_ncast(x)
+#' autoplot(ncast)
 #' }
 #'
 #' @export
-#' @importFrom dplyr transmute summarise filter select mutate group_by
-#'   ungroup left_join coalesce arrange if_else
-#' @importFrom ggplot2 ggplot aes geom_ribbon geom_line geom_point labs
-#'   scale_fill_manual guide_legend theme_classic
-#'
 get_ncast <- function(
   x,
   max_delay = 2,
@@ -52,6 +54,7 @@ get_ncast <- function(
 ) {
   # Accept accidda_data; coerce plain data frames via check_data()
   x <- check_data(x)
+
   if (!x$history) {
     stop(
       "Nowcasting requires revision history (multiple `as_of` dates).\n",
@@ -61,83 +64,84 @@ get_ncast <- function(
   if (max_delay <= 0) {
     stop("`max_delay` must be a positive integer.")
   }
-
-  meta <- accidda_meta(x)
-  interval <- meta$interval
-
   # Nowcasting is weekly-only.
-  if (interval != 7L) {
+  if (x$interval != 7L) {
     stop(
       "get_ncast() currently supports weekly data only ",
       "(detected reporting interval = ",
-      interval,
+      x$interval,
       " days).\n",
       "Aggregate the series to weekly before nowcasting, or skip the nowcast ",
       "and pass the data straight to get_cv() / get_fcast()."
     )
   }
 
-  df <- x$data
+  # Latest known value per week of every series, with its reference week.
+  best_obs <- extract_series(x) |>
+    dplyr::mutate(reference_date = week_floor(target_end_date))
 
-  latest_date <- max(df$target_end_date)
-  # Only a recent window is used for delay estimation.
-  estimation_window <- scale_factor * max_delay * interval # days
-
-  # Latest known observation per date, over the full history.
-  best_obs <- df |>
-    dplyr::group_by(target_end_date) |>
-    dplyr::filter(as_of == max(as_of)) |>
-    dplyr::ungroup() |>
-    dplyr::select(target_end_date, location, target, observation)
-
-  # Reporting triangle -> posterior nowcast draws -> summary (incl. 95% CrI)
-  triangle <- build_reporting_triangle(df, latest_date, estimation_window)
-
-  rep_tri <- baselinenowcast::as_reporting_triangle(
-    triangle,
-    delays_unit = "weeks"
-  )
-  rep_tri <- baselinenowcast::truncate_to_delay(rep_tri, max_delay = max_delay)
-  draws_tbl <- baselinenowcast::baselinenowcast(
-    rep_tri,
-    scale_factor = scale_factor,
-    prop_delay = prop_delay,
-    draws = draws
-  )
-
-  ncast_summary <- draws_tbl |>
-    dplyr::group_by(reference_date) |>
-    dplyr::summarise(
-      median = stats::median(pred_count),
-      lower = stats::quantile(pred_count, 0.025),
-      upper = stats::quantile(pred_count, 0.975),
-      q25 = stats::quantile(pred_count, 0.25),
-      q75 = stats::quantile(pred_count, 0.75),
-      .groups = "drop"
+  # Weekly nowcast per series -- the only per-series step: baselinenowcast
+  # models one reporting triangle at a time.
+  ncast_summary <- x$data |>
+    dplyr::reframe(
+      run_ncast(
+        dplyr::pick(dplyr::everything()),
+        max_delay, draws, prop_delay, scale_factor
+      ),
+      .by = dplyr::all_of(x$key)
+    ) |>
+    dplyr::left_join(
+      dplyr::select(
+        best_obs,
+        dplyr::all_of(x$key),
+        reference_date,
+        observed = observation
+      ),
+      by = c(x$key, "reference_date")
     )
 
-  # Replace only the last max_delay weeks (right-truncated) with the nowcast.
-  out_df <- build_corrected_series(
-    best_obs,
-    ncast_summary,
-    latest_date,
-    max_delay,
-    interval
-  )
-
-  p <- plot_ncast(ncast_summary, best_obs, latest_date, estimation_window, meta)
+  # Splice: the last max_delay weeks of each series take the nowcast median
+  # and 95% CrI bounds; earlier weeks keep their observation and NA bounds.
+  data <- best_obs |>
+    dplyr::left_join(
+      dplyr::select(
+        ncast_summary,
+        dplyr::all_of(x$key),
+        reference_date,
+        ncast_median = median,
+        ncast_lower = lower,
+        ncast_upper = upper
+      ),
+      by = c(x$key, "reference_date")
+    ) |>
+    dplyr::mutate(
+      corrected = !is.na(ncast_median) &
+        target_end_date > max(target_end_date) - max_delay * x$interval,
+      .by = dplyr::all_of(x$key)
+    ) |>
+    dplyr::mutate(
+      observation = dplyr::if_else(corrected, ncast_median, observation),
+      ncast_lower = dplyr::if_else(corrected, ncast_lower, NA_real_),
+      ncast_upper = dplyr::if_else(corrected, ncast_upper, NA_real_)
+    ) |>
+    dplyr::select(-reference_date, -ncast_median, -corrected) |>
+    dplyr::arrange(dplyr::across(dplyr::all_of(c(x$key, "target_end_date"))))
 
   new_accidda_ncast(
-    data = out_df,
-    location = meta$location,
-    target = meta$target,
-    window = c(
-      from = min(out_df$target_end_date),
-      to = max(out_df$target_end_date)
-    ),
-    interval = interval,
+    data = data,
+    key = x$key,
+    target = x$target,
+    # Splicing replaces values, never dates, so the window is unchanged.
+    window = x$window,
+    interval = x$interval,
     history = TRUE,
-    plot = p
+    meta = list(
+      max_delay = max_delay,
+      draws = draws,
+      prop_delay = prop_delay,
+      scale_factor = scale_factor,
+      ncast_summary = ncast_summary
+    )
   )
 }
 
@@ -150,23 +154,55 @@ week_floor <- function(dates) {
 }
 
 
+#' Nowcast one series: reporting triangle -> posterior draws -> weekly summary
+#'
+#' @param df Revision history (`target_end_date`, `as_of`, `observation`) for
+#'   a single series.
+#' @inheritParams get_ncast
+#' @return A tibble with one row per reference week: `median`, `lower` /
+#'   `upper` (95\% CrI) and `q25` / `q75`.
+#' @keywords internal
+#' @noRd
+run_ncast <- function(df, max_delay, draws, prop_delay, scale_factor) {
+  # Only a recent window is used for delay estimation.
+  estimation_window <- scale_factor * max_delay * 7L # days
+
+  rep_tri <- df |>
+    build_reporting_triangle(estimation_window) |>
+    baselinenowcast::as_reporting_triangle(delays_unit = "weeks") |>
+    baselinenowcast::preprocess_negative_values() |>
+    baselinenowcast::truncate_to_delay(max_delay = max_delay)
+
+  baselinenowcast::baselinenowcast(
+    rep_tri,
+    scale_factor = scale_factor,
+    prop_delay = prop_delay,
+    draws = draws
+  ) |>
+    dplyr::summarise(
+      median = stats::median(pred_count),
+      lower = stats::quantile(pred_count, 0.025),
+      upper = stats::quantile(pred_count, 0.975),
+      q25 = stats::quantile(pred_count, 0.25),
+      q75 = stats::quantile(pred_count, 0.75),
+      .by = reference_date
+    )
+}
+
+
 #' Build the incremental reporting triangle for baselinenowcast
 #'
 #' Differences successive revisions per reference date into new reports per
-#' period; negative revisions are clamped to 0 (with a warning).
-#' @param df A data frame with revision history (`as_of`).
-#' @param latest_date The most recent `target_end_date`.
+#' week. Negative increments (downward revisions) are kept;
+#' \code{baselinenowcast::preprocess_negative_values()} redistributes them.
+#' @param df Revision history (`as_of`) for a single series.
 #' @param estimation_window Width in days of the delay-estimation window.
 #' @return A data frame of `reference_date`, `report_date`, `count`.
 #' @keywords internal
 #' @noRd
-build_reporting_triangle <- function(df, latest_date, estimation_window) {
-  recent <- dplyr::filter(
-    df,
-    target_end_date >= latest_date - estimation_window
-  )
-
-  obs <- recent |>
+build_reporting_triangle <- function(df, estimation_window) {
+  df |>
+    dplyr::filter(target_end_date >= max(target_end_date) - estimation_window) |>
     dplyr::transmute(
       reference_date = week_floor(target_end_date),
       report_date = week_floor(as_of),
@@ -177,123 +213,9 @@ build_reporting_triangle <- function(df, latest_date, estimation_window) {
       .by = c(reference_date, report_date)
     ) |>
     dplyr::arrange(reference_date, report_date) |>
-    dplyr::group_by(reference_date) |>
     dplyr::mutate(
-      delta = confirm - dplyr::lag(confirm, default = 0L),
-      count = pmax(0L, delta)
-    ) |>
-    dplyr::ungroup()
-
-  n_neg <- sum(obs$delta < 0, na.rm = TRUE)
-  if (n_neg > 0) {
-    warning(
-      "Found ",
-      n_neg,
-      " negative revision(s) (later report lower than ",
-      "earlier one). These were clamped to 0. If this is frequent, the ",
-      "data may not follow a monotonically-increasing revision pattern."
+      count = confirm - dplyr::lag(confirm, default = 0L),
+      .by = reference_date,
+      .keep = "unused"
     )
-  }
-
-  dplyr::select(obs, reference_date, report_date, count)
-}
-
-
-#' Splice the nowcast into the last `max_delay` weeks of the series
-#'
-#' Corrected weeks take the nowcast median and 95\% CrI bounds
-#' (\code{ncast_lower} / \code{ncast_upper}); other weeks keep NA bounds.
-#' @param best_obs Latest observation per date (one row per `target_end_date`).
-#' @param ncast_summary Per-week nowcast summary (median + 50\%/95\% CrI bounds).
-#' @param latest_date The most recent `target_end_date`.
-#' @inheritParams get_ncast
-#' @param interval Reporting interval in days.
-#' @return The corrected series data frame.
-#' @keywords internal
-#' @noRd
-build_corrected_series <- function(
-  best_obs,
-  ncast_summary,
-  latest_date,
-  max_delay,
-  interval
-) {
-  ncast_cutoff <- latest_date - max_delay * interval
-
-  ncast_lookup <- data.frame(
-    reference_date = ncast_summary$reference_date,
-    ncast_median = ncast_summary$median,
-    ncast_lower = ncast_summary$lower,
-    ncast_upper = ncast_summary$upper
-  )
-
-  best_obs |>
-    dplyr::mutate(reference_date = week_floor(target_end_date)) |>
-    dplyr::left_join(ncast_lookup, by = "reference_date") |>
-    dplyr::mutate(
-      corrected = target_end_date > ncast_cutoff & !is.na(ncast_median),
-      observation = dplyr::if_else(corrected, ncast_median, observation),
-      ncast_lower = dplyr::if_else(corrected, ncast_lower, NA_real_),
-      ncast_upper = dplyr::if_else(corrected, ncast_upper, NA_real_)
-    ) |>
-    dplyr::select(
-      target_end_date,
-      location,
-      target,
-      observation,
-      ncast_lower,
-      ncast_upper
-    ) |>
-    dplyr::arrange(target_end_date)
-}
-
-
-#' Visualise the nowcast over the estimation window
-#' @param ncast_summary Per-week nowcast summary (median + 50\%/95\% CrI bounds).
-#' @param best_obs Latest observation per date (one row per `target_end_date`).
-#' @param latest_date The most recent `target_end_date`.
-#' @param estimation_window Width, in days, of the estimation window.
-#' @param meta Metadata backbone (for axis/subtitle labels).
-#' @return A ggplot object.
-#' @keywords internal
-#' @noRd
-plot_ncast <- function(
-  ncast_summary,
-  best_obs,
-  latest_date,
-  estimation_window,
-  meta
-) {
-  obs_window <- best_obs |>
-    dplyr::filter(target_end_date >= latest_date - estimation_window) |>
-    dplyr::mutate(reference_date = week_floor(target_end_date))
-
-  ggplot2::ggplot(ncast_summary, ggplot2::aes(x = reference_date)) +
-    ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = lower, ymax = upper, fill = "95% CrI"),
-      alpha = 0.2
-    ) +
-    ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q25, ymax = q75, fill = "50% CrI"),
-      alpha = 0.4
-    ) +
-    ggplot2::geom_line(ggplot2::aes(y = median)) +
-    ggplot2::geom_point(
-      data = obs_window,
-      ggplot2::aes(x = reference_date, y = observation),
-      size = 0.7
-    ) +
-    ggplot2::scale_fill_manual(
-      values = c("95% CrI" = "grey30", "50% CrI" = "grey30"),
-      guide = ggplot2::guide_legend(
-        override.aes = list(alpha = c(0.4, 0.2))
-      )
-    ) +
-    ggplot2::labs(
-      x = "Date",
-      y = meta$target,
-      subtitle = meta$location,
-      fill = NULL
-    ) +
-    ggplot2::theme_classic()
 }

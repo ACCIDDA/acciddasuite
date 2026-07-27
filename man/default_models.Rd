@@ -7,14 +7,19 @@
 default_models()
 }
 \value{
-A named list of fable model definitions.
+A named list of \code{fable} model specifications.
 }
 \description{
-The built-in model set for \code{\link{get_cv}} and \code{\link{get_fcast}}:
-a naive random walk, ETS, Theta and ARIMA, each fitted on
-\code{log(observation)} to stabilise count variance (\code{fable}
-back-transforms automatically).
-Extend rather than replace by composing, e.g.
+Return the default set of forecasting models used by
+\code{\link{get_cv}} and \code{\link{get_fcast}}.
+}
+\details{
+The default models are naive, ETS, Theta, and ARIMA models. All models are
+fitted to \code{log(observation)} to stabilise variance in count data.
+Forecasts are automatically transformed back to the original scale by
+\code{fable}.
+
+Additional models can be added by extending the returned list, for example:
 \code{c(default_models(), list(CUSTOM = fable::ARIMA(observation)))}.
 }
 \examples{

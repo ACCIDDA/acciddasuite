@@ -12,5 +12,5 @@
 \item{...}{Ignored.}
 }
 \description{
-Print an \code{accidda_fcast} object
+Display a summary of the target, series, forecast period, and models used.
 }

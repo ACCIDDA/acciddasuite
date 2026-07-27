@@ -4,47 +4,53 @@ specials_foundation <- fabletools::new_specials(
   }
 )
 
-#' Forecast with a pretrained ("foundation") time-series model
+
+#' Forecast with a pretrained time-series model
 #'
-#' \code{FOUNDATION()} lets you use a large pretrained forecasting model inside
-#' \code{fable}, next to ARIMA, ETS and the others. These models are
-#' \emph{zero-shot}: there is no training step. Fitting just stores your
-#' history; at forecast time the model produces many possible future paths,
-#' which the package turns into quantiles, ensembles and scores like any other
-#' model (see \code{\link{get_cv}}, \code{\link{get_fcast}}).
+#' \code{FOUNDATION()} provides access to large pretrained forecasting models
+#' within \code{fable}. Unlike traditional statistical models, these models do
+#' not require training on the supplied data. The fitting step stores the
+#' observed history, and forecasts are generated directly from the pretrained
+#' model.
 #'
-#' The models run in Python, set up for you - you only need the
-#' \code{reticulate} package installed. The first forecast of a session installs
-#' the Python pieces and downloads the model weights (a one-off that may take a
-#' few minutes); after that everything is cached and forecasts are quick.
+#' Forecasts are returned in the same format as other \code{fable} models,
+#' allowing them to be used with functions such as \code{\link{get_cv}} and
+#' \code{\link{get_fcast}}.
+#'
+#' The models run through Python using \code{reticulate}. On the first forecast
+#' in a session, required Python dependencies and model weights are installed
+#' and downloaded automatically. These are cached for subsequent forecasts.
 #'
 #' Available models (\code{backend}):
 #' \describe{
-#'   \item{\code{"chronos"}}{Amazon Chronos. Default
+#'   \item{\code{"chronos"}}{Amazon Chronos. Default:
 #'     \code{amazon/chronos-t5-small}.}
-#'   \item{\code{"timesfm"}}{Google TimesFM. Default
+#'   \item{\code{"timesfm"}}{Google TimesFM. Default:
 #'     \code{google/timesfm-2.5-200m-pytorch}.}
-#'   \item{\code{"sundial"}}{Tsinghua Sundial. Default
+#'   \item{\code{"sundial"}}{Tsinghua Sundial. Default:
 #'     \code{thuml/sundial-base-128m}.}
-#'   \item{\code{"moirai"}}{Salesforce Moirai. Default
+#'   \item{\code{"moirai"}}{Salesforce Moirai. Default:
 #'     \code{Salesforce/moirai-1.1-R-small}.}
 #' }
 #'
-#' Note: TimesFM and the Chronos-Bolt models report only a handful of quantiles,
-#' so their most extreme prediction intervals are approximate.
+#' Some models provide only a limited number of quantiles, so extreme prediction
+#' intervals may be approximate.
 #'
-#' @param formula The series to forecast, e.g. \code{observation}. For counts,
-#'   wrap it in \code{log()} (e.g. \code{log(observation)}) and \code{fable}
-#'   undoes the log for you. Extra predictor variables are not supported.
-#' @param backend Which model to use: \code{"chronos"}, \code{"timesfm"},
-#'   \code{"sundial"} or \code{"moirai"}.
-#' @param model_id Exact model to fetch from Hugging Face. \code{NULL} (default)
-#'   uses the backend's default model listed above.
-#' @param device \code{"cpu"} (default), or \code{"cuda"} to use a GPU.
-#' @param n_samples Number of forecast draws (default 200).
+#' @param formula The series to forecast, for example \code{observation}.
+#'   For count data, use \code{log(observation)} if variance stabilisation is
+#'   required. \code{fable} automatically back-transforms forecasts.
+#'   Additional predictors are not supported.
+#' @param backend Pretrained model backend to use:
+#'   \code{"chronos"}, \code{"timesfm"}, \code{"sundial"}, or \code{"moirai"}.
+#' @param model_id Optional Hugging Face model identifier. If \code{NULL},
+#'   the default model for the selected backend is used.
+#' @param device Computation device: \code{"cpu"} (default) or \code{"cuda"}.
+#' @param n_samples Number of forecast samples to generate. Defaults to
+#'   \code{200}.
 #'
-#' @return A model definition to pass to \code{\link[fabletools]{model}} (or to
-#'   the package's \code{\link{get_cv}} / \code{\link{get_fcast}}).
+#' @return A \code{fable} model specification for use with
+#'   \code{\link[fabletools]{model}}, \code{\link{get_cv}}, or
+#'   \code{\link{get_fcast}}.
 #'
 #' @examples
 #' \dontrun{

@@ -37,20 +37,15 @@ An `accidda_data` object (see
 ``` r
 get_data(pathogen = "covid", geo_value = "ny")
 #> <accidda_data>
-#> 
-#> Location: NY 
-#> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
-#> Interval: 7 days
-#> History:  FALSE
+#> Target:   wk inc covid hosp
+#> Series:   1 (location)
+#> Window:   2020-08-08 to 2026-07-18 (7-day interval)
 
 # Revision history for nowcasting
 get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 #> <accidda_data>
-#> 
-#> Location: CA 
-#> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
-#> Interval: 7 days
-#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
+#> Target:   wk inc covid hosp
+#> Series:   1 (location)
+#> Window:   2020-08-08 to 2026-07-18 (7-day interval)
+#> History:  2024-11-17 to 2026-07-19
 ```

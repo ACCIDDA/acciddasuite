@@ -74,7 +74,6 @@ foundation_backends <- function() {
         }
       }
     ),
-
     timesfm = list(
       deps = "timesfm[torch]",
       default_model = "google/timesfm-2.5-200m-pytorch",
@@ -109,7 +108,6 @@ foundation_backends <- function() {
         quantiles_to_paths(qmat, levels, n_samples)
       }
     ),
-
     sundial = list(
       # Sundial's remote code needs an older transformers: it reads
       # DynamicCache.seen_tokens (removed in 4.44) and its attention path breaks
@@ -139,7 +137,6 @@ foundation_backends <- function() {
         t(matrix(a[1, , ], nrow = n_samples, ncol = h))
       }
     ),
-
     moirai = list(
       # Salesforce Moirai: a masked-encoder universal forecaster on its own
       # Lightning/GluonTS stack - it never imports `transformers`, so it coexists

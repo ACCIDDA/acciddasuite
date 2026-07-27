@@ -38,28 +38,41 @@ via [`epidatr`](https://cmu-delphi.github.io/epidatr/).
 Setting `revisions = TRUE` retrieves the full revision history (*i.e.*
 all past versions of the data), which is needed for nowcasting.
 
-[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)
-returns a validated `accidda_data` object:
-
 ``` r
 
 library(acciddasuite)
-df <- get_data(pathogen = "covid", geo_value = "ny", revisions = TRUE)
+df <- get_data(pathogen = "covid", geo_value = c("ny", "ca"), revisions = TRUE)
 df
 #> <accidda_data>
-#> 
-#> Location: NY 
-#> Target:   wk inc covid hosp 
-#> Window:   2020-08-08 to 2026-06-06 ( 305 dates )
-#> Interval: 7 days
-#> History:  TRUE ( 2024-11-17 to 2026-06-07 )
+#> Target:   wk inc covid hosp
+#> Series:   2 (location)
+#> Window:   2020-08-08 to 2026-07-18 (7-day interval)
+#> History:  2024-11-17 to 2026-07-19
 ```
 
-You can also **bring your own data**. Just pass it through
+You can also provide **your own data**. Just pass it through
 [`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md).
 See
 [`vignette("external_data")`](https://accidda.github.io/acciddasuite/articles/external_data.md)
 for formatting details.
+
+``` r
+
+tail(example_data)
+#> # A tibble: 6 × 5
+#>   as_of      location target            target_end_date observation
+#>   <date>     <chr>    <chr>             <date>                <dbl>
+#> 1 2026-07-05 CA       wk inc covid hosp 2026-07-04              152
+#> 2 2026-07-12 CA       wk inc covid hosp 2026-07-04              161
+#> 3 2026-07-05 NY       wk inc covid hosp 2026-07-04               59
+#> 4 2026-07-12 NY       wk inc covid hosp 2026-07-04               60
+#> 5 2026-07-12 CA       wk inc covid hosp 2026-07-11              168
+#> 6 2026-07-12 NY       wk inc covid hosp 2026-07-11               51
+df <- check_data(example_data)
+autoplot(df)
+```
+
+![](acciddasuite_files/figure-html/check_data-1.png)
 
 ## Step 2: Nowcasting (optional)
 
@@ -70,29 +83,22 @@ biased downward.
 
 [`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
 estimates what the recent counts will look like once all reports arrive.
-With the default `max_delay = 4`, the last 4 weeks are corrected;
+With the default `max_delay = 2`, the last 2 weeks are corrected;
 everything before that is left untouched.
 
 ``` r
 
-ncast <- get_ncast(df)
+ncast <- get_ncast(df, max_delay = 3)
 ncast
 #> <accidda_ncast>
-#> 
-#> Location: NY 
-#> Target:   wk inc covid hosp 
-#> Nowcasted 2 weeks: 2026-05-30 to 2026-06-06 
-#> 
-#> $data  corrected series (305 rows)
-#> $plot  nowcast visualisation
+#> Target:   wk inc covid hosp
+#> Series:   2 (location)
+#> Window:   2024-01-06 to 2026-07-11 (7-day interval)
+#> Nowcast:  2026-06-27 to 2026-07-11
+autoplot(ncast)
 ```
 
-``` r
-
-ncast$plot
-```
-
-![](acciddasuite_files/figure-html/plot-nowcast-1.png)
+![](acciddasuite_files/figure-html/nowcast-1.png)
 
 The corrected `ncast$data` contains two extra columns: `ncast_lower` and
 `ncast_upper` (95% CrI) for the corrected weeks.
@@ -105,18 +111,19 @@ uncertainty into the final forecast.
 Forecasting is split into two steps:
 
 1.  **[`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
-    — model selection**: time series cross-validation on the full
+    (model selection)**: time series cross-validation on the full
     (median corrected) series, starting from `eval_start_date`. Models
     are ranked by WIS and interval coverage.
 2.  **[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-    — final forecast**: reuses the ranking to ensemble the best `top_n`
+    (final forecast)**: reuses the ranking to ensemble the best `top_n`
     models and projects `h` weeks into the future. When nowcast columns
     are present, the forecast is produced from three baselines (lower,
     median, and upper nowcast estimates) and pooled, so prediction
     intervals reflect both model uncertainty and nowcast uncertainty.
 
-We set `eval_start_date` to mark the start of the evaluation window. At
-least 52 weeks of data must precede this date.
+We set `eval_start_date` to mark the start of the evaluation window. All
+observations before this date form the initial training window, so every
+series needs at least two observations before it.
 
 ``` r
 
@@ -125,8 +132,8 @@ eval_start_date <- max(ncast$data$target_end_date) - 28
 
 Default models are:
 
-- `SNAIVE` (Seasonal Naïve): Assumes this week will look like the same
-  week last year. The simplest possible baseline.
+- `NAIVE` (Naïve / random walk): Carries the last observed value
+  forward. The simplest possible baseline.
 
 - `ETS` (Exponential Smoothing): A weighted average where recent weeks
   matter more than older ones. Adapts to trends and seasonal patterns.
@@ -146,48 +153,46 @@ cv <- get_cv(
 )
 cv
 #> <accidda_cv>
-#> 
-#> Models ranked (cross-validation):
-#>  model_id       wis
-#>    <char>     <num>
-#>       ETS  29.43926
-#>     ARIMA  31.71773
-#>     THETA  34.14236
-#>    SNAIVE 160.26634
-#> 
-#> Evaluated from 2026-05-09 | horizon 4 weeks | NY 
-#> 
-#> Contents:
-#>   $forecasts  per-origin forecasts (model_out_tbl)
-#>   $oracle     observed truth (oracle_output)
-#>   $score      model ranking table
-#>   $models     model specifications
-#>   $meta       eval_start_date, h, location, target, interval
+#> Target:   wk inc covid hosp
+#> Series:   2 (location)
+#> Window:   2024-01-06 to 2026-07-11 (7-day interval)
+#> CV:       4 models x 1 origins (h = 4)
 ```
+
+You can plot the relative WIS for each model and location with
+[`autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html). A
+value of `wis_relative_skill`=1 indicates average performance, values
+below 1 indicate lower WIS (better forecasts), and values above 1
+indicate higher WIS (worse forecasts).
 
 ``` r
 
-fcast <- get_fcast(cv, top_n = 3)
+autoplot(cv) +
+  ggplot2::scale_x_log10()
+```
+
+![](acciddasuite_files/figure-html/plot-cv-1.png)
+
+``` r
+
+fcast <- get_fcast(cv, top_n = 2)
 fcast
 #> <accidda_fcast>
-#> 
-#> Models ranked (cross-validation):
-#>  model_id       wis
-#>    <char>     <num>
-#>       ETS  29.43926
-#>     ARIMA  31.71773
-#>     THETA  34.14236
-#>    SNAIVE 160.26634
-#> 
-#> Forecast horizon:
-#>   From: 2026-06-13 
-#>   To:   2026-07-04 
-#> 
-#> Contents:
-#>   $hub    hub forecast object (model_out_tbl, oracle_output)
-#>   $score  model ranking table, or NULL
-#>   $meta   models, top_n, h, location, target, interval, nowcast
+#> Target:   wk inc covid hosp
+#> Series:   2 (location)
+#> Forecast: 2026-07-18 to 2026-08-08 (h = 4)
+#> Models:   2 + ENSEMBLE
 ```
+
+Plot the ensemble forecast with `autoplot(fcast)` (pass `model =` to
+inspect any single model instead):
+
+``` r
+
+autoplot(fcast, model = "ARIMA")
+```
+
+![](acciddasuite_files/figure-html/plot-forecast-1.png)
 
 ### Adding custom models
 
@@ -207,9 +212,12 @@ library(projections)
 my_models <- c(
   default_models(),
   list(
-    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
+    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
     PROPHET = prophet(observation ~ season("year")),
-    EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
+    NNETAR = NNETAR(observation),
+    EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7),
+    CHRONOS = FOUNDATION(log(observation), "chronos"),
+    TIMESFM = FOUNDATION(log(observation), "timesfm")
   )
 )
 

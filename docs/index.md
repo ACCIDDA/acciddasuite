@@ -1,7 +1,9 @@
 # acciddasuite
 
-`acciddasuite` provides a simple pipeline for infectious diseases
-forecasts. It validates input data
+`acciddasuite` provides a complete pipeline for infectious diseases
+forecasts. It fetches
+([`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md))
+and validates input data
 ([`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)),
 optionally applies nowcasting to adjust for reporting delays
 ([`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)),
@@ -18,7 +20,7 @@ You can install the development version of acciddasuite from
 ``` r
 
 # install.packages("pak")
-#pak::pak("ACCIDDA/acciddasuite")
+# pak::pak("ACCIDDA/acciddasuite")
 ```
 
 ## Example
@@ -26,16 +28,16 @@ You can install the development version of acciddasuite from
 ``` r
 
 library(acciddasuite)
-head(example_data)
+tail(example_data)
 #> # A tibble: 6 × 5
 #>   as_of      location target            target_end_date observation
 #>   <date>     <chr>    <chr>             <date>                <dbl>
-#> 1 2024-11-17 NY       wk inc covid hosp 2020-08-08              517
-#> 2 2024-11-24 NY       wk inc covid hosp 2020-08-08              517
-#> 3 2024-12-01 NY       wk inc covid hosp 2020-08-08              517
-#> 4 2024-12-08 NY       wk inc covid hosp 2020-08-08              517
-#> 5 2024-12-15 NY       wk inc covid hosp 2020-08-08              517
-#> 6 2024-12-22 NY       wk inc covid hosp 2020-08-08              517
+#> 1 2026-07-05 CA       wk inc covid hosp 2026-07-04              152
+#> 2 2026-07-12 CA       wk inc covid hosp 2026-07-04              161
+#> 3 2026-07-05 NY       wk inc covid hosp 2026-07-04               59
+#> 4 2026-07-12 NY       wk inc covid hosp 2026-07-04               60
+#> 5 2026-07-12 CA       wk inc covid hosp 2026-07-11              168
+#> 6 2026-07-12 NY       wk inc covid hosp 2026-07-11               51
 ```
 
 ``` r
@@ -43,38 +45,30 @@ head(example_data)
 fcast <- example_data |>
   check_data() |>
   get_ncast() |>
-  get_cv(eval_start_date = max(example_data$target_end_date) - 28) |>
+  get_cv(eval_start_date = max(example_data$target_end_date) - 30) |>
   get_fcast(top_n = 3)
 #> ℹ Using max_delay = 6 from data
 #> ℹ Truncating from max_delay = 6 to 2.
-#> [2026-06-17 19:07:08.646] get_cv: +0.7772 secs
-#> [2026-06-17 19:07:09.427] get_fcast: +2.2583 secs
+#> ℹ Using max_delay = 6 from data
+#> ℹ Truncating from max_delay = 6 to 2.
+#> [2026-07-27 13:39:59.502] get_cv: +1.0134 secs
+#> [2026-07-27 13:40:00.526] get_fcast: +4.9910 secs
 
 fcast
 #> <accidda_fcast>
-#> 
-#> Models ranked (cross-validation):
-#> # A tibble: 4 × 2
-#>   model_id   wis
-#>   <chr>    <dbl>
-#> 1 THETA     26.3
-#> 2 ARIMA     28.6
-#> 3 ETS       30.4
-#> 4 SNAIVE   256. 
-#> 
-#> Forecast horizon:
-#>   From: 2026-03-21 
-#>   To:   2026-04-11 
-#> 
-#> Contents:
-#>   $hub    hub forecast object (model_out_tbl, oracle_output)
-#>   $score  model ranking table, or NULL
-#>   $meta   models, top_n, h, location, target, interval, nowcast
+#> Target:   wk inc covid hosp
+#> Series:   2 (location)
+#> Forecast: 2026-07-18 to 2026-08-08 (h = 4)
+#> Models:   3 + ENSEMBLE
+
+fcast |> autoplot()
 ```
+
+![](reference/figures/README-unnamed-chunk-4-1.png)
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 
 ``` r
 
-to_respilens(fcast, path = "respilens.json")
+# to_respilens(fcast, path = "respilens.json")
 ```

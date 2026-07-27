@@ -1,64 +1,33 @@
-test_that("print.accidda_fcast handles accidda_fcast objects", {
-  mock_cast <- structure(
-    list(
-      hub = list(
-        model_out_tbl = data.frame(
-          target_end_date = as.Date(c("2024-01-01", "2024-01-08"))
-        ),
-        oracle_output = data.frame()
-      ),
-      score = data.frame(
-        model_id = c("SNAIVE", "ETS"),
-        wis = c(10.5, 12.3)
-      ),
-      meta = list(
-        models = c("SNAIVE", "ETS"),
-        top_n = 2,
-        h = 4,
-        location = "NY",
-        nowcast = FALSE
-      )
-    ),
-    class = "accidda_fcast"
-  )
+test_that("print.accidda_data shows the shared grid", {
+  x <- check_data(make_weekly_df(locations = c("NY", "CA"), n = 20))
+  expect_snapshot(print(x))
 
-  expect_output(print(mock_cast), "accidda_fcast")
-  expect_output(print(mock_cast), "Models ranked")
-  expect_output(print(mock_cast), "Forecast horizon")
+  rev <- check_data(make_weekly_df(n = 6, revisions = TRUE))
+  expect_snapshot(print(rev))
 })
 
-test_that("print.accidda_fcast handles a NULL score", {
-  mock_cast <- structure(
-    list(
-      hub = list(
-        model_out_tbl = data.frame(
-          target_end_date = as.Date(c("2024-01-01", "2024-01-08"))
-        ),
-        oracle_output = data.frame()
-      ),
-      score = NULL,
-      meta = list(models = c("ETS", "ARIMA"), top_n = 2, h = 4,
-                  location = "NY", nowcast = FALSE)
-    ),
-    class = "accidda_fcast"
+test_that("print.accidda_ncast and a pooled forecast print consistently", {
+  ncast <- get_ncast(
+    check_data(make_weekly_df(locations = c("NY", "CA"), n = 8, revisions = TRUE)),
+    draws = 50
   )
+  expect_snapshot(print(ncast))
 
-  expect_output(print(mock_cast), "Models forecast")
+  fcast <- get_fcast(ncast, models = list(NAIVE = fable::NAIVE(observation)), h = 2)
+  expect_snapshot(print(fcast))
 })
 
-test_that("print.accidda_cv handles accidda_cv objects", {
-  mock_cv <- structure(
-    list(
-      forecasts = data.frame(),
-      oracle = data.frame(),
-      score = data.frame(model_id = c("ETS", "ARIMA"), wis = c(5, 7)),
-      models = list(ETS = NULL, ARIMA = NULL),
-      meta = list(eval_start_date = as.Date("2025-01-01"), h = 4,
-                  location = "NY")
-    ),
-    class = "accidda_cv"
+test_that("print.accidda_cv and print.accidda_fcast print consistently", {
+  x <- check_data(make_weekly_df(locations = c("NY", "CA"), n = 20))
+  cv <- get_cv(
+    x,
+    eval_start_date = "2023-04-16",
+    h = 1,
+    step = 4,
+    models = list(NAIVE = fable::NAIVE(observation), MEAN = fable::MEAN(observation))
   )
+  expect_snapshot(print(cv))
 
-  expect_output(print(mock_cv), "accidda_cv")
-  expect_output(print(mock_cv), "Models ranked")
+  fcast <- get_fcast(cv, top_n = 1)
+  expect_snapshot(print(fcast))
 })

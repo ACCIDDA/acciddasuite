@@ -1,9 +1,11 @@
 #' Constructors for the pipeline's typed S3 objects
 #'
 #' Low-level constructors that assemble and type-check the four pipeline
-#' objects, which share a metadata backbone (\code{location}, \code{target},
-#' \code{window}, \code{interval}, \code{history}). User-facing validation
-#' lives in \code{\link{check_data}}.
+#' objects. \code{accidda_data} / \code{accidda_ncast} carry the full metadata
+#' backbone (\code{key}, \code{target}, \code{window}, \code{interval},
+#' \code{history}); \code{accidda_cv} / \code{accidda_fcast} keep only
+#' \code{key}, \code{target} and \code{interval}. User-facing validation lives
+#' in \code{\link{check_data}}.
 #'
 #' @name accidda-class
 #' @keywords internal
@@ -13,10 +15,10 @@ NULL
 
 #' @keywords internal
 #' @noRd
-new_accidda_data <- function(data, location, target, window, interval, history) {
+new_accidda_data <- function(data, key, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
-    is.character(location), length(location) == 1L,
+    is.character(key), length(key) > 0L, all(key %in% names(data)),
     is.character(target), length(target) == 1L,
     inherits(window, "Date"), length(window) == 2L,
     is.numeric(interval), length(interval) == 1L,
@@ -25,7 +27,7 @@ new_accidda_data <- function(data, location, target, window, interval, history) 
   structure(
     list(
       data = data,
-      location = location,
+      key = key,
       target = target,
       window = window,
       interval = as.integer(interval),
@@ -40,31 +42,19 @@ new_accidda_data <- function(data, location, target, window, interval, history) 
 #' @noRd
 new_accidda_ncast <- function(
   data,
-  location,
+  key,
   target,
   window,
   interval,
   history,
-  plot
+  meta
 ) {
-  stopifnot(
-    is.data.frame(data),
-    is.character(location), length(location) == 1L,
-    is.character(target), length(target) == 1L,
-    inherits(plot, "ggplot")
-  )
-  structure(
-    list(
-      data = data,
-      location = location,
-      target = target,
-      window = window,
-      interval = as.integer(interval),
-      history = history,
-      plot = plot
-    ),
-    class = "accidda_ncast"
-  )
+  stopifnot(is.list(meta))
+  # Same backbone as accidda_data, validated in one place, plus `meta`.
+  out <- new_accidda_data(data, key, target, window, interval, history)
+  out$meta <- meta
+  class(out) <- "accidda_ncast"
+  out
 }
 
 
@@ -97,29 +87,26 @@ new_accidda_fcast <- function(hub, score, meta) {
 }
 
 
-#' Read the shared metadata backbone from any pipeline object
+#' Read the shared metadata backbone from a pipeline object
 #'
-#' Returns \code{location}, \code{target}, \code{interval} (plus \code{window}
-#' and \code{history} for dataset objects), whichever stage produced \code{x}.
-#' @param x An \code{accidda_data}, \code{accidda_ncast} or \code{accidda_cv}.
+#' Returns the fields shared by every stage (\code{key}, \code{target},
+#' \code{interval}), plus \code{window} and \code{history} for
+#' \code{accidda_data} / \code{accidda_ncast}.
+#' @param x An \code{accidda_data}, \code{accidda_ncast}, \code{accidda_cv} or
+#'   \code{accidda_fcast}.
 #' @return A named list.
 #' @keywords internal
 #' @noRd
 accidda_meta <- function(x) {
-  if (inherits(x, "accidda_cv")) {
-    return(x$meta)
-  }
   if (inherits(x, c("accidda_data", "accidda_ncast"))) {
-    return(list(
-      location = x$location,
-      target = x$target,
-      window = x$window,
-      interval = x$interval,
-      history = x$history
-    ))
+    x[c("key", "target", "window", "interval", "history")]
+  } else if (inherits(x, c("accidda_cv", "accidda_fcast"))) {
+    x$meta[c("key", "target", "interval")]
+  } else {
+    stop(
+      "`x` must be an accidda_data, accidda_ncast, accidda_cv or ",
+      "accidda_fcast object.\n",
+      "Run check_data() on your data frame first."
+    )
   }
-  stop(
-    "`x` must be an accidda_data, accidda_ncast or accidda_cv object.\n",
-    "Run check_data() on your data frame first."
-  )
 }
