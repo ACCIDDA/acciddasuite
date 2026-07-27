@@ -5,6 +5,26 @@
 - [`EPIESTIM()`](https://accidda.github.io/acciddasuite/reference/EPIESTIM.md)
   : EpiEstim model for fable
 
+- [`FOUNDATION()`](https://accidda.github.io/acciddasuite/reference/FOUNDATION.md)
+  : Forecast with a pretrained time-series model
+
+- [`as_tibble(`*`<accidda_data>`*`)`](https://accidda.github.io/acciddasuite/reference/as_tibble.accidda_data.md)
+  [`as_tibble(`*`<accidda_ncast>`*`)`](https://accidda.github.io/acciddasuite/reference/as_tibble.accidda_data.md)
+  [`as_tibble(`*`<accidda_fcast>`*`)`](https://accidda.github.io/acciddasuite/reference/as_tibble.accidda_data.md)
+  : Plot-ready tibbles from pipeline objects
+
+- [`autoplot(`*`<accidda_cv>`*`)`](https://accidda.github.io/acciddasuite/reference/autoplot.accidda_cv.md)
+  : Plot cross-validation model rankings
+
+- [`autoplot(`*`<accidda_data>`*`)`](https://accidda.github.io/acciddasuite/reference/autoplot.accidda_data.md)
+  : Plot surveillance data
+
+- [`autoplot(`*`<accidda_fcast>`*`)`](https://accidda.github.io/acciddasuite/reference/autoplot.accidda_fcast.md)
+  : Plot a forecast
+
+- [`autoplot(`*`<accidda_ncast>`*`)`](https://accidda.github.io/acciddasuite/reference/autoplot.accidda_ncast.md)
+  : Plot a nowcast
+
 - [`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
   : Validate surveillance data
 
@@ -12,7 +32,7 @@
   : Default forecasting models
 
 - [`example_data`](https://accidda.github.io/acciddasuite/reference/example_data.md)
-  : Weekly COVID-19 hospital admissions for New York
+  : Weekly COVID-19 hospital admissions for New York and California
 
 - [`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
   : Cross-validate forecasting models
@@ -21,7 +41,7 @@
   : Fetch hospitalisation data
 
 - [`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
-  : Produce a forward-looking forecast
+  : Produce a forward forecast
 
 - [`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
   : Nowcast right-truncated surveillance data

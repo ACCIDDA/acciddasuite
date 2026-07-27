@@ -3,12 +3,12 @@
 \docType{data}
 \name{example_data}
 \alias{example_data}
-\title{Weekly COVID-19 hospital admissions for New York}
+\title{Weekly COVID-19 hospital admissions for New York and California}
 \format{
 A data frame with 5 columns:
 \describe{
 \item{as_of}{Date the observation was reported.}
-\item{location}{State abbreviation (\code{"NY"}).}
+\item{location}{State abbreviation (\code{"NY"} or \code{"CA"}).}
 \item{target}{Forecast target (\code{"wk inc covid hosp"}).}
 \item{target_end_date}{End date of the epiweek.}
 \item{observation}{Confirmed hospital admissions count.}
@@ -21,9 +21,10 @@ CDC NHSN via \code{\link[epidatr]{pub_covidcast}}.
 example_data
 }
 \description{
-Weekly confirmed COVID-19 hospital admissions for New York (CDC NHSN), with
-revision history, fetched via \code{\link{get_data}}; pass through
-\code{\link{check_data}} to use it. Covers Aug 2020 to Mar 2026.
+Weekly confirmed COVID-19 hospital admissions for New York and California
+(CDC NHSN), with revision history, fetched via \code{\link{get_data}}; pass
+through \code{\link{check_data}} to use it. Covers Jan 2024 to Jul 2026;
+regenerate with \code{data-raw/example_data.R}.
 }
 \examples{
 \dontrun{

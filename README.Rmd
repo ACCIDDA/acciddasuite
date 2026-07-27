@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`acciddasuite` provides a simple pipeline for infectious diseases forecasts. It validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), evaluates models by cross-validation (`get_cv()`), and generates forecasts (`get_fcast()`).
+`acciddasuite` provides a complete pipeline for infectious diseases forecasts. It fetches (`get_data()`) and validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), evaluates models by cross-validation (`get_cv()`), and generates forecasts (`get_fcast()`).
 
 ## Installation
 
@@ -27,26 +27,28 @@ You can install the development version of acciddasuite from [GitHub](https://gi
 
 ```{r}
 # install.packages("pak")
-#pak::pak("ACCIDDA/acciddasuite")
+# pak::pak("ACCIDDA/acciddasuite")
 ```
 
 ## Example
 ```{r, eval = TRUE, message = FALSE}
 library(acciddasuite)
-head(example_data)
+tail(example_data)
 ```
 
 ```{r, eval = TRUE}
 fcast <- example_data |>
   check_data() |>
   get_ncast() |>
-  get_cv(eval_start_date = max(example_data$target_end_date) - 28) |>
+  get_cv(eval_start_date = max(example_data$target_end_date) - 30) |>
   get_fcast(top_n = 3)
 
 fcast
+
+fcast |> autoplot()
 ```
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 ```{r, eval = FALSE}
-to_respilens(fcast, path = "respilens.json")
+# to_respilens(fcast, path = "respilens.json")
 ```

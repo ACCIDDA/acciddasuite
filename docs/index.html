@@ -43,7 +43,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/external_data.html">Preparing External Data</a></li>
+<li><a class="dropdown-item" href="articles/ebola_2026.html">Ebola 2026</a></li>
+    <li><a class="dropdown-item" href="articles/external_data.html">Preparing External Data</a></li>
     <li><a class="dropdown-item" href="articles/forecast_planning.html">Disease Forecast Planning for Public Health</a></li>
   </ul>
 </li>
@@ -68,64 +69,55 @@
 </div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p><code>acciddasuite</code> provides a simple pipeline for infectious diseases forecasts. It validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), evaluates models by cross-validation (<code><a href="reference/get_cv.html">get_cv()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
+<p><code>acciddasuite</code> provides a complete pipeline for infectious diseases forecasts. It fetches (<code><a href="reference/get_data.html">get_data()</a></code>) and validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), evaluates models by cross-validation (<code><a href="reference/get_cv.html">get_cv()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of acciddasuite from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="co">#pak::pak("ACCIDDA/acciddasuite")</span></span></code></pre></div>
+<span><span class="co"># pak::pak("ACCIDDA/acciddasuite")</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ACCIDDA/acciddasuite" class="external-link">acciddasuite</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 6 × 5</span></span>
 <span><span class="co">#&gt;   as_of      location target            target_end_date observation</span></span>
 <span><span class="co">#&gt;   &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;             &lt;date&gt;                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 2024-11-17 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; 2 2024-11-24 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; 3 2024-12-01 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; 4 2024-12-08 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; 5 2024-12-15 NY       wk inc covid hosp 2020-08-08              517</span></span>
-<span><span class="co">#&gt; 6 2024-12-22 NY       wk inc covid hosp 2020-08-08              517</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 2026-07-05 CA       wk inc covid hosp 2026-07-04              152</span></span>
+<span><span class="co">#&gt; 2 2026-07-12 CA       wk inc covid hosp 2026-07-04              161</span></span>
+<span><span class="co">#&gt; 3 2026-07-05 NY       wk inc covid hosp 2026-07-04               59</span></span>
+<span><span class="co">#&gt; 4 2026-07-12 NY       wk inc covid hosp 2026-07-04               60</span></span>
+<span><span class="co">#&gt; 5 2026-07-12 CA       wk inc covid hosp 2026-07-11              168</span></span>
+<span><span class="co">#&gt; 6 2026-07-12 NY       wk inc covid hosp 2026-07-11               51</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">&lt;-</span> <span class="va">example_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/check_data.html">check_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">28</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">example_data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">30</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/get_fcast.html">get_fcast</a></span><span class="op">(</span>top_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Using max_delay = 6 from data</span></span>
 <span><span class="co">#&gt; ℹ Truncating from max_delay = 6 to 2.</span></span>
-<span><span class="co">#&gt; [2026-06-17 19:07:08.646] get_cv: +0.7772 secs</span></span>
-<span><span class="co">#&gt; [2026-06-17 19:07:09.427] get_fcast: +2.2583 secs</span></span>
+<span><span class="co">#&gt; ℹ Using max_delay = 6 from data</span></span>
+<span><span class="co">#&gt; ℹ Truncating from max_delay = 6 to 2.</span></span>
+<span><span class="co">#&gt; [2026-07-27 12:27:44.342] get_cv: +1.0240 secs</span></span>
+<span><span class="co">#&gt; [2026-07-27 12:27:45.380] get_fcast: +5.0982 secs</span></span>
 <span></span>
 <span><span class="va">fcast</span></span>
 <span><span class="co">#&gt; &lt;accidda_fcast&gt;</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Models ranked (cross-validation):</span></span>
-<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
-<span><span class="co">#&gt;   model_id   wis</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 THETA     26.3</span></span>
-<span><span class="co">#&gt; 2 ARIMA     28.6</span></span>
-<span><span class="co">#&gt; 3 ETS       30.4</span></span>
-<span><span class="co">#&gt; 4 SNAIVE   256. </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Forecast horizon:</span></span>
-<span><span class="co">#&gt;   From: 2026-03-21 </span></span>
-<span><span class="co">#&gt;   To:   2026-04-11 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Contents:</span></span>
-<span><span class="co">#&gt;   $hub    hub forecast object (model_out_tbl, oracle_output)</span></span>
-<span><span class="co">#&gt;   $score  model ranking table, or NULL</span></span>
-<span><span class="co">#&gt;   $meta   models, top_n, h, location, target, interval, nowcast</span></span></code></pre></div>
+<span><span class="co">#&gt; Target:   wk inc covid hosp</span></span>
+<span><span class="co">#&gt; Series:   2 (location)</span></span>
+<span><span class="co">#&gt; Forecast: 2026-07-18 to 2026-08-08 (h = 4)</span></span>
+<span><span class="co">#&gt; Models:   3 + ENSEMBLE</span></span>
+<span></span>
+<span><span class="va">fcast</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" alt="" width="100%"></p>
 <p>Save to <a href="https://www.respilens.com/myrespilens" class="external-link">myRespiLens</a> format:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, path <span class="op">=</span> <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># to_respilens(fcast, path = "respilens.json")</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -138,7 +130,8 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>`use_mit_license()`, `use_gpl3_license()` or friends to pick a license</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 

@@ -1,274 +1,239 @@
-#' Produce a forward-looking forecast
+#' Produce a forward forecast
 #'
-#' Refits models on the full series, forecasts \code{h} steps ahead and
-#' combines them into an equal-weight ensemble. Accepts either an
-#' \code{accidda_cv} from \code{\link{get_cv}} — whose ranking selects the best
-#' \code{top_n} models — or an \code{accidda_data} / \code{accidda_ncast},
-#' which forecasts every model in \code{models}.
+#' Fit forecasting models to the full time series and generate forecasts for the
+#' next \code{h} reporting intervals.
 #'
-#' If the input carries \code{ncast_lower} / \code{ncast_upper} (from
-#' \code{\link{get_ncast}}), forecasts are pooled across the nowcast median and
-#' 95\% CrI baselines so the intervals also reflect nowcast uncertainty.
+#' When provided with an \code{accidda_cv} object, the function uses the
+#' cross-validation results to select the best-performing models for each series
+#' and combines them into an equal-weight ensemble. For \code{accidda_data} or
+#' \code{accidda_ncast} objects, all models in \code{models} are fitted and
+#' forecast.
 #'
-#' @param x An \code{accidda_cv} (\code{\link{get_cv}}), \code{accidda_ncast}
-#'   or \code{accidda_data}.
-#' @param models Named list of \code{fable} models. Defaults to
-#'   \code{\link{default_models}}. For an \code{accidda_cv}, leave unset to
-#'   forecast its \code{top_n} ranked models, or pass \code{models} to forecast
-#'   a set of your own.
-#' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
-#'   weekly data). Default 4; for an \code{accidda_cv}, defaults to the
-#'   cross-validation horizon.
-#' @param top_n Integer. Number of top-ranked CV models to ensemble. Used only
-#'   when \code{x} is an \code{accidda_cv} and \code{models} is unset. Default 3.
+#' If the input contains nowcast uncertainty from \code{\link{get_ncast}},
+#' this uncertainty is incorporated into the forecast intervals.
 #'
-#' @return An \code{accidda_fcast} object:
-#'   \describe{
-#'     \item{hub}{Hub-format forecast (\code{model_out_tbl}, \code{oracle_output}).}
-#'     \item{score}{Model ranking from the \code{accidda_cv}, or \code{NULL}.}
-#'     \item{meta}{\code{models}, \code{top_n}, \code{h}, \code{location},
-#'       \code{target}, \code{interval}, \code{nowcast}.}
-#'   }
-#'   Export with \code{\link{to_respilens}}.
+#' @param x An \code{accidda_*} object.
+#'
+#' @param models Named list of \code{fable} model specifications. Defaults to
+#'   \code{\link{default_models}}. When \code{x} is an \code{accidda_cv} object,
+#'   leave unset to use the top-ranked models from cross-validation, or provide
+#'   a custom set of models.
+#'
+#' @param h Integer giving the forecast horizon in reporting intervals. Defaults
+#'   to \code{4}. When \code{x} is an \code{accidda_cv} object, the default is
+#'   the cross-validation horizon.
+#'
+#' @param top_n Integer giving the number of top-ranked models to combine into
+#'   the ensemble for each series. Used only when \code{x} is an
+#'   \code{accidda_cv} object and \code{models} is not provided. Defaults to
+#'   \code{3}.
+#'
+#' @return An \code{accidda_fcast} object containing:
+#' \describe{
+#'   \item{hub}{Hub-format forecasts containing \code{model_out_tbl} and
+#'   \code{oracle_output}.}
+#'   \item{score}{Cross-validation model performance scores, or \code{NULL}.}
+#'   \item{meta}{Forecast settings including models, model selection,
+#'   ensemble size, horizon, series keys, target, reporting interval,
+#'   nowcast information, and evaluation date.}
+#' }
+#'
+#' Forecast outputs can be exported with \code{\link{to_respilens}}.
 #'
 #' @examples
 #' \dontrun{
 #' ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
-#' cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
+#' cv <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 #'
-#' get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
-#' get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
-#' get_fcast(ncast)                         # or forecast the default models directly
+#' get_fcast(cv, top_n = 3) # use cross-validation rankings
+#' get_fcast(cv, models = default_models()) # use custom models
+#' get_fcast(ncast) # forecast directly from nowcast data
 #' }
 #'
 #' @export
 #'
 #' @importFrom progressr with_progress
-#' @importFrom dplyr filter mutate pull arrange slice_head bind_rows summarise
-#'   coalesce select as_tibble
-#' @importFrom tsibble as_tsibble fill_gaps
+#' @importFrom dplyr filter mutate bind_rows summarise coalesce slice_min
+#'   semi_join select all_of as_tibble
 #' @importFrom fabletools model forecast
 #' @importFrom pipetime time_pipe
-#'
-get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
 
-  # The CV supplies its top_n models unless the caller passes `models`.
+get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
+  # The CV supplies each series' top_n models unless the caller passes `models`.
   use_cv_ranking <- inherits(x, "accidda_cv") && missing(models)
 
-  # If cross validation has been performed, compute the top model IDs for
-  # each location
-  inherits_cv <- inherits(x, "accidda_cv")
-  if (inherits_cv) {
+  if (inherits(x, "accidda_cv")) {
     if (missing(h)) {
       h <- x$meta$h
     }
-    if (use_cv_ranking) {
-      if (!is.numeric(top_n) || length(top_n) != 1L || top_n <= 0) {
-        stop("`top_n` must be a single positive integer.")
-      }
-      top_ids <- x$score |>
-        dplyr::arrange(wis) |>
-        dplyr::slice_head(n = top_n) |>
-        dplyr::pull(model_id)
-      models <- x$models[top_ids]
-    } else {
-      validate_models(models)
-    }
-
     score <- x$score
     meta <- x$meta
     df <- x$data
-    location = unique(df$location)
-
-    models_by_location <- setNames(
-      lapply(location, function(loc) {
-        select_location_models(x$models, loc, score, top_n)
-      }),
-      location
-    )
-
-  } else {
-    if (!inherits(x, c("accidda_data", "accidda_ncast"))) {
-      stop(
-        "`x` must be an accidda_cv, accidda_data or accidda_ncast object.\n",
-        "Run check_data() on your data frame first."
-      )
-    }
+  } else if (inherits(x, c("accidda_data", "accidda_ncast"))) {
     score <- NULL
     meta <- accidda_meta(x)
     df <- extract_series(x)
-
-    location <- unique(df$location)
-    models_by_location <- setNames(
-      rep(list(models), length(location)),
-      location
+  } else {
+    stop(
+      "`x` must be an accidda_cv, accidda_data or accidda_ncast object.\n",
+      "Run check_data() on your data frame first."
     )
   }
 
-  # Split data frame into per-location series.
-  pieces <- split(df, df$location, drop = TRUE)
+  validate_positive_scalar(h, "h", "number of forecast steps")
 
-  target <- meta$target
-  interval <- meta$interval
+  key <- meta$key
 
-  # Run forecasting over each location.
-  results <- lapply(names(pieces), function(loc) {
-    run_fcast(
-      df = pieces[[loc]],
-      models = models_by_location[[loc]],
-      h = h,
-      target = target,
-      interval = interval
-    )
-  })
-  names(results) <- location
+  # If CV available, select the top_n models per series. Otherwise, validate the provided models.
+  if (use_cv_ranking) {
+    validate_positive_scalar(top_n, "top_n", "top-ranked models per series")
+    selection <- score |>
+      dplyr::slice_min(
+        wis,
+        n = top_n,
+        by = dplyr::all_of(key),
+        with_ties = FALSE
+      ) |>
+      dplyr::select(dplyr::all_of(c(key, "model_id")))
+    models <- x$models[unique(selection$model_id)]
+  } else {
+    validate_models(models)
+    selection <- NULL
+  }
 
-  hubs <- lapply(results, `[[`, "hub")
-  ncasts <- lapply(results, `[[`, "has_nowcast")
-
-  new_accidda_fcast(
-    hub = hubs,
-    score = score,
-    meta = list(
-      models = if (inherits_cv) models_by_location else names(models),
-      top_n = if (inherits_cv) top_n else length(models),
-      h = h,
-      location = location,
-      target = target,
-      interval = interval,
-      nowcast = ncasts,
-      eval_start_date = if (inherits_cv) x$meta$eval_start_date else NULL
-    )
-  )
-}
-
-
-#' Run forecasting over one location.
-#'
-#' @param df A data frame for a single location.
-#' @param models Named list of \code{fable} models.
-#' @param h Integer. Forecast horizon, in reporting-interval steps (weeks for
-#'   weekly data).
-#' @param target
-#' @param interval
-#'
-#' @return A list with:
-#' \describe{
-#'  \item{fcast}{A data frame containing the per-location forecast.}
-#'  \item{hub}
-#' }
-#'
-#' @keywords internal
-#' @noRd
-run_fcast <- function(
-    df,
-    models,
-    h,
-    target,
-    interval
-) {
   # Nowcast columns (present when df came from get_ncast)
   has_nowcast <- all(c("ncast_lower", "ncast_upper") %in% names(df))
 
-  # Time the forecast with pipetime.
+  # Built once: fitted on below, and the oracle for fable_to_hub.
+  ts <- as_model_ts(df, key)
+
   {
     # --------- Forecast each model on the full series ---------
-    model_fcast <- if (has_nowcast) {
-      pool_nowcast_scenarios(df, models, h)
-    } else {
-      forecast_final(df, models, h)
+    progressr::with_progress({
+      model_fcast <- if (has_nowcast) {
+        pool_nowcast_scenarios(df, key, models, h)
+      } else {
+        forecast_final(ts, models, h)
+      }
+    })
+
+    # Keep only each series' selected models before ensembling.
+    if (!is.null(selection)) {
+      model_fcast <- dplyr::semi_join(
+        model_fcast,
+        selection,
+        by = c(key, ".model" = "model_id")
+      )
     }
 
-    # --------- Equal-weight ensemble of the chosen models ---------
+    # --------- Equal-weight ensemble per series ---------
     ensemble <- model_fcast |>
-      dplyr::filter(.model %in% names(models)) |>
       dplyr::summarise(
         observation = mix_equally(observation),
         .mean = mean(.mean),
-        .by = target_end_date
+        .by = c(dplyr::all_of(key), target_end_date)
       ) |>
       dplyr::mutate(.model = "ENSEMBLE")
 
     fcast <- dplyr::bind_rows(model_fcast, ensemble) |>
       dplyr::mutate(.id = 1L)
 
-    # Observed series, for the hub oracle.
-    ts <- as_model_ts(df)
-
-    # Build the hub once; reused for both the stored forecasts and the score.
-    hub <- fable_to_hub(
-      fcast,
-      ts,
-      location = unique(df$location),
-      target = target,
-      interval = interval
+    new_accidda_fcast(
+      hub = fable_to_hub(
+        fcast,
+        ts,
+        key = key,
+        target = meta$target,
+        interval = meta$interval
+      ),
+      score = score,
+      meta = list(
+        models = names(models),
+        selection = selection,
+        top_n = if (use_cv_ranking) top_n,
+        h = h,
+        key = key,
+        target = meta$target,
+        interval = meta$interval,
+        nowcast = has_nowcast,
+        eval_start_date = meta$eval_start_date
+      )
     )
-
   } |>
     pipetime::time_pipe("get_fcast")
-
-  list(
-    fcast = fcast,
-    hub = hub,
-    has_nowcast = has_nowcast
-  )
 }
 
 
-#' Compute the best models for a location
+#' Fit forecasting models and generate forecasts
+#'
+#' Fit each model to every series and generate forecasts for the specified
+#' horizon.
+#'
+#' @param ts A keyed model \code{tsibble} created by \code{as_model_ts}.
+#' @param models A named list of \code{fable} model specifications.
+#' @param h Forecast horizon in reporting intervals.
+#'
+#' @return A tibble containing forecasts for each series and model, including
+#' the model name (\code{.model}), key columns, forecast dates
+#' (\code{target_end_date}), observed values, and point forecasts
+#' (\code{.mean}).
+#'
 #' @keywords internal
 #' @noRd
-select_location_models <- function(models, single_loc, score, top_n) {
-  top_ids <- score |>
-    dplyr::filter(location == single_loc) |>
-    dplyr::arrange(wis, model_id) |>
-    dplyr::slice_head(n = top_n) |>
-    dplyr::pull(model_id)
+forecast_final <- function(ts, models, h) {
+  fit <- fabletools::model(ts, !!!models)
 
-  models[top_ids]
+  # A model that fails to fit becomes a fable "null model" whose NA forecasts
+  # would only crash much later, in the quantile math. Name it and stop here.
+  failed <- names(models)[vapply(
+    names(models),
+    function(m) {
+      any(vapply(
+        fit[[m]],
+        function(x) inherits(x$fit, "null_mdl"),
+        logical(1L)
+      ))
+    },
+    logical(1L)
+  )]
+  if (length(failed) > 0) {
+    stop(
+      "Model", if (length(failed) > 1) "s " else " ",
+      paste(failed, collapse = ", "),
+      " failed to fit (fable's warning above says why). ",
+      "Fix or drop the model, or use different models."
+    )
+  }
+
+  fit |>
+    fabletools::forecast(h = h) |>
+    dplyr::mutate(observation = truncate_counts(observation)) |>
+    dplyr::as_tibble()
 }
 
 
-#' Refit models on the full series and forecast `h` steps ahead
-#' @param df A forecast-ready data frame with an `observation` column.
-#' @param models A named list of fable model definitions.
-#' @param h Forecast horizon, in reporting-interval steps.
-#' @return A tibble of per-model forecasts (`.model`, `target_end_date`,
-#'   `observation`, `.mean`).
-#' @keywords internal
-#' @noRd
-forecast_final <- function(df, models, h) {
-  ts <- as_model_ts(df)
-
-  progressr::with_progress(
-    fcast <- ts |>
-      fabletools::model(!!!models) |>
-      fabletools::forecast(h = h) |>
-      dplyr::mutate(observation = truncate_counts(observation))
-  )
-  dplyr::as_tibble(fcast)
-}
-
-
-#' Forecast from the three nowcast baselines and pool per (model, date)
+#' Forecast from the three nowcast baselines and pool per (model, series, date)
+#' @param df A forecast-ready data frame with `observation`, `ncast_lower`
+#'   and `ncast_upper` columns.
+#' @param key Key column name(s).
 #' @inheritParams forecast_final
-#' @return A tibble of pooled per-model forecasts.
+#' @return A tibble of pooled per-series, per-model forecasts.
 #' @keywords internal
 #' @noRd
-pool_nowcast_scenarios <- function(df, models, h) {
+pool_nowcast_scenarios <- function(df, key, models, h) {
   df_lo <- df |>
     dplyr::mutate(observation = dplyr::coalesce(ncast_lower, observation))
   df_hi <- df |>
     dplyr::mutate(observation = dplyr::coalesce(ncast_upper, observation))
 
   dplyr::bind_rows(
-    forecast_final(df, models, h),
-    forecast_final(df_lo, models, h),
-    forecast_final(df_hi, models, h)
+    forecast_final(as_model_ts(df, key), models, h),
+    forecast_final(as_model_ts(df_lo, key), models, h),
+    forecast_final(as_model_ts(df_hi, key), models, h)
   ) |>
     dplyr::summarise(
       observation = mix_equally(observation),
       .mean = mean(.mean),
-      .by = c(.model, target_end_date)
+      .by = c(.model, dplyr::all_of(key), target_end_date)
     )
 }

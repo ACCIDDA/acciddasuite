@@ -1,0 +1,189 @@
+---
+title: "Ebola 2026"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Ebola 2026}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 7,
+  dpi = 300
+)
+```
+
+## Overview
+In May 2026, the Democratic Republic of the Congo (DRC) reported an Ebola outbreak, caused by the Bundibugyo strain, just five months after the previous epidemic. By July 2026, 2,423 cases and 967 deaths had been reported. Rapid forecasting is essential to guide public health response and resource allocation. This vignette demonstrates how to use `acciddasuite` to forecast Ebola incidence using surveillance data from the [Institut National de Recherche Biomédicale (INRB)](https://github.com/INRB-UMIE/BDBV2026-Data). 
+
+The vignette is not executed as the models are computationally expensive. You can run the code on your own machine, but it may take several minutes to complete.
+
+## Data
+
+For this example we'll model the top 6 locations with the highest cumulative confirmed cases to date. For each location we build a regular daily series running to the latest reporting date, carrying the last cumulative count forward to fill gaps and enforcing that counts never decrease (discarding any downward corrections). We also drop the leading zeros before each location's first case, since the log transformation used by the models requires positive values, a location whose outbreak started later simply begins with a shorter history.
+
+```{r, data}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+ebola <- read.csv(
+  "https://raw.githubusercontent.com/scc-usc/ebola2026/refs/heads/main/hubverse_observed_data.csv"
+) |>
+  filter(
+    target == "insp_sitrep__cumulative_confirmed_cases__daily",
+    !is.na(location)
+  ) |>
+  mutate(target_end_date = as.Date(target_end_date))
+
+top_locations <- ebola |>
+  slice_max(target_end_date, by = location) |>
+  slice_max(observation, n = 6) |>
+  pull(location)
+
+common_end <- max(ebola$target_end_date)
+
+ebola <- ebola |>
+  filter(location %in% top_locations) |>
+  arrange(location, target_end_date) |>
+  group_by(location) |>
+  complete(
+    target_end_date = seq(min(target_end_date), common_end, by = "day")
+  ) |>
+  fill(observation, .direction = "down") |> # carry cumulative over gaps
+  mutate(observation = cummax(coalesce(observation, 0))) |> # monotonic, per location
+  filter(cumsum(observation > 0) > 0) |> # drop pre-first-case zeros; log() needs > 0
+  ungroup() |>
+  mutate(target = "insp_sitrep__cumulative_confirmed_cases__daily")
+```
+
+
+## `acciddasuite` Workflow
+
+### Data Validation
+
+`check_data()` validates the Ebola data and returns an `accidda_data` object. The function checks for missing values, ensures that the data is in the correct format, and verifies that the necessary columns are present.
+
+```{r, check_data}
+library(acciddasuite)
+data <- ebola |> check_data()
+data
+data |> autoplot()
+```
+
+Revised history of cumulative confirmed cases is not available for this outbreak, so we will skip `get_ncast()` and proceed directly to cross-validation and forecasting.
+
+### Cross Validation
+
+`get_cv()` performs time series cross-validation on the data to evaluate the performance of different forecasting models. We will use the last 21 days of data as the evaluation window.
+
+First we define a list of models to test. We will use the default models provided by `acciddasuite` from `fable` and add some custom models, including ARIMA, (a neural network), and several foundation models.
+
+```{r, models}
+library(fable)
+library(fable.prophet)
+
+models <- c(
+  default_models(),
+  list(
+    CUSTOM_ARIMA = ARIMA(log(observation) ~ pdq(1, 1, 0)),
+    NNETAR = NNETAR(log(observation), n_networks = 10), #takes 5min
+    PROPHET = prophet(log(observation)),
+    # you will need a python environment (see reticulate)
+    CHRONOS = FOUNDATION(log(observation), "chronos"),
+    TIMESFM = FOUNDATION(log(observation), "timesfm"),
+    SUNDIAL = FOUNDATION(log(observation), "sundial"),
+    MOIRAI = FOUNDATION(log(observation), "moirai")
+  )
+)
+```
+
+```{r, cross-validation}
+cv <- data |>
+  get_cv(
+    eval_start_date = max(data$data$target_end_date) - 21,
+    h = 7, # forecast 7 days ahead
+    models = models
+  )
+cv
+```
+
+`autoplot()` summarises cross-validation performance using relative WIS (the `wis_relative_skill` column in `cv$score`). Raw WIS depends on the scale of the observed data and is therefore not comparable across locations. Relative WIS removes this scale dependence by comparing models within each location.
+
+For each location, models are compared pairwise over shared forecast targets using ratios of mean WIS values. A model's relative skill is the geometric mean of these pairwise ratios. A value of `wis_relative_skill`=1 indicates average performance, values below 1 indicate lower WIS (better forecasts), and values above 1 indicate higher WIS (worse forecasts). For example, 0.8 corresponds to 20% lower WIS than a typical competitor.
+
+The log scale makes relative differences easier to interpret: 0.5 and 2 represent half and double the average WIS, respectively, and are equally distant from the reference value of 1.
+
+```{r, cv-plot}
+cv |> autoplot()
+```
+
+You can also build your own summaries from `cv$score`. For example, raw WIS per model and location.
+
+```{r, cv-custom-plot}
+cv$score |>
+  group_by(location) |>
+  arrange(wis, .by_group = TRUE) |>
+  mutate(model_id_ordered = paste(model_id, location, sep = "__")) |>
+  ggplot(aes(y = reorder(model_id_ordered, wis), x = wis)) +
+  facet_wrap(~location, scales = "free") +
+  geom_col(aes(fill = model_id), show.legend = FALSE) +
+  scale_y_discrete(labels = \(x) sub("__.*$", "", x)) +
+  theme_classic() +
+  labs(
+    title = "Cross-validation WIS by model and location",
+    x = "Weighted Interval Score (WIS)",
+    y = "Model"
+  )
+```
+
+
+### Forecasting
+
+By default `get_fcast()` will use the best 3 model for each location based on the cross-validation results. The function returns a `accidda_fcast` object containing the forecasts for each location.
+```{r, forecast}
+fcast <- cv |> get_fcast()
+fcast
+fcast$meta$selection
+```
+
+`autoplot()` visualizes the ensemble forecasts for each location, including the median, 50% and 95% prediction intervals.
+```{r, fcast-plot}
+fcast |> autoplot()
+```
+
+You can also build your own plot using `as_tibble()` to extract the forecast data and `ggplot2` to create a custom visualization.
+```{r, fcast-custom-plot}
+fcast |>
+  as_tibble() |>
+  ggplot() +
+  geom_ribbon(
+    aes(x = target_end_date, ymin = lower, ymax = upper, fill = model_id),
+    alpha = 0.2,
+    show.legend = FALSE
+  ) +
+  geom_line(
+    aes(x = target_end_date, y = median, colour = model_id),
+    show.legend = TRUE
+  ) +
+  facet_wrap(~location, scales = "free") +
+  # ground truth
+  geom_line(
+    data = fcast$hub$oracle_output |>
+      filter(target_end_date >= as.Date("2026-07-01")),
+    aes(x = target_end_date, y = oracle_value),
+    color = "black"
+  ) +
+  theme_classic() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank()
+  )
+```

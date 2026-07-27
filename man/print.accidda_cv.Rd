@@ -12,5 +12,6 @@
 \item{...}{Ignored.}
 }
 \description{
-Print an \code{accidda_cv} object
+Display a summary of the target, series, data window, and
+cross-validation settings.
 }

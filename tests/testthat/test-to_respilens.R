@@ -20,32 +20,32 @@ test_that("to_respilens throws error if multiple locations are present in either
     target = "inc hosp",
     oracle_value = 105
   )
-  
+
   # multiple locations in model_out_tbl
   bad_model_tbl <- rbind(
-    model_data, 
-    transform(model_data, location = "NY") 
+    model_data,
+    transform(model_data, location = "NY")
   )
   cast_multi_model <- list(
     hub = list(model_out_tbl = bad_model_tbl, oracle_output = gt_data)
   )
   class(cast_multi_model) <- "accidda_fcast"
   expect_error(
-    to_respilens(cast_multi_model), 
+    to_respilens(cast_multi_model),
     "Expected exactly one location in input data."
   )
-  
+
   # multiple locations in oracle_output
   bad_oracle_tbl <- rbind(
     gt_data,
-    transform(gt_data, location = "NY") 
+    transform(gt_data, location = "NY")
   )
   cast_multi_oracle <- list(
     hub = list(model_out_tbl = model_data, oracle_output = bad_oracle_tbl)
   )
   class(cast_multi_oracle) <- "accidda_fcast"
   expect_error(
-    to_respilens(cast_multi_oracle), 
+    to_respilens(cast_multi_oracle),
     "Expected exactly one location in input data."
   )
 })
@@ -79,7 +79,7 @@ test_that("to_respilens creates correctly nested output", {
 
   result <- to_respilens(fake_cast)
   expect_named(result, c("metadata", "ground_truth", "forecasts"))
-  
+
   # check nesting
   expect_type(result$metadata$hubverse_keys, "list")
   expect_true(model_name %in% result$metadata$hubverse_keys$models)
@@ -94,4 +94,3 @@ test_that("to_respilens creates correctly nested output", {
   expect_equal(pred_entry$values, 100)
   expect_equal(pred_entry$quantiles, 0.5)
 })
-

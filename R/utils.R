@@ -1,19 +1,22 @@
 #' Internal shared helpers
+#' Internal utility functions used across acciddasuite.
 #' @name acciddasuite-utils
 #' @keywords internal
 #' @noRd
 NULL
 
 
-#' Determine the dominant reporting interval.
-#' Checks that there are no mixed cadences and that the dominant reporting
-#' interval is positive.
+#' Detect the reporting interval
 #'
-#' @param dates A Date vector.
-#' @return A single positive integer (days).
+#' Determine the regular reporting interval in days from observation dates.
+#' Missing periods that are multiples of the detected interval are allowed,
+#' but irregular date spacing is not.
+#'
+#' @param dates A \code{Date} vector. Duplicate dates are allowed.
+#' @return A positive integer giving the reporting interval in days.
 #' @keywords internal
 #' @noRd
-detect_interval_stratum <- function(dates) {
+detect_interval <- function(dates) {
   u <- sort(unique(dates))
   if (length(u) < 2L) {
     stop(
@@ -23,55 +26,28 @@ detect_interval_stratum <- function(dates) {
   }
   diffs <- as.integer(diff(u))
   tab <- table(diffs)
-
   interval <- as.integer(names(tab)[which.max(tab)])
   if (interval <= 0L) {
     stop("Could not determine a positive reporting interval from the dates.")
   }
-
-  # Allow missing periods, but not mixed cadences.
-  if (any(diffs %% interval != 0L)) {
+  irregular <- unique(diffs[diffs %% interval != 0L])
+  if (length(irregular) > 0L) {
     stop(
-      "Detected mixed reporting intervals.\n\n",
-      paste(capture.output(print(tab)), collapse = "\n")
+      "Irregular reporting dates: gaps of ",
+      paste(irregular, collapse = ", "),
+      " days do not fit the dominant ", interval, "-day interval."
     )
   }
   interval
 }
 
 
-#' Detect the reporting interval in days (7 = weekly)
-#' Checks that every location has the same dominant reporting cadence while
-#' allowing for some missing data points.
-#' Duplicate dates are allowed.
+#' Extract forecast-ready series data
 #'
-#' Modal day-spacing between consecutive distinct \code{target_end_date}s,
-#' recorded by \code{\link{check_data}}.
-#' @param df A data frame containing the data to forecast.
-#' @return A list, positive integers corresponding to detected reporting
-#' intervals per data stratum.
-#' @keywords internal
-#' @noRd
-detect_intervals <- function(df) {
-
-  pieces <- split(df$target_end_date, df$location)
-
-  intervals <- vapply(
-    pieces,
-    detect_interval_stratum,
-    integer(1)
-  )
-
-  intervals
-}
-
-
-#' Forecast-ready data frame from a typed object
-#'
-#' Returns the data frame, keeping the latest revision per
-#' \code{target_end_date} and location when revision history is present.
+#' Extract the data used for modelling, keeping the latest revision when'
+#' revision history is available.
 #' @param x An \code{accidda_data} or \code{accidda_ncast} object.
-#' @return A data frame, one row per \code{target_end_date}.
+#' @return A data frame with one row per series per target_end_date.
 #' @keywords internal
 #' @noRd
 extract_series <- function(x) {
@@ -86,7 +62,7 @@ extract_series <- function(x) {
 
   if ("as_of" %in% names(df)) {
     df <- df |>
-      dplyr::group_by(location, target_end_date) |>
+      dplyr::group_by(dplyr::across(dplyr::all_of(c(x$key, "target_end_date")))) |>
       dplyr::filter(as_of == max(as_of)) |>
       dplyr::ungroup() |>
       dplyr::select(-as_of)
@@ -95,28 +71,33 @@ extract_series <- function(x) {
 }
 
 
-#' Build the regular tsibble that models are fitted on
+#' Create a modelling tsibble
 #'
-#' A \code{target_end_date} / \code{observation} tsibble with missing rows
-#' dropped and implicit gaps filled.
-#' @param df A forecast-ready data frame with an \code{observation} column.
-#' @return A regular tsibble indexed by \code{target_end_date}.
+#' Convert forecast-ready data into a regular keyed \code{tsibble} suitable
+#' for fitting \code{fable} models.
+#'
+#' @param df A data frame containing an \code{observation} column.
+#' @param key Character vector of key column names.
+#' @return A keyed \code{tsibble} indexed by \code{target_end_date}.
 #' @keywords internal
 #' @noRd
 #' @importFrom dplyr filter select
 #' @importFrom tsibble as_tsibble fill_gaps
-as_model_ts <- function(df) {
+as_model_ts <- function(df, key) {
   df |>
     dplyr::filter(!is.na(observation)) |>
-    dplyr::select(target_end_date, observation) |>
-    tsibble::as_tsibble(index = target_end_date) |>
+    dplyr::select(dplyr::all_of(key), target_end_date, observation) |>
+    tsibble::as_tsibble(index = target_end_date, key = dplyr::all_of(key)) |>
     tsibble::fill_gaps()
 }
 
 
-#' Truncate a distribution to \code{[0, Inf)} (counts are non-negative)
-#' @param dist A \code{distributional} vector.
-#' @return The truncated distribution.
+#' Truncate count distributions
+#'
+#' Restrict a distribution to non-negative values.
+#'
+#' @param dist A \code{distributional} distribution.
+#' @return A truncated distribution.
 #' @keywords internal
 #' @noRd
 #' @importFrom distributional dist_truncated
@@ -125,9 +106,12 @@ truncate_counts <- function(dist) {
 }
 
 
-#' Equal-weight mixture of distributions
-#' @param dists A \code{distributional} vector (or list) of distributions.
-#' @return A single mixture distribution.
+#' Create an equal-weight mixture distribution
+#'
+#' Combine multiple distributions into a single mixture with equal weights.
+#'
+#' @param dists A vector or list of \code{distributional} distributions.
+#' @return A mixture distribution.
 #' @keywords internal
 #' @noRd
 #' @importFrom distributional dist_mixture
@@ -141,8 +125,29 @@ mix_equally <- function(dists) {
 }
 
 
-#' Error unless \code{models} is a non-empty, uniquely named list
-#' @param models A named list of fable model definitions.
+#' Validate a positive numeric value
+#'
+#' Check that an input is a single positive number.
+#'
+#' @param x Value to check.
+#' @param name Argument name shown in the error.
+#' @param what Description of the expected value.
+#' @return \code{x}, invisibly.
+#' @keywords internal
+#' @noRd
+validate_positive_scalar <- function(x, name, what) {
+  if (!is.numeric(x) || length(x) != 1L || is.na(x) || x <= 0) {
+    stop("`", name, "` must be a single positive number (", what, ").")
+  }
+  invisible(x)
+}
+
+
+#' Validate forecasting models
+#'
+#' Check that a model specification is a non-empty named list.
+#'
+#' @param models A named list of \code{fable} model specifications.
 #' @return \code{models}, invisibly.
 #' @keywords internal
 #' @noRd

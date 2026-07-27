@@ -2,56 +2,62 @@
 % Please edit documentation in R/get_fcast.R
 \name{get_fcast}
 \alias{get_fcast}
-\title{Produce a forward-looking forecast}
+\title{Produce a forward forecast}
 \usage{
 get_fcast(x, models = default_models(), h = 4, top_n = 3)
 }
 \arguments{
-\item{x}{An \code{accidda_cv} (\code{\link{get_cv}}), \code{accidda_ncast}
-or \code{accidda_data}.}
+\item{x}{An \code{accidda_*} object.}
 
-\item{models}{Named list of \code{fable} models. Defaults to
-\code{\link{default_models}}. For an \code{accidda_cv}, leave unset to
-forecast its \code{top_n} ranked models, or pass \code{models} to forecast
-a set of your own.}
+\item{models}{Named list of \code{fable} model specifications. Defaults to
+\code{\link{default_models}}. When \code{x} is an \code{accidda_cv} object,
+leave unset to use the top-ranked models from cross-validation, or provide
+a custom set of models.}
 
-\item{h}{Integer. Forecast horizon, in reporting-interval steps (weeks for
-weekly data). Default 4; for an \code{accidda_cv}, defaults to the
-cross-validation horizon.}
+\item{h}{Integer giving the forecast horizon in reporting intervals. Defaults
+to \code{4}. When \code{x} is an \code{accidda_cv} object, the default is
+the cross-validation horizon.}
 
-\item{top_n}{Integer. Number of top-ranked CV models to ensemble. Used only
-when \code{x} is an \code{accidda_cv} and \code{models} is unset. Default 3.}
+\item{top_n}{Integer giving the number of top-ranked models to combine into
+the ensemble for each series. Used only when \code{x} is an
+\code{accidda_cv} object and \code{models} is not provided. Defaults to
+\code{3}.}
 }
 \value{
-An \code{accidda_fcast} object:
+An \code{accidda_fcast} object containing:
 \describe{
-\item{hub}{Hub-format forecast (\code{model_out_tbl}, \code{oracle_output}).}
-\item{score}{Model ranking from the \code{accidda_cv}, or \code{NULL}.}
-\item{meta}{\code{models}, \code{top_n}, \code{h}, \code{location},
-\code{target}, \code{interval}, \code{nowcast}.}
+\item{hub}{Hub-format forecasts containing \code{model_out_tbl} and
+\code{oracle_output}.}
+\item{score}{Cross-validation model performance scores, or \code{NULL}.}
+\item{meta}{Forecast settings including models, model selection,
+ensemble size, horizon, series keys, target, reporting interval,
+nowcast information, and evaluation date.}
 }
-Export with \code{\link{to_respilens}}.
+
+Forecast outputs can be exported with \code{\link{to_respilens}}.
 }
 \description{
-Refits models on the full series, forecasts \code{h} steps ahead and
-combines them into an equal-weight ensemble. Accepts either an
-\code{accidda_cv} from \code{\link{get_cv}} — whose ranking selects the best
-\code{top_n} models — or an \code{accidda_data} / \code{accidda_ncast},
-which forecasts every model in \code{models}.
+Fit forecasting models to the full time series and generate forecasts for the
+next \code{h} reporting intervals.
 }
 \details{
-If the input carries \code{ncast_lower} / \code{ncast_upper} (from
-\code{\link{get_ncast}}), forecasts are pooled across the nowcast median and
-95\\% CrI baselines so the intervals also reflect nowcast uncertainty.
+When provided with an \code{accidda_cv} object, the function uses the
+cross-validation results to select the best-performing models for each series
+and combines them into an equal-weight ensemble. For \code{accidda_data} or
+\code{accidda_ncast} objects, all models in \code{models} are fitted and
+forecast.
+
+If the input contains nowcast uncertainty from \code{\link{get_ncast}},
+this uncertainty is incorporated into the forecast intervals.
 }
 \examples{
 \dontrun{
 ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
-cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
+cv <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
-get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
-get_fcast(ncast)                         # or forecast the default models directly
+get_fcast(cv, top_n = 3) # use cross-validation rankings
+get_fcast(cv, models = default_models()) # use custom models
+get_fcast(ncast) # forecast directly from nowcast data
 }
 
 }

@@ -1,114 +1,120 @@
+#' Shared print helpers
+#'
+#' Internal helpers for printing \code{accidda} objects using a consistent
+#' summary format.
+#'
+#' @keywords internal
+#' @noRd
+cat_field <- function(label, ...) {
+  cat(sprintf("%-9s %s\n", paste0(label, ":"), paste0(...)))
+}
+
+
+#' Format series information
+#'
+#' Create a summary of the number of series and their key columns.
+#'
+#' @keywords internal
+#' @noRd
+fmt_series <- function(df, key) {
+  sprintf("%d (%s)", nrow(unique(df[key])), paste(key, collapse = " x "))
+}
+
+
+#' Format a date range and reporting interval
+#'
+#' @keywords internal
+#' @noRd
+fmt_window <- function(from, to, interval) {
+  paste0(from, " to ", to, " (", interval, "-day interval)")
+}
+
+
 #' Print an \code{accidda_data} object
+#'
 #' @param x An \code{accidda_data} object.
 #' @param ... Ignored.
+#'
 #' @export
 print.accidda_data <- function(x, ...) {
-  cat("<accidda_data>\n\n")
-  cat("Location:", x$location, "\n")
-  cat("Target:  ", x$target, "\n")
-  cat(
-    "Window:  ",
-    as.character(x$window["from"]),
-    "to",
-    as.character(x$window["to"]),
-    "(",
-    nrow(x$data[!duplicated(x$data$target_end_date), ]),
-    "dates )\n"
-  )
-  cat("Interval:", x$interval, "days\n")
-  if (x$history) {
-    as_of_rng <- range(x$data$as_of)
-    cat(
-      "History: ",
-      "TRUE (",
-      as.character(as_of_rng[1]),
-      "to",
-      as.character(as_of_rng[2]),
-      ")\n"
-    )
-  } else {
-    cat("History:  FALSE\n")
+  m <- accidda_meta(x)
+  cat("<accidda_data>\n")
+  cat_field("Target", m$target)
+  cat_field("Series", fmt_series(x$data, m$key))
+  cat_field("Window", fmt_window(m$window[["from"]], m$window[["to"]], m$interval))
+  if (m$history) {
+    cat_field("History", min(x$data$as_of), " to ", max(x$data$as_of))
   }
   invisible(x)
 }
+
 
 #' Print an \code{accidda_ncast} object
+#'
+#' Display a summary of the target, series, data window, and nowcast period.
+#'
 #' @param x An \code{accidda_ncast} object.
 #' @param ... Ignored.
+#'
 #' @export
 print.accidda_ncast <- function(x, ...) {
-  cat("<accidda_ncast>\n\n")
-  cat("Locations:", paste(x$location, collapse = ", "), "\n")
-  cat("Target:  ", x$target, "\n")
-
-  corrected <- !is.na(x$data$ncast_lower)
-  n_corrected <- sum(corrected)
-  rng <- range(x$data$target_end_date[corrected])
-  cat(
-    "Nowcasted", n_corrected, "weeks:",
-    as.character(rng[1]), "to", as.character(rng[2]), "\n"
-  )
-
-  cat("\n$data  corrected series (", nrow(x$data), " rows)\n", sep = "")
-
+  m <- accidda_meta(x)
+  cat("<accidda_ncast>\n")
+  cat_field("Target", m$target)
+  cat_field("Series", fmt_series(x$data, m$key))
+  cat_field("Window", fmt_window(m$window[["from"]], m$window[["to"]], m$interval))
+  corrected <- x$data$target_end_date[!is.na(x$data$ncast_lower)]
+  if (length(corrected) > 0) {
+    cat_field("Nowcast", min(corrected), " to ", max(corrected))
+  }
   invisible(x)
 }
+
 
 #' Print an \code{accidda_cv} object
+#'
+#' Display a summary of the target, series, data window, and
+#' cross-validation settings.
+#'
 #' @param x An \code{accidda_cv} object.
 #' @param ... Ignored.
+#'
 #' @export
 print.accidda_cv <- function(x, ...) {
-  cat("<accidda_cv>\n\n")
-
-  cat("Models ranked (cross-validation):\n")
-  print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)
-
-  cat(
-    "\nEvaluated from", as.character(x$meta$eval_start_date),
-    "| horizon", x$meta$h, "weeks |", x$meta$location, "\n"
+  m <- accidda_meta(x)
+  cat("<accidda_cv>\n")
+  cat_field("Target", m$target)
+  cat_field("Series", fmt_series(x$data, m$key))
+  cat_field(
+    "Window",
+    fmt_window(min(x$data$target_end_date), max(x$data$target_end_date), m$interval)
   )
-
-  cat("\nContents:\n")
-  cat("  $data       surveillance data\n")
-  cat("  $forecasts  per-origin forecasts (model_out_tbl)\n")
-  cat("  $oracle     observed truth (oracle_output)\n")
-  cat("  $score      model ranking table\n")
-  cat("  $models     model specifications\n")
-  cat("  $meta       eval_start_date, h, location, target, interval\n")
-
+  cat_field(
+    "CV",
+    length(x$models), " models x ",
+    dplyr::n_distinct(x$forecasts$reference_date), " origins (h = ", x$meta$h, ")"
+  )
   invisible(x)
 }
 
+
 #' Print an \code{accidda_fcast} object
+#'
+#' Display a summary of the target, series, forecast period, and models used.
+#'
 #' @param x An \code{accidda_fcast} object.
 #' @param ... Ignored.
+#'
 #' @export
 print.accidda_fcast <- function(x, ...) {
-  cat("<accidda_fcast>\n\n")
-
-  if (is.null(x$score)) {
-    cat("Models forecast:", paste(x$meta$models, collapse = ", "), "\n")
-  } else {
-    cat("Models ranked (cross-validation):\n")
-    print(x$score |> dplyr::select(model_id, wis), row.names = FALSE)
-  }
-
-  # TODO: do we want to print forecast horizon for all locations?
-  cat("\nForecast horizon:\n")
-  for (loc in names(fcast$hub)){
-    rng <- range(x$hub[[loc]]$model_out_tbl$target_end_date)
-    # cat("For", loc, ":\n") # TODO remove if we want the forecast horizon for more than one location
-    cat("  From:", as.character(rng[1]), "\n")
-    cat("  To:  ", as.character(rng[2]), "\n")
-
-    break # TODO remove if we want the forecast horizon for more than one location
-  }
-
-  cat("\nContents:\n")
-  cat("  $hub    hub forecast object (model_out_tbl, oracle_output)\n")
-  cat("  $score  model ranking table, or NULL\n")
-  cat("  $meta   models, top_n, h, location, target, interval, nowcast\n")
-
+  m <- accidda_meta(x)
+  rng <- range(x$hub$model_out_tbl$target_end_date)
+  cat("<accidda_fcast>\n")
+  cat_field("Target", m$target)
+  cat_field("Series", fmt_series(x$hub$model_out_tbl, m$key))
+  cat_field("Forecast", rng[1], " to ", rng[2], " (h = ", x$meta$h, ")")
+  # Distinct models in the forecast itself; ENSEMBLE is always one of them.
+  n_models <- dplyr::n_distinct(x$hub$model_out_tbl$model_id) - 1L
+  cat_field("Models", n_models, " + ENSEMBLE")
   invisible(x)
 }

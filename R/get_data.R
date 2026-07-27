@@ -19,7 +19,6 @@
 #'
 #' # Revision history for nowcasting
 #' get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
-
 get_data <- function(pathogen, geo_value, revisions = FALSE) {
   pathogen <- match.arg(pathogen, choices = c("covid", "flu", "rsv"))
 

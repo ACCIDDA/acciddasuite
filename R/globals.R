@@ -1,6 +1,12 @@
 #' Global variables used in NSE functions
 #' To avoid R CMD check notes about "no visible binding for global variable"
 #' we declare these variables as global here.
+#'
+#' The urca import is not called directly: fable::ARIMA() needs it for its
+#' unit-root order selection, but only suggests it. Without it every ARIMA
+#' fit in default_models() silently fails.
+#' @importFrom utils head
+#' @importFrom urca ur.kpss
 #' @keywords internal
 #' @noRd
 
@@ -16,6 +22,7 @@ utils::globalVariables(c(
   "geo_value",
   "time_value",
   "wis",
+  "wis_relative_skill",
   "model_id",
   # fable_to_hub / forecasts_key
   "reference_date",
@@ -29,8 +36,6 @@ utils::globalVariables(c(
   "as_of",
   "confirm",
   "count",
-  "delta",
-  "ncast_val",
   "ncast_median",
   "ncast_lower",
   "ncast_upper",
@@ -42,5 +47,6 @@ utils::globalVariables(c(
   "upper",
   "q25",
   "q75",
-  "median"
+  "median",
+  "observed"
 ))

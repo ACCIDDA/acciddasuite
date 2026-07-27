@@ -7,43 +7,49 @@
 get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 }
 \arguments{
-\item{x}{An \code{accidda_ncast} (\code{\link{get_ncast}}) or
-\code{accidda_data} (\code{\link{check_data}} / \code{\link{get_data}}).}
+\item{x}{An \code{accidda_ncast} object from \code{\link{get_ncast}} or an
+\code{accidda_data} object from \code{\link{check_data}} or
+\code{\link{get_data}}.}
 
-\item{eval_start_date}{Date (or string coercible to one). First origin
-evaluated; must lie within the data window. All observations before it form
-the initial training window.}
+\item{eval_start_date}{Date (or character string coercible to a date) giving
+the first forecast origin to evaluate. Must fall within the data window.
+All earlier observations are used as the initial training period.}
 
-\item{h}{Integer. Forecast horizon, in reporting-interval steps (weeks for
-weekly data, days for daily). Default 4.}
+\item{h}{Integer giving the forecast horizon in reporting intervals (for
+example, weeks for weekly data). Defaults to \code{4}.}
 
-\item{models}{Named list of \code{fable} models. Defaults to
-\code{\link{default_models}}; compose with \code{c(default_models(),
-  list(...))} to extend. Each element must reference \code{observation}. See
-the \href{https://fabletools.tidyverts.org/articles/extension_models.html}{fabletools extension vignette} for custom models.}
+\item{models}{Named list of \code{fable} model specifications. Defaults to
+\code{\link{default_models}}. Additional models can be added with
+\code{c(default_models(), list(...))}. Each model must use
+\code{observation} as the response variable.}
 
-\item{step}{Integer. Number of reporting-interval steps the training window
-advances between successive CV origins. Defaults to \code{h}
-(non-overlapping evaluation blocks).}
+\item{step}{Integer giving the number of reporting intervals between
+successive cross-validation origins. Defaults to \code{h}, resulting in
+non-overlapping evaluation periods.}
 }
 \value{
-An \code{accidda_cv} object:
+An \code{accidda_cv} object containing:
 \describe{
-\item{forecasts}{Per-origin, per-model forecasts (\code{model_out_tbl}).}
-\item{oracle}{Observed truth (\code{oracle_output}).}
-\item{score}{Model ranking by WIS with interval coverage.}
+\item{forecasts}{Forecasts for each model, series, and cross-validation origin.}
+\item{oracle}{Observed values used for scoring.}
+\item{score}{Model performance metrics, including WIS and interval coverage,
+for each model and series.}
 \item{models}{The evaluated model specifications.}
-\item{meta}{\code{eval_start_date}, \code{h}, \code{location},
-\code{target}, \code{interval}.}
-\item{data}{Revision-collapsed input, reused by \code{\link{get_fcast}}.}
+\item{meta}{Cross-validation settings including dates, horizon, step,
+series keys, target, and reporting interval.}
+\item{data}{Input data with revisions collapsed, used by
+\code{\link{get_fcast}}.}
 }
 }
 \description{
-Evaluates \code{fable} models by expanding-window time-series
-cross-validation: from \code{eval_start_date}, models are refit at each
-origin and forecast \code{h} steps ahead, then scored by weighted interval
-score (WIS) and interval coverage via \code{hubEvals}. The ranking is
-reused by \code{\link{get_fcast}}.
+Evaluate forecasting models using expanding-window time-series
+cross-validation. Starting from \code{eval_start_date}, models are refitted
+at each forecast origin and evaluated over the next \code{h} time steps.
+}
+\details{
+Forecast performance is measured using weighted interval score (WIS) and
+interval coverage. Models are ranked separately for each series, and the
+resulting rankings are used by \code{\link{get_fcast}}.
 }
 \examples{
 \dontrun{

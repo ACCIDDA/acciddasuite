@@ -52,15 +52,15 @@ You can also **bring your own data**. Just pass it through `check_data()`. See `
 
 The most recent weeks of surveillance data are almost always too low because hospitals are still filing late reports (**right truncated**). If you feed these raw counts into a forecaster, predictions will be biased downward.
 
-`get_ncast()` estimates what the recent counts will look like once all reports arrive. With the default `max_delay = 4`, the last 4 weeks are corrected; everything before that is left untouched.
+`get_ncast()` estimates what the recent counts will look like once all reports arrive. With the default `max_delay = 2`, the last 2 weeks are corrected; everything before that is left untouched.
 
 ```{r, nowcast}
-ncast <- get_ncast(df)
+ncast <- get_ncast(df, max_delay = 3)
 ncast
 ```
 
 ```{r, plot-nowcast}
-ncast$plot
+autoplot(ncast)
 ```
 
 The corrected `ncast$data` contains two extra columns: `ncast_lower` and `ncast_upper` (95% CrI) for the corrected weeks. `get_fcast()` detects these automatically and uses them to propagate nowcasting uncertainty into the final forecast.
@@ -69,10 +69,10 @@ The corrected `ncast$data` contains two extra columns: `ncast_lower` and `ncast_
 
 Forecasting is split into two steps:
 
-1. **`get_cv()` — model selection**: time series cross-validation on the full (median corrected) series, starting from `eval_start_date`. Models are ranked by WIS and interval coverage.
-2. **`get_fcast()` — final forecast**: reuses the ranking to ensemble the best `top_n` models and projects `h` weeks into the future. When nowcast columns are present, the forecast is produced from three baselines (lower, median, and upper nowcast estimates) and pooled, so prediction intervals reflect both model uncertainty and nowcast uncertainty.
+1. **`get_cv()` (model selection)**: time series cross-validation on the full (median corrected) series, starting from `eval_start_date`. Models are ranked by WIS and interval coverage.
+2. **`get_fcast()` (final forecast)**: reuses the ranking to ensemble the best `top_n` models and projects `h` weeks into the future. When nowcast columns are present, the forecast is produced from three baselines (lower, median, and upper nowcast estimates) and pooled, so prediction intervals reflect both model uncertainty and nowcast uncertainty.
 
-We set `eval_start_date` to mark the start of the evaluation window. At least 52 weeks of data must precede this date.
+We set `eval_start_date` to mark the start of the evaluation window. All observations before this date form the initial training window, so every series needs at least two observations before it.
 
 ```{r, tscv-setup}
 eval_start_date <- max(ncast$data$target_end_date) - 28
@@ -95,12 +95,17 @@ cv <- get_cv(
   h = 4
 )
 cv
-
 ```
 
 ```{r, final-forecast}
 fcast <- get_fcast(cv, top_n = 3)
 fcast
+```
+
+Plot the ensemble forecast with `autoplot()` (pass `model = ` to inspect any single model instead):
+
+```{r, plot-forecast}
+autoplot(fcast)
 ```
 
 
@@ -116,7 +121,7 @@ library(projections)
 my_models <- c(
   default_models(),
   list(
-    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1,1,0)),
+    CUSTOM_ARIMA = ARIMA(observation ~ pdq(1, 1, 0)),
     PROPHET = prophet(observation ~ season("year")),
     EPIESTIM = EPIESTIM(observation, mean_si = 3, std_si = 2, rt_window = 7)
   )
@@ -130,7 +135,6 @@ cv <- get_cv(
 )
 
 fcast <- get_fcast(cv, top_n = 3)
-
 ```
 
 

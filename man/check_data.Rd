@@ -4,33 +4,47 @@
 \alias{check_data}
 \title{Validate surveillance data}
 \usage{
-check_data(data)
+check_data(data, key = "location")
 }
 \arguments{
-\item{data}{A data frame with \code{target_end_date} (Date),
-\code{observation} (numeric), \code{location} (character) and
-\code{target} (character). An optional \code{as_of} (Date) column enables
-nowcasting (\code{\link{get_ncast}}). An existing \code{accidda_data} is
-returned unchanged.}
+\item{data}{A data frame containing \code{target_end_date} (\code{Date}),
+\code{observation} (numeric), \code{target} (character), and one or more
+key columns. An optional \code{as_of} (\code{Date}) column enables
+nowcasting with \code{\link{get_ncast}}. If \code{data} is already an
+\code{accidda_data} object, it is returned unchanged.}
+
+\item{key}{Character vector giving the column name(s) that uniquely identify
+each time series, equivalent to the key of a
+\code{\link[tsibble]{tsibble}}. Each unique combination of key values is
+treated as a separate series. Defaults to \code{"location"}.}
 }
 \value{
-An \code{accidda_data} object:
+An \code{accidda_data} object containing:
 \describe{
-\item{data}{Validated data frame with coerced types.}
-\item{location, target}{Single location / target identifier.}
-\item{window}{Named \code{from} / \code{to} dates.}
-\item{interval}{Reporting interval in days (7 = weekly).}
-\item{history}{\code{TRUE} if revision history (\code{as_of}) is present.}
+\item{data}{Validated data with standardised column types.}
+\item{key}{Names of the key columns.}
+\item{target}{Target variable name.}
+\item{window}{Start and end dates of the data.}
+\item{interval}{Reporting interval in days (for example, 7 for weekly data).}
+\item{history}{Logical indicating whether revision history (\code{as_of}) is available.}
 }
 }
 \description{
-Validates a surveillance data frame and returns a typed \code{accidda_data}
-object that the rest of the pipeline accepts without re-validating.
+Validate and standardise surveillance data for use throughout the package.
+The returned \code{accidda_data} object can be passed directly to forecasting
+and nowcasting functions.
+}
+\details{
+Data must contain one row per time series and reporting date (and
+\code{as_of}, if present). All series must have the same reporting interval,
+share the same reporting dates, and end on the same date. Series may begin
+at different times and may contain missing reporting periods.
 }
 \examples{
 \dontrun{
-x <- get_data("covid", "ny") |> check_data()
-my_x <- read.csv("my_data.csv") |> check_data()
+x <- get_data("covid", c("ny", "ca")) |> check_data()
+my_x <- read.csv("my_data.csv") |>
+  check_data(key = c("location", "age_group"))
 }
 
 }

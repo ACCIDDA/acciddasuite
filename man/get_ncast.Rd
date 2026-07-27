@@ -24,22 +24,28 @@ estimation window. Default 3.}
 }
 \value{
 An \code{accidda_ncast} object with the shared backbone
-(\code{location}, \code{target}, \code{window}, \code{interval},
+(\code{key}, \code{target}, \code{window}, \code{interval},
 \code{history}) plus:
 \describe{
 \item{data}{Corrected series. \code{observation} holds the nowcast
 median for corrected weeks; \code{ncast_lower} / \code{ncast_upper}
 (95\\% CrI) are non-NA only there, and let \code{\link{get_fcast}}
 propagate nowcast uncertainty.}
-\item{plot}{ggplot of the correction.}
+\item{meta}{The nowcast settings (\code{max_delay}, \code{draws},
+\code{prop_delay}, \code{scale_factor}) and \code{ncast_summary},
+one tidy table of per-series weekly nowcasts (median, CrI bounds and
+the reported-so-far \code{observed} count) plotted by
+\code{\link[ggplot2]{autoplot}}.}
 }
 }
 \description{
 Recent weeks of surveillance data are incomplete because of reporting
 delays (right truncation). \code{get_ncast} estimates their final counts
 with \href{https://baselinenowcast.epinowcast.org/}{baselinenowcast},
-replacing the last \code{max_delay} weeks and leaving earlier weeks
-untouched.
+replacing the last \code{max_delay} weeks of every series and leaving
+earlier weeks untouched. Downward revisions are redistributed across
+earlier delays via
+\code{\link[baselinenowcast]{preprocess_negative_values}}.
 }
 \details{
 Weekly data only; other cadences are rejected (the rest of the pipeline is
@@ -47,8 +53,9 @@ cadence-agnostic).
 }
 \examples{
 \dontrun{
-x     <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
+x <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 ncast <- get_ncast(x)
+autoplot(ncast)
 }
 
 }
