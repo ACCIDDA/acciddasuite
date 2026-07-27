@@ -32,16 +32,18 @@ The package relies on the [`fable`](https://fable.tidyverts.org/) modeling frame
 
 To get more information about how to know whether forecasting is the best approach for your task, follow the steps in [this](forecast_planning.html) article.
 
+```{r, setup}
+library(acciddasuite)
+```
+
 ## Step 1: Get data
 
 We fetch weekly COVID-19 hospital admissions for New York from the [CDC NHSN](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/mpgq-jmmr/about_data) via [`epidatr`](https://cmu-delphi.github.io/epidatr/).
 
 Setting `revisions = TRUE` retrieves the full revision history (*i.e.* all past versions of the data), which is needed for nowcasting.
 
-```{r, get_data}
-library(acciddasuite)
+```{r, get_data, eval = FALSE}
 df <- get_data(pathogen = "covid", geo_value = c("ny", "ca"), revisions = TRUE)
-df
 ```
 
 You can also provide **your own data**. Just pass it through `check_data()`. See `vignette("external_data")` for formatting details.
