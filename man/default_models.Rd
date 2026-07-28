@@ -15,9 +15,9 @@ Return the default set of forecasting models used by
 }
 \details{
 The default models are naive, ETS, Theta, and ARIMA models. All models are
-fitted to \code{log(observation)} to stabilise variance in count data.
+fitted to \code{log(observation + 1)} to stabilise variance in count data.
 Forecasts are automatically transformed back to the original scale by
-\code{fable}.
+\code{fable}. +1 is added to avoid taking the log of zero.
 
 Additional models can be added by extending the returned list, for example:
 \code{c(default_models(), list(CUSTOM = fable::ARIMA(observation)))}.

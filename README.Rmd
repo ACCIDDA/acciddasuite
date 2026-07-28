@@ -40,8 +40,8 @@ tail(example_data)
 fcast <- example_data |>
   check_data() |>
   get_ncast() |>
-  get_cv(eval_start_date = max(example_data$target_end_date) - 30) |>
-  get_fcast(top_n = 3)
+  get_cv(eval_start_date = as.Date("2025-01-01")) |>
+  get_fcast()
 
 fcast
 
@@ -50,5 +50,5 @@ fcast |> autoplot()
 
 Save to [myRespiLens](https://www.respilens.com/myrespilens) format:
 ```{r, eval = FALSE}
-# to_respilens(fcast, path = "respilens.json")
+to_respilens(fcast, path = "respilens.json")
 ```

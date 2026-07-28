@@ -3,13 +3,13 @@
 \docType{data}
 \name{example_data}
 \alias{example_data}
-\title{Weekly COVID-19 hospital admissions for New York and California}
+\title{Weekly influenza hospital admissions for New York and California}
 \format{
 A data frame with 5 columns:
 \describe{
 \item{as_of}{Date the observation was reported.}
 \item{location}{State abbreviation (\code{"NY"} or \code{"CA"}).}
-\item{target}{Forecast target (\code{"wk inc covid hosp"}).}
+\item{target}{Forecast target (\code{"wk inc flu hosp"}).}
 \item{target_end_date}{End date of the epiweek.}
 \item{observation}{Confirmed hospital admissions count.}
 }
@@ -21,10 +21,14 @@ CDC NHSN via \code{\link[epidatr]{pub_covidcast}}.
 example_data
 }
 \description{
-Weekly confirmed COVID-19 hospital admissions for New York and California
-(CDC NHSN), with revision history, fetched via \code{\link{get_data}}; pass
-through \code{\link{check_data}} to use it. Covers Jan 2024 to Jul 2026;
-regenerate with \code{data-raw/example_data.R}.
+Weekly confirmed influenza hospital admissions for New York and California
+(CDC NHSN), with revision history, fetched via \code{\link{get_data}};
+pass through \code{\link{check_data}} to use it.
+}
+\details{
+The archive is pinned to the 14 December 2025 history, so the most recent weeks
+are still right-truncated and \code{\link{get_ncast}} has reporting delay to model.
+To regenerate with \code{data-raw/example_data.R}.
 }
 \examples{
 \dontrun{

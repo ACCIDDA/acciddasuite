@@ -5,10 +5,13 @@
 devtools::load_all()
 
 example_data <- get_data(
-  pathogen = "covid",
+  pathogen = "flu",
   geo_value = c("ny", "ca"),
   revisions = TRUE
 )$data |>
-  dplyr::filter(target_end_date >= as.Date("2024-01-01"))
+  dplyr::filter(
+    as_of <= as.Date("2025-12-14"),
+    target_end_date >= as.Date("2022-06-01")
+  )
 
 usethis::use_data(example_data, overwrite = TRUE, compress = "xz")

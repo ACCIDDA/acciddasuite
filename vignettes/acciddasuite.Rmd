@@ -61,7 +61,7 @@ The most recent weeks of surveillance data are almost always too low because hos
 `get_ncast()` estimates what the recent counts will look like once all reports arrive. With the default `max_delay = 2`, the last 2 weeks are corrected; everything before that is left untouched.
 
 ```{r, nowcast}
-ncast <- get_ncast(df, max_delay = 3)
+ncast <- get_ncast(df)
 ncast
 autoplot(ncast)
 ```
@@ -77,13 +77,10 @@ Forecasting is split into two steps:
 
 We set `eval_start_date` to mark the start of the evaluation window. All observations before this date form the initial training window, so every series needs at least two observations before it.
 
-```{r, tscv-setup}
-eval_start_date <- max(ncast$data$target_end_date) - 28
-```
 
 Default models are:
 
-* `NAIVE` (Naïve / random walk): Carries the last observed value forward. The simplest possible baseline.
+* `NAIVE`: Carries the last observed value forward. The simplest possible baseline.
 
 * `ETS` (Exponential Smoothing): A weighted average where recent weeks matter more than older ones. Adapts to trends and seasonal patterns.
 
@@ -94,8 +91,9 @@ Default models are:
 ```{r, cross-validation}
 cv <- get_cv(
   ncast,
-  eval_start_date = eval_start_date,
-  h = 4
+  eval_start_date = as.Date("2024-01-10"),
+  h = 4, # 4 weeks ahead forecasts
+  step = 1 # train+evaluate weekly
 )
 cv
 ```
@@ -115,7 +113,7 @@ fcast
 Plot the ensemble forecast with `autoplot(fcast)` (pass `model = ` to inspect any single model instead):
 
 ```{r, plot-forecast}
-autoplot(fcast, model = "ARIMA")
+autoplot(fcast)
 ```
 
 
