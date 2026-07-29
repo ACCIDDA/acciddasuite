@@ -157,8 +157,7 @@ indicate higher WIS (worse forecasts).
 
 ``` r
 
-autoplot(cv) +
-  ggplot2::scale_x_log10()
+autoplot(cv)
 ```
 
 ![](acciddasuite_files/figure-html/plot-cv-1.png)

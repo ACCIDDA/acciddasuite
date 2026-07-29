@@ -6,7 +6,13 @@ for the next `h` reporting intervals.
 ## Usage
 
 ``` r
-get_fcast(x, models = default_models(), h = 4, top_n = 3)
+get_fcast(
+  x,
+  models = default_models(),
+  h = 4,
+  top_n = 3,
+  ensemble = c("linear_pool", "quantile_average")
+)
 ```
 
 ## Arguments
@@ -34,6 +40,14 @@ get_fcast(x, models = default_models(), h = 4, top_n = 3)
   ensemble for each series. Used only when `x` is an `accidda_cv` object
   and `models` is not provided. Defaults to `3`.
 
+- ensemble:
+
+  Method used to combine the models into the `ENSEMBLE` forecast.
+  `"linear_pool"` (default) mixes the models' predictive distributions
+  with equal weights. `"quantile_average"` takes, at each quantile
+  level, the median of the models' quantiles using
+  [`simple_ensemble`](https://hubverse-org.github.io/hubEnsembles/reference/simple_ensemble.html)
+
 ## Value
 
 An `accidda_fcast` object containing:
@@ -48,7 +62,7 @@ An `accidda_fcast` object containing:
 
 - meta:
 
-  Forecast settings including models, model selection, ensemble size,
+  Forecast settings including models, model selection, ensemble method,
   horizon, series keys, target, reporting interval, nowcast information,
   and evaluation date.
 

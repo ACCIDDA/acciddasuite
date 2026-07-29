@@ -207,8 +207,7 @@ indicates average performance, values below 1 indicate lower WIS (better
 forecasts), and values above 1 indicate higher WIS (worse
 forecasts).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">cv</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">cv</span><span class="op">)</span></span></code></pre></div>
 <p><img src="acciddasuite_files/figure-html/plot-cv-1.png" class="r-plt" alt="" width="2100"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span><span class="va">cv</span>, top_n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
