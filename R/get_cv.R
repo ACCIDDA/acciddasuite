@@ -8,8 +8,8 @@
 #' interval coverage. Models are ranked separately for each series, and the
 #' resulting rankings are used by \code{\link{get_fcast}}.
 #'
-#' @param x An \code{accidda_ncast} object from \code{\link{get_ncast}} or an
-#'   \code{accidda_data} object from \code{\link{check_data}} or
+#' @param x An \code{incast_ncast} object from \code{\link{get_ncast}} or an
+#'   \code{incast_data} object from \code{\link{check_data}} or
 #'   \code{\link{get_data}}.
 #'
 #' @param eval_start_date Date (or character string coercible to a date) giving
@@ -28,7 +28,7 @@
 #'   successive cross-validation origins. Defaults to \code{h}, resulting in
 #'   non-overlapping evaluation periods.
 #'
-#' @return An \code{accidda_cv} object containing:
+#' @return An \code{incast_cv} object containing:
 #' \describe{
 #'   \item{forecasts}{Forecasts for each model, series, and cross-validation origin.}
 #'   \item{oracle}{Observed values used for scoring.}
@@ -66,8 +66,8 @@ get_cv <- function(
   models = default_models(),
   step = h
 ) {
-  df <- extract_series(x) # errors unless x is an accidda_data / accidda_ncast
-  meta <- accidda_meta(x)
+  df <- extract_series(x) # errors unless x is an incast_data / incast_ncast
+  meta <- incast_meta(x)
 
   eval_start_date <- as.Date(eval_start_date)
   if (length(eval_start_date) != 1L || is.na(eval_start_date)) {
@@ -123,7 +123,7 @@ get_cv <- function(
         dplyr::arrange(dplyr::across(dplyr::all_of(meta$key)), wis)
     })
 
-    new_accidda_cv(
+    new_incast_cv(
       forecasts = hub$model_out_tbl,
       oracle = hub$oracle_output,
       score = score,

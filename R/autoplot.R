@@ -8,12 +8,12 @@ ggplot2::autoplot
 #' Observed counts over time, one panel per series. When revision history is
 #' present, the latest reported value per week is shown.
 #'
-#' @param object An \code{accidda_data} from \code{\link{check_data}}.
+#' @param object An \code{incast_data} from \code{\link{check_data}}.
 #' @param ... Ignored.
 #' @return A ggplot object.
 #' @export
-autoplot.accidda_data <- function(object, ...) {
-  m <- accidda_meta(object)
+autoplot.incast_data <- function(object, ...) {
+  m <- incast_meta(object)
   ggplot2::ggplot(
     extract_series(object),
     ggplot2::aes(target_end_date, observation)
@@ -50,14 +50,14 @@ plot_bands <- function(bands, x, key, target) {
 #'
 #' Each panel corresponds to a single time series.
 #'
-#' @param object An \code{accidda_ncast} object returned by
+#' @param object An \code{incast_ncast} object returned by
 #' \code{\link{get_ncast}}.
 #' @param ... Ignored.
 #'
 #' @return A ggplot object.
 #' @export
-autoplot.accidda_ncast <- function(object, ...) {
-  m <- accidda_meta(object)
+autoplot.incast_ncast <- function(object, ...) {
+  m <- incast_meta(object)
   plot_bands(
     object$meta$ncast_summary,
     reference_date,
@@ -79,13 +79,13 @@ autoplot.accidda_ncast <- function(object, ...) {
 #' Each panel corresponds to a single time series.
 #'
 #'
-#' @param object An \code{accidda_cv} object returned by \code{\link{get_cv}}.
+#' @param object An \code{incast_cv} object returned by \code{\link{get_cv}}.
 #' @param ... Ignored.
 #'
 #' @return A ggplot object.
 #' @export
-autoplot.accidda_cv <- function(object, ...) {
-  m <- accidda_meta(object)
+autoplot.incast_cv <- function(object, ...) {
+  m <- incast_meta(object)
   score <- object$score
 
   p <- if ("wis_relative_skill" %in% names(score)) {
@@ -121,15 +121,15 @@ autoplot.accidda_cv <- function(object, ...) {
 #'
 #' Each panel corresponds to a single time series.
 #'
-#' @param object An \code{accidda_fcast} object returned by
+#' @param object An \code{incast_fcast} object returned by
 #' \code{\link{get_fcast}}.
 #' @param model The model to plot. Defaults to \code{"ENSEMBLE"}.
 #' @param ... Ignored.
 #'
 #' @return A ggplot object.
 #' @export
-autoplot.accidda_fcast <- function(object, model = "ENSEMBLE", ...) {
-  m <- accidda_meta(object)
+autoplot.incast_fcast <- function(object, model = "ENSEMBLE", ...) {
+  m <- incast_meta(object)
   out <- object$hub$model_out_tbl
   if (length(model) != 1L || !model %in% out$model_id) {
     stop("`model` must be one of: ", paste(unique(out$model_id), collapse = ", "))

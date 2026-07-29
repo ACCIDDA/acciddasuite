@@ -1,4 +1,4 @@
-Package: acciddasuite
+Package: incast
 Title: A suite of tools for epidemic forecasting
 Version: 0.0.1
 Authors@R: 
@@ -42,5 +42,5 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 LazyData: true
-URL: https://github.com/ACCIDDA/acciddasuite, https://ACCIDDA.github.io/acciddasuite/, https://accidda.github.io/acciddasuite/
+URL: https://github.com/ACCIDDA/incast, https://accidda.github.io/incast/
 Config/testthat/edition: 3

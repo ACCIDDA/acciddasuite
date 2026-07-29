@@ -7,7 +7,7 @@
 get_ncast(x, max_delay = 2, draws = 1000, prop_delay = 0.5, scale_factor = 3)
 }
 \arguments{
-\item{x}{An \code{accidda_data} (\code{\link{get_data}} /
+\item{x}{An \code{incast_data} (\code{\link{get_data}} /
 \code{\link{check_data}}) with revision history; use
 \code{get_data(revisions = TRUE)}.}
 
@@ -23,7 +23,7 @@ delay estimation. Default 0.5.}
 estimation window. Default 3.}
 }
 \value{
-An \code{accidda_ncast} object with the shared backbone
+An \code{incast_ncast} object with the shared backbone
 (\code{key}, \code{target}, \code{window}, \code{interval},
 \code{history}) plus:
 \describe{

@@ -7,8 +7,8 @@
 get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 }
 \arguments{
-\item{x}{An \code{accidda_ncast} object from \code{\link{get_ncast}} or an
-\code{accidda_data} object from \code{\link{check_data}} or
+\item{x}{An \code{incast_ncast} object from \code{\link{get_ncast}} or an
+\code{incast_data} object from \code{\link{check_data}} or
 \code{\link{get_data}}.}
 
 \item{eval_start_date}{Date (or character string coercible to a date) giving
@@ -28,7 +28,7 @@ successive cross-validation origins. Defaults to \code{h}, resulting in
 non-overlapping evaluation periods.}
 }
 \value{
-An \code{accidda_cv} object containing:
+An \code{incast_cv} object containing:
 \describe{
 \item{forecasts}{Forecasts for each model, series, and cross-validation origin.}
 \item{oracle}{Observed values used for scoring.}

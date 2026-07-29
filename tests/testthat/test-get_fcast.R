@@ -1,7 +1,7 @@
 test_that("get_fcast rejects plain data frames", {
   expect_error(
     get_fcast(data.frame(wrong_column = 1)),
-    "accidda_cv, accidda_data or accidda_ncast"
+    "incast_cv, incast_data or incast_ncast"
   )
 })
 
@@ -24,7 +24,7 @@ test_that("get_fcast builds one flat hub with an ensemble, without cross-validat
     h = 2
   )
 
-  expect_s3_class(fcast, "accidda_fcast")
+  expect_s3_class(fcast, "incast_fcast")
   expect_null(fcast$score)
   expect_equal(fcast$meta$models, c("NAIVE", "DRIFT"))
   expect_false(fcast$meta$nowcast)
@@ -168,7 +168,7 @@ test_that("get_fcast reuses the cv horizon when h is unset", {
   expect_setequal(unique(fcast$hub$model_out_tbl$horizon), 1:2)
 })
 
-test_that("get_fcast pools nowcast uncertainty from an accidda_ncast", {
+test_that("get_fcast pools nowcast uncertainty from an incast_ncast", {
   x <- check_data(make_weekly_df(n = 12, revisions = TRUE))
   ncast <- get_ncast(x, draws = 50)
 

@@ -1,4 +1,4 @@
-url: https://accidda.github.io/acciddasuite/
+url: https://accidda.github.io/incast/
 template:
   bootstrap: 5
   bslib:
@@ -8,7 +8,7 @@ template:
     height: 250px
 repo:
   url:
-    home: https://github.com/ACCIDDA/acciddasuite
-    issue: https://github.com/ACCIDDA/acciddasuite/issues
+    home: https://github.com/ACCIDDA/incast
+    issue: https://github.com/ACCIDDA/incast/issues
     user: https://github.com/ACCIDDA
-    source: https://github.com/ACCIDDA/acciddasuite/blob/main/
+    source: https://github.com/ACCIDDA/incast/blob/main/

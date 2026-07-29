@@ -1,8 +1,8 @@
 test_that("to_respilens throws error for wrong class", {
-  expect_error(to_respilens(list(a = 1)), "Input must be an object of class 'accidda_fcast'")
+  expect_error(to_respilens(list(a = 1)), "Input must be an object of class 'incast_fcast'")
 })
 
-test_that("to_respilens throws error if multiple locations are present in either acciddacast object", {
+test_that("to_respilens throws error if multiple locations are present in either incast object", {
   model_data <- data.frame(
     location = "US",
     reference_date = as.Date("2026-03-01"),
@@ -29,7 +29,7 @@ test_that("to_respilens throws error if multiple locations are present in either
   cast_multi_model <- list(
     hub = list(model_out_tbl = bad_model_tbl, oracle_output = gt_data)
   )
-  class(cast_multi_model) <- "accidda_fcast"
+  class(cast_multi_model) <- "incast_fcast"
   expect_error(
     to_respilens(cast_multi_model),
     "Expected exactly one location in input data."
@@ -43,7 +43,7 @@ test_that("to_respilens throws error if multiple locations are present in either
   cast_multi_oracle <- list(
     hub = list(model_out_tbl = model_data, oracle_output = bad_oracle_tbl)
   )
-  class(cast_multi_oracle) <- "accidda_fcast"
+  class(cast_multi_oracle) <- "incast_fcast"
   expect_error(
     to_respilens(cast_multi_oracle),
     "Expected exactly one location in input data."
@@ -75,7 +75,7 @@ test_that("to_respilens creates correctly nested output", {
   fake_cast <- list(
     hub = list(model_out_tbl = model_data, oracle_output = gt_data)
   )
-  class(fake_cast) <- "accidda_fcast"
+  class(fake_cast) <- "incast_fcast"
 
   result <- to_respilens(fake_cast)
   expect_named(result, c("metadata", "ground_truth", "forecasts"))

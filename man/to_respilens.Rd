@@ -7,7 +7,7 @@
 to_respilens(x, path = NULL)
 }
 \arguments{
-\item{x}{An \code{accidda_fcast} from \code{\link{get_fcast}}.}
+\item{x}{An \code{incast_fcast} from \code{\link{get_fcast}}.}
 
 \item{path}{Optional \code{.json} path to write to; if \code{NULL}, nothing
 is written.}
