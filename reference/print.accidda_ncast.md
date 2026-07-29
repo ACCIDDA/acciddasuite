@@ -1,6 +1,7 @@
 # Print an `accidda_ncast` object
 
-Print an `accidda_ncast` object
+Display a summary of the target, series, data window, and nowcast
+period.
 
 ## Usage
 

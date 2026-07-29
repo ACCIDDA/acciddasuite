@@ -1,6 +1,7 @@
 # Print an `accidda_cv` object
 
-Print an `accidda_cv` object
+Display a summary of the target, series, data window, and
+cross-validation settings.
 
 ## Usage
 

@@ -1,10 +1,7 @@
-# Produce a forward-looking forecast
+# Produce a forward forecast
 
-Refits models on the full series, forecasts `h` steps ahead and combines
-them into an equal-weight ensemble. Accepts either an `accidda_cv` from
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md) —
-whose ranking selects the best `top_n` models — or an `accidda_data` /
-`accidda_ncast`, which forecasts every model in `models`.
+Fit forecasting models to the full time series and generate forecasts
+for the next `h` reporting intervals.
 
 ## Usage
 
@@ -16,62 +13,69 @@ get_fcast(x, models = default_models(), h = 4, top_n = 3)
 
 - x:
 
-  An `accidda_cv`
-  ([`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)),
-  `accidda_ncast` or `accidda_data`.
+  An `accidda_*` object.
 
 - models:
 
-  Named list of `fable` models. Defaults to
+  Named list of `fable` model specifications. Defaults to
   [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
-  For an `accidda_cv`, leave unset to forecast its `top_n` ranked
-  models, or pass `models` to forecast a set of your own.
+  When `x` is an `accidda_cv` object, leave unset to use the top-ranked
+  models from cross-validation, or provide a custom set of models.
 
 - h:
 
-  Integer. Forecast horizon, in reporting-interval steps (weeks for
-  weekly data). Default 4; for an `accidda_cv`, defaults to the
+  Integer giving the forecast horizon in reporting intervals. Defaults
+  to `4`. When `x` is an `accidda_cv` object, the default is the
   cross-validation horizon.
 
 - top_n:
 
-  Integer. Number of top-ranked CV models to ensemble. Used only when
-  `x` is an `accidda_cv` and `models` is unset. Default 3.
+  Integer giving the number of top-ranked models to combine into the
+  ensemble for each series. Used only when `x` is an `accidda_cv` object
+  and `models` is not provided. Defaults to `3`.
 
 ## Value
 
-An `accidda_fcast` object:
+An `accidda_fcast` object containing:
 
 - hub:
 
-  Hub-format forecast (`model_out_tbl`, `oracle_output`).
+  Hub-format forecasts containing `model_out_tbl` and `oracle_output`.
 
 - score:
 
-  Model ranking from the `accidda_cv`, or `NULL`.
+  Cross-validation model performance scores, or `NULL`.
 
 - meta:
 
-  `models`, `top_n`, `h`, `location`, `target`, `interval`, `nowcast`.
+  Forecast settings including models, model selection, ensemble size,
+  horizon, series keys, target, reporting interval, nowcast information,
+  and evaluation date.
 
-Export with
+Forecast outputs can be exported with
 [`to_respilens`](https://accidda.github.io/acciddasuite/reference/to_respilens.md).
 
 ## Details
 
-If the input carries `ncast_lower` / `ncast_upper` (from
-[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)),
-forecasts are pooled across the nowcast median and 95\\
+When provided with an `accidda_cv` object, the function uses the
+cross-validation results to select the best-performing models for each
+series and combines them into an equal-weight ensemble. For
+`accidda_data` or `accidda_ncast` objects, all models in `models` are
+fitted and forecast.
+
+If the input contains nowcast uncertainty from
+[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md),
+this uncertainty is incorporated into the forecast intervals.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
 ncast <- get_data("covid", "ny", revisions = TRUE) |> get_ncast()
-cv    <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
+cv <- ncast |> get_cv(eval_start_date = "2025-01-01", h = 4)
 
-get_fcast(cv, top_n = 3)                 # reuse the cross-validation ranking
-get_fcast(cv, models = default_models()) # forecast a different set; keeps $score
-get_fcast(ncast)                         # or forecast the default models directly
+get_fcast(cv, top_n = 3) # use cross-validation rankings
+get_fcast(cv, models = default_models()) # use custom models
+get_fcast(ncast) # forecast directly from nowcast data
 } # }
 ```

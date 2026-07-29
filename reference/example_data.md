@@ -1,11 +1,11 @@
-# Weekly COVID-19 hospital admissions for New York
+# Weekly influenza hospital admissions for New York and California
 
-Weekly confirmed COVID-19 hospital admissions for New York (CDC NHSN),
-with revision history, fetched via
+Weekly confirmed influenza hospital admissions for New York and
+California (CDC NHSN), with revision history, fetched via
 [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md);
 pass through
 [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
-to use it. Covers Aug 2020 to Mar 2026.
+to use it.
 
 ## Usage
 
@@ -23,11 +23,11 @@ A data frame with 5 columns:
 
 - location:
 
-  State abbreviation (`"NY"`).
+  State abbreviation (`"NY"` or `"CA"`).
 
 - target:
 
-  Forecast target (`"wk inc covid hosp"`).
+  Forecast target (`"wk inc flu hosp"`).
 
 - target_end_date:
 
@@ -41,6 +41,14 @@ A data frame with 5 columns:
 
 CDC NHSN via
 [`pub_covidcast`](https://cmu-delphi.github.io/epidatr/reference/pub_covidcast.html).
+
+## Details
+
+The archive is pinned to the 14 December 2025 history, so the most
+recent weeks are still right-truncated and
+[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+has reporting delay to model. To regenerate with
+`data-raw/example_data.R`.
 
 ## Examples
 

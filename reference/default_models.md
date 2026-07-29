@@ -1,13 +1,9 @@
 # Default forecasting models
 
-The built-in model set for
+Return the default set of forecasting models used by
 [`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
 and
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md):
-a naive random walk, ETS, Theta and ARIMA, each fitted on
-`log(observation)` to stabilise count variance (`fable` back-transforms
-automatically). Extend rather than replace by composing, e.g.
-`c(default_models(), list(CUSTOM = fable::ARIMA(observation)))`.
+[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
 
 ## Usage
 
@@ -17,7 +13,18 @@ default_models()
 
 ## Value
 
-A named list of fable model definitions.
+A named list of `fable` model specifications.
+
+## Details
+
+The default models are naive, ETS, Theta, and ARIMA models. All models
+are fitted to `log(observation + 1)` to stabilise variance in count
+data. Forecasts are automatically transformed back to the original scale
+by `fable`. +1 is added to avoid taking the log of zero.
+
+Additional models can be added by extending the returned list, for
+example:
+`c(default_models(), list(CUSTOM = fable::ARIMA(observation)))`.
 
 ## Examples
 

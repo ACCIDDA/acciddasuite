@@ -1,6 +1,9 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://accidda.github.io/acciddasuite/404.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/LICENSE-text.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/LICENSE.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/articles/acciddasuite.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/articles/ebola_2026.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/articles/external_data.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/articles/forecast_planning.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/articles/index.html</loc></url>
@@ -8,6 +11,11 @@
 <url><loc>https://accidda.github.io/acciddasuite/index.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/EPIESTIM.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/FOUNDATION.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/as_tibble.accidda_data.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/autoplot.accidda_cv.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/autoplot.accidda_data.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/autoplot.accidda_fcast.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/autoplot.accidda_ncast.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/check_data.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/default_models.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/example_data.html</loc></url>
@@ -20,6 +28,7 @@
 <url><loc>https://accidda.github.io/acciddasuite/reference/print.accidda_data.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/print.accidda_fcast.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/print.accidda_ncast.html</loc></url>
+<url><loc>https://accidda.github.io/acciddasuite/reference/reexports.html</loc></url>
 <url><loc>https://accidda.github.io/acciddasuite/reference/to_respilens.html</loc></url>
 </urlset>
 

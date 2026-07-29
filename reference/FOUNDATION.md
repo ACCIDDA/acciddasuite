@@ -1,13 +1,10 @@
-# Forecast with a pretrained ("foundation") time-series model
+# Forecast with a pretrained time-series model
 
-`FOUNDATION()` lets you use a large pretrained forecasting model inside
-`fable`, next to ARIMA, ETS and the others. These models are
-*zero-shot*: there is no training step. Fitting just stores your
-history; at forecast time the model produces many possible future paths,
-which the package turns into quantiles, ensembles and scores like any
-other model (see
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md),
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)).
+`FOUNDATION()` provides access to large pretrained forecasting models
+within `fable`. Unlike traditional statistical models, these models do
+not require training on the supplied data. The fitting step stores the
+observed history, and forecasts are generated directly from the
+pretrained model.
 
 ## Usage
 
@@ -25,65 +22,70 @@ FOUNDATION(
 
 - formula:
 
-  The series to forecast, e.g. `observation`. For counts, wrap it in
-  [`log()`](https://rdrr.io/r/base/Log.html) (e.g. `log(observation)`)
-  and `fable` undoes the log for you. Extra predictor variables are not
+  The series to forecast, for example `observation`. For count data, use
+  `log(observation)` if variance stabilisation is required. `fable`
+  automatically back-transforms forecasts. Additional predictors are not
   supported.
 
 - backend:
 
-  Which model to use: `"chronos"`, `"timesfm"`, `"sundial"` or
-  `"moirai"`.
+  Pretrained model backend to use: `"chronos"`, `"timesfm"`,
+  `"sundial"`, or `"moirai"`.
 
 - model_id:
 
-  Exact model to fetch from Hugging Face. `NULL` (default) uses the
-  backend's default model listed above.
+  Optional Hugging Face model identifier. If `NULL`, the default model
+  for the selected backend is used.
 
 - device:
 
-  `"cpu"` (default), or `"cuda"` to use a GPU.
+  Computation device: `"cpu"` (default) or `"cuda"`.
 
 - n_samples:
 
-  Number of forecast draws (default 200).
+  Number of forecast samples to generate. Defaults to `200`.
 
 ## Value
 
-A model definition to pass to
-[`model`](https://fabletools.tidyverts.org/reference/model.html) (or to
-the package's
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md) /
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)).
+A `fable` model specification for use with
+[`model`](https://fabletools.tidyverts.org/reference/model.html),
+[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md),
+or
+[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
 
 ## Details
 
-The models run in Python, set up for you - you only need the
-`reticulate` package installed. The first forecast of a session installs
-the Python pieces and downloads the model weights (a one-off that may
-take a few minutes); after that everything is cached and forecasts are
-quick.
+Forecasts are returned in the same format as other `fable` models,
+allowing them to be used with functions such as
+[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
+and
+[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+
+The models run through Python using `reticulate`. On the first forecast
+in a session, required Python dependencies and model weights are
+installed and downloaded automatically. These are cached for subsequent
+forecasts.
 
 Available models (`backend`):
 
 - `"chronos"`:
 
-  Amazon Chronos. Default `amazon/chronos-t5-small`.
+  Amazon Chronos. Default: `amazon/chronos-t5-small`.
 
 - `"timesfm"`:
 
-  Google TimesFM. Default `google/timesfm-2.5-200m-pytorch`.
+  Google TimesFM. Default: `google/timesfm-2.5-200m-pytorch`.
 
 - `"sundial"`:
 
-  Tsinghua Sundial. Default `thuml/sundial-base-128m`.
+  Tsinghua Sundial. Default: `thuml/sundial-base-128m`.
 
 - `"moirai"`:
 
-  Salesforce Moirai. Default `Salesforce/moirai-1.1-R-small`.
+  Salesforce Moirai. Default: `Salesforce/moirai-1.1-R-small`.
 
-Note: TimesFM and the Chronos-Bolt models report only a handful of
-quantiles, so their most extreme prediction intervals are approximate.
+Some models provide only a limited number of quantiles, so extreme
+prediction intervals may be approximate.
 
 ## See also
 

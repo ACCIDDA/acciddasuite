@@ -52,9 +52,6 @@ checked
 ```
 
     ## <accidda_data>
-    ## 
-    ## Location: NY 
-    ## Target:   inc hosp influenza 
-    ## Window:   2024-01-01 to 2024-12-23 ( 52 dates )
-    ## Interval: 7 days
-    ## History:  FALSE
+    ## Target:   inc hosp influenza
+    ## Series:   1 (location)
+    ## Window:   2024-01-01 to 2024-12-23 (7-day interval)

@@ -1,11 +1,8 @@
 # Cross-validate forecasting models
 
-Evaluates `fable` models by expanding-window time-series
-cross-validation: from `eval_start_date`, models are refit at each
-origin and forecast `h` steps ahead, then scored by weighted interval
-score (WIS) and interval coverage via `hubEvals`. The ranking is reused
-by
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+Evaluate forecasting models using expanding-window time-series
+cross-validation. Starting from `eval_start_date`, models are refitted
+at each forecast origin and evaluated over the next `h` time steps.
 
 ## Usage
 
@@ -17,54 +14,53 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 
 - x:
 
-  An `accidda_ncast`
-  ([`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md))
-  or `accidda_data`
-  ([`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
-  /
-  [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md)).
+  An `accidda_ncast` object from
+  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+  or an `accidda_data` object from
+  [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+  or
+  [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md).
 
 - eval_start_date:
 
-  Date (or string coercible to one). First origin evaluated; must lie
-  within the data window. All observations before it form the initial
-  training window.
+  Date (or character string coercible to a date) giving the first
+  forecast origin to evaluate. Must fall within the data window. All
+  earlier observations are used as the initial training period.
 
 - h:
 
-  Integer. Forecast horizon, in reporting-interval steps (weeks for
-  weekly data, days for daily). Default 4.
+  Integer giving the forecast horizon in reporting intervals (for
+  example, weeks for weekly data). Defaults to `4`.
 
 - models:
 
-  Named list of `fable` models. Defaults to
-  [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md);
-  compose with `c(default_models(), list(...))` to extend. Each element
-  must reference `observation`. See the [fabletools extension
-  vignette](https://fabletools.tidyverts.org/articles/extension_models.html)
-  for custom models.
+  Named list of `fable` model specifications. Defaults to
+  [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
+  Additional models can be added with `c(default_models(), list(...))`.
+  Each model must use `observation` as the response variable.
 
 - step:
 
-  Integer. Number of reporting-interval steps the training window
-  advances between successive CV origins. Defaults to `h`
-  (non-overlapping evaluation blocks).
+  Integer giving the number of reporting intervals between successive
+  cross-validation origins. Defaults to `h`, resulting in
+  non-overlapping evaluation periods.
 
 ## Value
 
-An `accidda_cv` object:
+An `accidda_cv` object containing:
 
 - forecasts:
 
-  Per-origin, per-model forecasts (`model_out_tbl`).
+  Forecasts for each model, series, and cross-validation origin.
 
 - oracle:
 
-  Observed truth (`oracle_output`).
+  Observed values used for scoring.
 
 - score:
 
-  Model ranking by WIS with interval coverage.
+  Model performance metrics, including WIS and interval coverage, for
+  each model and series.
 
 - models:
 
@@ -72,12 +68,20 @@ An `accidda_cv` object:
 
 - meta:
 
-  `eval_start_date`, `h`, `location`, `target`, `interval`.
+  Cross-validation settings including dates, horizon, step, series keys,
+  target, and reporting interval.
 
 - data:
 
-  Revision-collapsed input, reused by
+  Input data with revisions collapsed, used by
   [`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+
+## Details
+
+Forecast performance is measured using weighted interval score (WIS) and
+interval coverage. Models are ranked separately for each series, and the
+resulting rankings are used by
+[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
 
 ## Examples
 

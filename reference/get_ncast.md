@@ -3,7 +3,10 @@
 Recent weeks of surveillance data are incomplete because of reporting
 delays (right truncation). `get_ncast` estimates their final counts with
 [baselinenowcast](https://baselinenowcast.epinowcast.org/), replacing
-the last `max_delay` weeks and leaving earlier weeks untouched.
+the last `max_delay` weeks of every series and leaving earlier weeks
+untouched. Downward revisions are redistributed across earlier delays
+via
+[`preprocess_negative_values`](https://baselinenowcast.epinowcast.org/reference/preprocess_negative_values.html).
 
 ## Usage
 
@@ -41,8 +44,8 @@ get_ncast(x, max_delay = 2, draws = 1000, prop_delay = 0.5, scale_factor = 3)
 
 ## Value
 
-An `accidda_ncast` object with the shared backbone (`location`,
-`target`, `window`, `interval`, `history`) plus:
+An `accidda_ncast` object with the shared backbone (`key`, `target`,
+`window`, `interval`, `history`) plus:
 
 - data:
 
@@ -50,9 +53,13 @@ An `accidda_ncast` object with the shared backbone (`location`,
   weeks; `ncast_lower` / `ncast_upper` (95\\ propagate nowcast
   uncertainty.
 
-- plot:
+- meta:
 
-  ggplot of the correction.
+  The nowcast settings (`max_delay`, `draws`, `prop_delay`,
+  `scale_factor`) and `ncast_summary`, one tidy table of per-series
+  weekly nowcasts (median, CrI bounds and the reported-so-far `observed`
+  count) plotted by
+  [`autoplot`](https://ggplot2.tidyverse.org/reference/autoplot.html).
 
 ## Details
 
@@ -63,7 +70,8 @@ is cadence-agnostic).
 
 ``` r
 if (FALSE) { # \dontrun{
-x     <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
+x <- get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 ncast <- get_ncast(x)
+autoplot(ncast)
 } # }
 ```

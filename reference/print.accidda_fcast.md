@@ -1,6 +1,7 @@
 # Print an `accidda_fcast` object
 
-Print an `accidda_fcast` object
+Display a summary of the target, series, forecast period, and models
+used.
 
 ## Usage
 
