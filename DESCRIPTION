@@ -23,7 +23,8 @@ Imports:
     jsonlite,
     baselinenowcast (>= 0.2.0),
     pipetime,
-    urca
+    urca,
+    feasts
 Suggests:
     EpiEstim,
     projections,

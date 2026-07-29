@@ -18,6 +18,7 @@
 #'
 #' @export
 #' @importFrom fable ETS ARIMA NAIVE THETA
+#' @importFrom feasts unitroot_ndiffs
 default_models <- function() {
   list(
     NAIVE = fable::NAIVE(log(observation + 1)),
