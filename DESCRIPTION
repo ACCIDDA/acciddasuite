@@ -18,6 +18,7 @@ Imports:
     ggplot2 (>= 3.5.0),
     distributional,
     epidatr,
+    hubEnsembles,
     hubEvals,
     incidence,
     jsonlite,

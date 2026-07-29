@@ -73,13 +73,11 @@ autoplot.accidda_ncast <- function(object, ...) {
 #' Plot model performance across time series using the weighted interval score
 #' (WIS). By default, models are ranked using relative WIS, where values below
 #' 1 indicate better-than-average performance and values above 1 indicate
-#' worse-than-average performance.
+#' worse-than-average performance. If only one model is present, raw WIS
+#' values are displayed instead.
 #'
-#' Each panel corresponds to a single time series and uses a common log scale
-#' and model ordering to allow comparisons across panels. If only one model is
-#' present, raw WIS values are displayed instead.
+#' Each panel corresponds to a single time series.
 #'
-#' For custom metrics or visualisations, use \code{object$score} directly.
 #'
 #' @param object An \code{accidda_cv} object returned by \code{\link{get_cv}}.
 #' @param ... Ignored.
@@ -101,11 +99,9 @@ autoplot.accidda_cv <- function(object, ...) {
       ggplot2::geom_vline(xintercept = 1, colour = "grey70") +
       ggplot2::geom_segment(ggplot2::aes(xend = 1)) +
       ggplot2::geom_point(size = 2.5) +
-      ggplot2::scale_x_continuous(transform = "log2") +
       ggplot2::facet_wrap(m$key) +
-      ggplot2::labs(x = "Relative WIS (log scale; 1 = average model)")
+      ggplot2::labs(x = "Relative WIS")
   } else {
-    # get_cv() scores relative skill only when models can be compared (> 1).
     ggplot2::ggplot(score, ggplot2::aes(wis, model_id)) +
       ggplot2::geom_segment(ggplot2::aes(xend = 0)) +
       ggplot2::geom_point(size = 2.5) +

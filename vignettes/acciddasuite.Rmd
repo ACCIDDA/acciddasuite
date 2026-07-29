@@ -97,8 +97,7 @@ cv
 You can plot the relative WIS for each model and location with `autoplot()`.  A value of `wis_relative_skill`=1 indicates average performance, values below 1 indicate lower WIS (better forecasts), and values above 1 indicate higher WIS (worse forecasts).
 
 ```{r, plot-cv}
-autoplot(cv) +
-  ggplot2::scale_x_log10()
+autoplot(cv)
 ```
 
 ```{r, final-forecast}

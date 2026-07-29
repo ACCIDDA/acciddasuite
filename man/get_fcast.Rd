@@ -4,7 +4,13 @@
 \alias{get_fcast}
 \title{Produce a forward forecast}
 \usage{
-get_fcast(x, models = default_models(), h = 4, top_n = 3)
+get_fcast(
+  x,
+  models = default_models(),
+  h = 4,
+  top_n = 3,
+  ensemble = c("linear_pool", "quantile_average")
+)
 }
 \arguments{
 \item{x}{An \code{accidda_*} object.}
@@ -22,6 +28,14 @@ the cross-validation horizon.}
 the ensemble for each series. Used only when \code{x} is an
 \code{accidda_cv} object and \code{models} is not provided. Defaults to
 \code{3}.}
+
+\item{ensemble}{Method used to combine the models into the \code{ENSEMBLE}
+forecast.
+\code{"linear_pool"} (default) mixes the models' predictive
+distributions with equal weights.
+\code{"quantile_average"} takes, at each quantile level,
+the median of the models' quantiles using
+\code{\link[hubEnsembles]{simple_ensemble}}}
 }
 \value{
 An \code{accidda_fcast} object containing:
@@ -30,8 +44,8 @@ An \code{accidda_fcast} object containing:
 \code{oracle_output}.}
 \item{score}{Cross-validation model performance scores, or \code{NULL}.}
 \item{meta}{Forecast settings including models, model selection,
-ensemble size, horizon, series keys, target, reporting interval,
-nowcast information, and evaluation date.}
+ensemble method, horizon, series keys, target, reporting
+interval, nowcast information, and evaluation date.}
 }
 
 Forecast outputs can be exported with \code{\link{to_respilens}}.

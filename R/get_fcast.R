@@ -28,14 +28,22 @@
 #'   \code{accidda_cv} object and \code{models} is not provided. Defaults to
 #'   \code{3}.
 #'
+#' @param ensemble Method used to combine the models into the \code{ENSEMBLE}
+#'   forecast.
+#'   \code{"linear_pool"} (default) mixes the models' predictive
+#'   distributions with equal weights.
+#'   \code{"quantile_average"} takes, at each quantile level,
+#'   the median of the models' quantiles using
+#'   \code{\link[hubEnsembles]{simple_ensemble}}
+#'
 #' @return An \code{accidda_fcast} object containing:
 #' \describe{
 #'   \item{hub}{Hub-format forecasts containing \code{model_out_tbl} and
 #'   \code{oracle_output}.}
 #'   \item{score}{Cross-validation model performance scores, or \code{NULL}.}
 #'   \item{meta}{Forecast settings including models, model selection,
-#'   ensemble size, horizon, series keys, target, reporting interval,
-#'   nowcast information, and evaluation date.}
+#'   ensemble method, horizon, series keys, target, reporting
+#'   interval, nowcast information, and evaluation date.}
 #' }
 #'
 #' Forecast outputs can be exported with \code{\link{to_respilens}}.
@@ -56,9 +64,19 @@
 #' @importFrom dplyr filter mutate bind_rows summarise coalesce slice_min
 #'   semi_join select all_of as_tibble
 #' @importFrom fabletools model forecast
+#' @importFrom hubEnsembles simple_ensemble
+#' @importFrom stats median
 #' @importFrom pipetime time_pipe
 
-get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
+get_fcast <- function(
+  x,
+  models = default_models(),
+  h = 4,
+  top_n = 3,
+  ensemble = c("linear_pool", "quantile_average")
+) {
+  ensemble <- match.arg(ensemble)
+
   # The CV supplies each series' top_n models unless the caller passes `models`.
   use_cv_ranking <- inherits(x, "accidda_cv") && missing(models)
 
@@ -127,30 +145,49 @@ get_fcast <- function(x, models = default_models(), h = 4, top_n = 3) {
     }
 
     # --------- Equal-weight ensemble per series ---------
-    ensemble <- model_fcast |>
-      dplyr::summarise(
-        observation = mix_equally(observation),
-        .mean = mean(.mean),
-        .by = c(dplyr::all_of(key), target_end_date)
-      ) |>
-      dplyr::mutate(.model = "ENSEMBLE")
+    # The linear pool mixes the predictive distributions, so it is built
+    # before the quantiles are extracted.
+    if (ensemble == "linear_pool") {
+      pool <- model_fcast |>
+        dplyr::summarise(
+          observation = mix_equally(observation),
+          .mean = mean(.mean),
+          .by = c(dplyr::all_of(key), target_end_date)
+        ) |>
+        dplyr::mutate(.model = "ENSEMBLE")
+      model_fcast <- dplyr::bind_rows(model_fcast, pool)
+    }
 
-    fcast <- dplyr::bind_rows(model_fcast, ensemble) |>
-      dplyr::mutate(.id = 1L)
+    fcast <- dplyr::mutate(model_fcast, .id = 1L)
+
+    hub <- fable_to_hub(
+      fcast,
+      ts,
+      key = key,
+      target = meta$target,
+      interval = meta$interval
+    )
+
+    # Quantile average: at each quantile level,
+    # take the median of the models' quantiles.
+    if (ensemble == "quantile_average") {
+      ens <- hub$model_out_tbl |>
+        hubEnsembles::simple_ensemble(
+          agg_fun = stats::median,
+          model_id = "ENSEMBLE"
+        ) |>
+        dplyr::as_tibble()
+      hub$model_out_tbl <- dplyr::bind_rows(hub$model_out_tbl, ens)
+    }
 
     new_accidda_fcast(
-      hub = fable_to_hub(
-        fcast,
-        ts,
-        key = key,
-        target = meta$target,
-        interval = meta$interval
-      ),
+      hub = hub,
       score = score,
       meta = list(
         models = names(models),
         selection = selection,
         top_n = if (use_cv_ranking) top_n,
+        ensemble = ensemble,
         h = h,
         key = key,
         target = meta$target,

@@ -38,6 +38,43 @@ test_that("get_fcast builds one flat hub with an ensemble, without cross-validat
   expect_equal(nrow(out), 60)
 })
 
+test_that("get_fcast quantile_average takes the median of the models' quantiles", {
+  x <- check_data(make_weekly_df(locations = c("NY", "CA"), n = 20))
+
+  fcast <- get_fcast(
+    x,
+    models = list(
+      NAIVE = fable::NAIVE(observation),
+      DRIFT = fable::RW(observation ~ drift())
+    ),
+    h = 2,
+    ensemble = "quantile_average"
+  )
+
+  expect_equal(fcast$meta$ensemble, "quantile_average")
+  out <- fcast$hub$model_out_tbl
+  expect_setequal(unique(out$model_id), c("NAIVE", "DRIFT", "ENSEMBLE"))
+  # Same shape as the linear pool: 2 locations x 3 models x 2 horizons x 5 quantiles
+  expect_equal(nrow(out), 60)
+  expect_false(anyNA(out))
+
+  # The ENSEMBLE value at each quantile level is the median across models.
+  by_cols <- c("location", "target_end_date", "output_type_id")
+  expected <- out |>
+    dplyr::filter(model_id != "ENSEMBLE") |>
+    dplyr::summarise(value = stats::median(value), .by = dplyr::all_of(by_cols)) |>
+    dplyr::arrange(dplyr::pick(dplyr::all_of(by_cols)))
+  ens <- out |>
+    dplyr::filter(model_id == "ENSEMBLE") |>
+    dplyr::arrange(dplyr::pick(dplyr::all_of(by_cols)))
+  expect_equal(ens$value, expected$value)
+})
+
+test_that("get_fcast rejects unknown ensemble methods", {
+  x <- check_data(make_weekly_df(n = 10))
+  expect_error(get_fcast(x, ensemble = "stacking"), "should be one of")
+})
+
 test_that("get_fcast selects each series' own top_n from the cv ranking", {
   dates <- seq(as.Date("2023-01-01"), by = "week", length.out = 30)
   df <- rbind(
