@@ -94,7 +94,7 @@ models <- c(
   default_models(),
   list(
     CUSTOM_ARIMA = ARIMA(log(observation) ~ pdq(1, 1, 0)),
-    NNETAR = NNETAR(log(observation), n_networks = 10), #takes 5min
+    NNETAR = NNETAR(log(observation), n_networks = 10), # takes 5min
     PROPHET = prophet(log(observation)),
     # you will need a python environment (see reticulate)
     CHRONOS = FOUNDATION(log(observation), "chronos"),

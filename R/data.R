@@ -4,7 +4,7 @@
 #' (CDC NHSN), with revision history, fetched via \code{\link{get_data}};
 #' pass through \code{\link{check_data}} to use it.
 #'
-#' The archive is pinned to the 14 December 2025 history, so the most recent weeks 
+#' The archive is pinned to the 14 December 2025 history, so the most recent weeks
 #' are still right-truncated and \code{\link{get_ncast}} has reporting delay to model.
 #' To regenerate with \code{data-raw/example_data.R}.
 #'

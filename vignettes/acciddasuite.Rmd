@@ -88,12 +88,14 @@ Default models are:
 
 * `ARIMA`: Learns repeating patterns from past values to predict future ones. Auto-configured to find the best fit.
 
-```{r, cross-validation}
-cv <- get_cv(
-  ncast,
-  eval_start_date = as.Date("2024-01-10"),
-  h = 4, # 4 weeks ahead forecasts
-  step = 1 # train+evaluate weekly
+```{r, cross-validation, warning = TRUE}
+eval_start_date <- as.Date("2024-01-10")
+
+cv <- withCallingHandlers(
+  get_cv(ncast, eval_start_date),
+  warning = function(w) {
+    cat("[fable]", conditionMessage(w), "\n", file = stderr())
+  }
 )
 cv
 ```
@@ -141,7 +143,6 @@ my_models <- c(
 cv <- get_cv(
   ncast,
   eval_start_date = eval_start_date,
-  h = 3,
   models = my_models
 )
 
