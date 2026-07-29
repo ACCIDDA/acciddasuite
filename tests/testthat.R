@@ -1,6 +1,6 @@
 # This file is part of the standard testthat testing framework setup
 
 library(testthat)
-library(acciddasuite)
+library(incast)
 
-test_check("acciddasuite")
+test_check("incast")

@@ -1,8 +1,8 @@
 ---
-title: "acciddasuite"
+title: "incast"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{acciddasuite}
+  %\VignetteIndexEntry{incast}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-`acciddasuite` builds infectious disease forecasts in a few steps:
+`incast` builds infectious disease forecasts in a few steps:
 
 1. **`get_data()`** or **`check_data()`**: fetch or validate surveillance data.
 2. **`get_ncast()`** *(optional)*: correct recent weeks for reporting delays.
@@ -33,7 +33,7 @@ The package relies on the [`fable`](https://fable.tidyverts.org/) modeling frame
 To get more information about how to know whether forecasting is the best approach for your task, follow the steps in [this](forecast_planning.html) article.
 
 ```{r, setup}
-library(acciddasuite)
+library(incast)
 ```
 
 ## Step 1: Get data

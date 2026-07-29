@@ -6,7 +6,7 @@
 # adding a model is one list entry.
 
 # Session cache of loaded pipelines, keyed by "<backend>@<model_id>@<device>".
-.acciddasuite_pipelines <- new.env(parent = emptyenv())
+.incast_pipelines <- new.env(parent = emptyenv())
 
 
 # Error early if reticulate is not installed.
@@ -205,8 +205,8 @@ foundation_backend <- function(backend) foundation_backends()[[backend]]
 # validation (which refits at every origin) initialises each model only once.
 load_foundation_pipeline <- function(backend, model_id, device) {
   key <- paste(backend, model_id, device, sep = "@")
-  if (!is.null(.acciddasuite_pipelines[[key]])) {
-    return(.acciddasuite_pipelines[[key]])
+  if (!is.null(.incast_pipelines[[key]])) {
+    return(.incast_pipelines[[key]])
   }
 
   ensure_reticulate()
@@ -225,7 +225,7 @@ load_foundation_pipeline <- function(backend, model_id, device) {
   torch$set_num_threads(1L)
 
   pipeline <- spec$load(model_id, device)
-  .acciddasuite_pipelines[[key]] <- pipeline
+  .incast_pipelines[[key]] <- pipeline
   pipeline
 }
 

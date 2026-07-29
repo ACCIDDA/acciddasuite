@@ -11,7 +11,7 @@
 #' Weekly data only; other cadences are rejected (the rest of the pipeline is
 #' cadence-agnostic).
 #'
-#' @param x An \code{accidda_data} (\code{\link{get_data}} /
+#' @param x An \code{incast_data} (\code{\link{get_data}} /
 #'   \code{\link{check_data}}) with revision history; use
 #'   \code{get_data(revisions = TRUE)}.
 #' @param max_delay Integer. Number of recent weeks treated as
@@ -22,7 +22,7 @@
 #' @param scale_factor Numeric. Multiplier on \code{max_delay} for the
 #'   estimation window. Default 3.
 #'
-#' @return An \code{accidda_ncast} object with the shared backbone
+#' @return An \code{incast_ncast} object with the shared backbone
 #'   (\code{key}, \code{target}, \code{window}, \code{interval},
 #'   \code{history}) plus:
 #'   \describe{
@@ -52,7 +52,7 @@ get_ncast <- function(
   prop_delay = 0.5,
   scale_factor = 3
 ) {
-  # Accept accidda_data; coerce plain data frames via check_data()
+  # Accept incast_data; coerce plain data frames via check_data()
   x <- check_data(x)
 
   if (!x$history) {
@@ -127,7 +127,7 @@ get_ncast <- function(
     dplyr::select(-reference_date, -ncast_median, -corrected) |>
     dplyr::arrange(dplyr::across(dplyr::all_of(c(x$key, "target_end_date"))))
 
-  new_accidda_ncast(
+  new_incast_ncast(
     data = data,
     key = x$key,
     target = x$target,

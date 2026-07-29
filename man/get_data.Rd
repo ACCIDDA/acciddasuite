@@ -16,7 +16,7 @@ get_data(pathogen, geo_value, revisions = FALSE)
 needed by \code{\link{get_ncast}}. Default \code{FALSE} (latest only).}
 }
 \value{
-An \code{accidda_data} object (see \code{\link{check_data}}).
+An \code{incast_data} object (see \code{\link{check_data}}).
 }
 \description{
 Fetch confirmed US hospital admissions (COVID-19, influenza or RSV) from

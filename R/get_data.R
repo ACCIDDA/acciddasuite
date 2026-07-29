@@ -9,7 +9,7 @@
 #' @param revisions Logical. If \code{TRUE}, fetch the full revision history
 #'   needed by \code{\link{get_ncast}}. Default \code{FALSE} (latest only).
 #'
-#' @return An \code{accidda_data} object (see \code{\link{check_data}}).
+#' @return An \code{incast_data} object (see \code{\link{check_data}}).
 #'
 #' @export
 #' @importFrom epidatr pub_covidcast

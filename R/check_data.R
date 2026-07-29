@@ -1,7 +1,7 @@
 #' Validate surveillance data
 #'
 #' Validate and standardise surveillance data for use throughout the package.
-#' The returned \code{accidda_data} object can be passed directly to forecasting
+#' The returned \code{incast_data} object can be passed directly to forecasting
 #' and nowcasting functions.
 #'
 #' Data must contain one row per time series and reporting date (and
@@ -13,14 +13,14 @@
 #' \code{observation} (numeric), \code{target} (character), and one or more
 #' key columns. An optional \code{as_of} (\code{Date}) column enables
 #' nowcasting with \code{\link{get_ncast}}. If \code{data} is already an
-#' \code{accidda_data} object, it is returned unchanged.
+#' \code{incast_data} object, it is returned unchanged.
 #'
 #' @param key Character vector giving the column name(s) that uniquely identify
 #' each time series, equivalent to the key of a
 #' \code{\link[tsibble]{tsibble}}. Each unique combination of key values is
 #' treated as a separate series. Defaults to \code{"location"}.
 #'
-#' @return An \code{accidda_data} object containing:
+#' @return An \code{incast_data} object containing:
 #' \describe{
 #' \item{data}{Validated data with standardised column types.}
 #' \item{key}{Names of the key columns.}
@@ -44,7 +44,7 @@ check_data <- function(data, key = "location") {
   }
 
   # Already validated: return as-is
-  if (inherits(data, "accidda_data")) {
+  if (inherits(data, "incast_data")) {
     if (!missing(key) && !identical(key, data$key)) {
       stop(
         "`data` is already validated with key: ",
@@ -171,7 +171,7 @@ check_data <- function(data, key = "location") {
     to = max(data$target_end_date)
   )
 
-  new_accidda_data(
+  new_incast_data(
     data = data,
     key = key,
     target = target,

@@ -9,7 +9,7 @@ vignette: >
 
 ## Bringing your own data
 
-You can use any surveillance dataset with `acciddasuite` — just pass it through `check_data()` to validate and enter the pipeline.
+You can use any surveillance dataset with `incast` — just pass it through `check_data()` to validate and enter the pipeline.
 
 ## Required columns
 
@@ -42,7 +42,7 @@ df <- data.frame(
 ```
 
 ```{r}
-library(acciddasuite)
+library(incast)
 head(df)
 
 checked <- check_data(df)

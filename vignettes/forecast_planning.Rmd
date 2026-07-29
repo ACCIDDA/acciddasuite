@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-Disease forecasting is an invaluable tool for the field public health, however, clearly defining the parameters of the problems you want to solve is often more difficult than the forecasting itself. The `acciddasuite` pakcage provides a comprehensive toolkit for generating forecasts with the expectation that users already have a concrete idea of what they would like to forecast. In this vignette, we provide a series of questions to aid forecasters in the discovery of the "why", "what", "where" and "how" for their question. This package and its documentation is still actively under development, and we welcome [contributions and feedback](https://github.com/ACCIDDA/acciddasuite/issues/new) from the community.
+Disease forecasting is an invaluable tool for the field public health, however, clearly defining the parameters of the problems you want to solve is often more difficult than the forecasting itself. The `incast` pakcage provides a comprehensive toolkit for generating forecasts with the expectation that users already have a concrete idea of what they would like to forecast. In this vignette, we provide a series of questions to aid forecasters in the discovery of the "why", "what", "where" and "how" for their question. This package and its documentation is still actively under development, and we welcome [contributions and feedback](https://github.com/ACCIDDA/incast/issues/new) from the community.
 
 
 ## Step 1: Why are we interested in forecasting?
@@ -79,7 +79,7 @@ Next, define what **pathogen**, **target** (data stream), and **spatial unit** a
 
 2. What data stream are you interested in forecasting (also known as your **target**)? 
 
-    - Examples of common forecasting targets are "incidence of hospitalization" (of patients with a certain hospitalization), "percent of emergency department visits" (attributable to a certain pathogen), "deaths" (due to a certain pathogen), "hospital bed occupancy" (by patients with a certain pathogen). All of these targets are measures of disease burden that give public health professionals an idea of how much disease a population bears at a given time. The most common forecasting target for respiratory illnesses is "incidence of hospitalization", which makes it the easiest to find data on. Presently, `acciddasuite` only forecasts targets "incidence of hospitalization" and "death". 
+    - Examples of common forecasting targets are "incidence of hospitalization" (of patients with a certain hospitalization), "percent of emergency department visits" (attributable to a certain pathogen), "deaths" (due to a certain pathogen), "hospital bed occupancy" (by patients with a certain pathogen). All of these targets are measures of disease burden that give public health professionals an idea of how much disease a population bears at a given time. The most common forecasting target for respiratory illnesses is "incidence of hospitalization", which makes it the easiest to find data on. Presently, `incast` only forecasts targets "incidence of hospitalization" and "death". 
   
 3. What **spatial unit** will provide the best insight? Is there data available at that scale? 
 
@@ -215,7 +215,7 @@ graph TB
 
 After you decide to create your own forecasts and find a suitable ground truth data, you must confirm that your ground truth data stream is stable enough to support a repeatable workflow.
 
-If you are pulling ground truth data from a hubverse hub, this data is likely released on a weekly cadence and is mostly complete. You can find this data in the `target-data/` directory of the hub's GitHub repository. Alternatively, `acciddasuite` has a built-in function (**`get_data()`**) that will handle the collection + formatting of state level respiratory data. If you want to use another ground truth data source, you will first have to validate it with **`check_data()`**. Please see the [external data](external_data.html) article for information on external data source formatting. 
+If you are pulling ground truth data from a hubverse hub, this data is likely released on a weekly cadence and is mostly complete. You can find this data in the `target-data/` directory of the hub's GitHub repository. Alternatively, `incast` has a built-in function (**`get_data()`**) that will handle the collection + formatting of state level respiratory data. If you want to use another ground truth data source, you will first have to validate it with **`check_data()`**. Please see the [external data](external_data.html) article for information on external data source formatting. 
 
 If there are reporting delays in your data stream, or inconsistencies that are often fixed later but you cannot wait on, use the **`get_ncast()`** function to correct recent weeks for reporting delays. 
 
@@ -242,7 +242,7 @@ graph TB
 
     PIPE --> DELAY{Are there reporting delays<br/>or completeness issues?}
     DELAY -->|Yes| NOWCAST[Plan for nowcasting]
-    DELAY -->|No| READY[Proceed to using the<br/>acciddasuite for forecasting]
+    DELAY -->|No| READY[Proceed to using<br/>incast for forecasting]
     NOWCAST --> READY
 
     classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;
@@ -258,4 +258,4 @@ graph TB
 
 ## Next steps:
 
-When you are ready to begin, visit the [**GET STARTED**](acciddasuite.html) page to use `acciddasuite` for your forecasting needs!
+When you are ready to begin, visit the [**GET STARTED**](incast.html) page to use `incast` for your forecasting needs!

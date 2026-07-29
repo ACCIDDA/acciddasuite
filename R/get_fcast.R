@@ -3,29 +3,29 @@
 #' Fit forecasting models to the full time series and generate forecasts for the
 #' next \code{h} reporting intervals.
 #'
-#' When provided with an \code{accidda_cv} object, the function uses the
+#' When provided with an \code{incast_cv} object, the function uses the
 #' cross-validation results to select the best-performing models for each series
-#' and combines them into an equal-weight ensemble. For \code{accidda_data} or
-#' \code{accidda_ncast} objects, all models in \code{models} are fitted and
+#' and combines them into an equal-weight ensemble. For \code{incast_data} or
+#' \code{incast_ncast} objects, all models in \code{models} are fitted and
 #' forecast.
 #'
 #' If the input contains nowcast uncertainty from \code{\link{get_ncast}},
 #' this uncertainty is incorporated into the forecast intervals.
 #'
-#' @param x An \code{accidda_*} object.
+#' @param x An \code{incast_*} object.
 #'
 #' @param models Named list of \code{fable} model specifications. Defaults to
-#'   \code{\link{default_models}}. When \code{x} is an \code{accidda_cv} object,
+#'   \code{\link{default_models}}. When \code{x} is an \code{incast_cv} object,
 #'   leave unset to use the top-ranked models from cross-validation, or provide
 #'   a custom set of models.
 #'
 #' @param h Integer giving the forecast horizon in reporting intervals. Defaults
-#'   to \code{4}. When \code{x} is an \code{accidda_cv} object, the default is
+#'   to \code{4}. When \code{x} is an \code{incast_cv} object, the default is
 #'   the cross-validation horizon.
 #'
 #' @param top_n Integer giving the number of top-ranked models to combine into
 #'   the ensemble for each series. Used only when \code{x} is an
-#'   \code{accidda_cv} object and \code{models} is not provided. Defaults to
+#'   \code{incast_cv} object and \code{models} is not provided. Defaults to
 #'   \code{3}.
 #'
 #' @param ensemble Method used to combine the models into the \code{ENSEMBLE}
@@ -36,7 +36,7 @@
 #'   the median of the models' quantiles using
 #'   \code{\link[hubEnsembles]{simple_ensemble}}
 #'
-#' @return An \code{accidda_fcast} object containing:
+#' @return An \code{incast_fcast} object containing:
 #' \describe{
 #'   \item{hub}{Hub-format forecasts containing \code{model_out_tbl} and
 #'   \code{oracle_output}.}
@@ -78,22 +78,22 @@ get_fcast <- function(
   ensemble <- match.arg(ensemble)
 
   # The CV supplies each series' top_n models unless the caller passes `models`.
-  use_cv_ranking <- inherits(x, "accidda_cv") && missing(models)
+  use_cv_ranking <- inherits(x, "incast_cv") && missing(models)
 
-  if (inherits(x, "accidda_cv")) {
+  if (inherits(x, "incast_cv")) {
     if (missing(h)) {
       h <- x$meta$h
     }
     score <- x$score
     meta <- x$meta
     df <- x$data
-  } else if (inherits(x, c("accidda_data", "accidda_ncast"))) {
+  } else if (inherits(x, c("incast_data", "incast_ncast"))) {
     score <- NULL
-    meta <- accidda_meta(x)
+    meta <- incast_meta(x)
     df <- extract_series(x)
   } else {
     stop(
-      "`x` must be an accidda_cv, accidda_data or accidda_ncast object.\n",
+      "`x` must be an incast_cv, incast_data or incast_ncast object.\n",
       "Run check_data() on your data frame first."
     )
   }
@@ -180,7 +180,7 @@ get_fcast <- function(
       hub$model_out_tbl <- dplyr::bind_rows(hub$model_out_tbl, ens)
     }
 
-    new_accidda_fcast(
+    new_incast_fcast(
       hub = hub,
       score = score,
       meta = list(

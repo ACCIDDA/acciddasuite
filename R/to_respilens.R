@@ -14,7 +14,7 @@ metadata_key <- function(model_out_tbl) {
     abbreviation = loc,
     location_name = loc,
     population = 0,
-    dataset = "ACCIDDA Suite",
+    dataset = "incast",
     series_type = "projection",
     hubverse_keys = list(
       models = unique(df$model_id),
@@ -120,7 +120,7 @@ forecasts_key <- function(model_out_tbl) {
 
 #' Convert a forecast to RespiLens format
 #'
-#' @param x An \code{accidda_fcast} from \code{\link{get_fcast}}.
+#' @param x An \code{incast_fcast} from \code{\link{get_fcast}}.
 #' @param path Optional \code{.json} path to write to; if \code{NULL}, nothing
 #'   is written.
 #' @return A named list (\code{metadata}, \code{ground_truth},
@@ -128,9 +128,9 @@ forecasts_key <- function(model_out_tbl) {
 #' @export
 
 to_respilens <- function(x, path = NULL) {
-  # check it is of class `accidda_fcast`
-  if (!inherits(x, "accidda_fcast")) {
-    stop("Input must be an object of class 'accidda_fcast'.")
+  # check it is of class `incast_fcast`
+  if (!inherits(x, "incast_fcast")) {
+    stop("Input must be an object of class 'incast_fcast'.")
   }
 
   model_out_tbl <- x$hub$model_out_tbl

@@ -14,25 +14,25 @@ knitr::opts_chunk$set(
 )
 ```
 
-# acciddasuite <a href="https://accidda.github.io/acciddasuite/"><img src="man/figures/logo.png" align="right" height="139" alt="acciddasuite website" /></a>
+# incast <a href="https://accidda.github.io/incast/"><img src="man/figures/logo.png" align="right" height="139" alt="incast website" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-`acciddasuite` provides a complete pipeline for infectious diseases forecasts. It fetches (`get_data()`) and validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), evaluates models by cross-validation (`get_cv()`), and generates forecasts (`get_fcast()`).
+`incast` provides a complete pipeline for infectious diseases forecasts. It fetches (`get_data()`) and validates input data (`check_data()`), optionally applies nowcasting to adjust for reporting delays (`get_ncast()`), evaluates models by cross-validation (`get_cv()`), and generates forecasts (`get_fcast()`).
 
 ## Installation
 
-You can install the development version of acciddasuite from [GitHub](https://github.com/) with:
+You can install the development version of incast from [GitHub](https://github.com/) with:
 
 ```{r}
 # install.packages("pak")
-# pak::pak("ACCIDDA/acciddasuite")
+# pak::pak("ACCIDDA/incast")
 ```
 
 ## Example
 ```{r, eval = TRUE, message = FALSE}
-library(acciddasuite)
+library(incast)
 tail(example_data)
 ```
 

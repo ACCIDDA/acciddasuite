@@ -1,13 +1,13 @@
 #' Constructors for the pipeline's typed S3 objects
 #'
 #' Low-level constructors that assemble and type-check the four pipeline
-#' objects. \code{accidda_data} / \code{accidda_ncast} carry the full metadata
+#' objects. \code{incast_data} / \code{incast_ncast} carry the full metadata
 #' backbone (\code{key}, \code{target}, \code{window}, \code{interval},
-#' \code{history}); \code{accidda_cv} / \code{accidda_fcast} keep only
+#' \code{history}); \code{incast_cv} / \code{incast_fcast} keep only
 #' \code{key}, \code{target} and \code{interval}. User-facing validation lives
 #' in \code{\link{check_data}}.
 #'
-#' @name accidda-class
+#' @name incast-class
 #' @keywords internal
 #' @noRd
 NULL
@@ -15,7 +15,7 @@ NULL
 
 #' @keywords internal
 #' @noRd
-new_accidda_data <- function(data, key, target, window, interval, history) {
+new_incast_data <- function(data, key, target, window, interval, history) {
   stopifnot(
     is.data.frame(data),
     is.character(key), length(key) > 0L, all(key %in% names(data)),
@@ -33,14 +33,14 @@ new_accidda_data <- function(data, key, target, window, interval, history) {
       interval = as.integer(interval),
       history = history
     ),
-    class = "accidda_data"
+    class = "incast_data"
   )
 }
 
 
 #' @keywords internal
 #' @noRd
-new_accidda_ncast <- function(
+new_incast_ncast <- function(
   data,
   key,
   target,
@@ -50,17 +50,17 @@ new_accidda_ncast <- function(
   meta
 ) {
   stopifnot(is.list(meta))
-  # Same backbone as accidda_data, validated in one place, plus `meta`.
-  out <- new_accidda_data(data, key, target, window, interval, history)
+  # Same backbone as incast_data, validated in one place, plus `meta`.
+  out <- new_incast_data(data, key, target, window, interval, history)
   out$meta <- meta
-  class(out) <- "accidda_ncast"
+  class(out) <- "incast_ncast"
   out
 }
 
 
 #' @keywords internal
 #' @noRd
-new_accidda_cv <- function(forecasts, oracle, score, models, meta, data) {
+new_incast_cv <- function(forecasts, oracle, score, models, meta, data) {
   stopifnot(is.list(models), is.list(meta), is.data.frame(data))
   structure(
     list(
@@ -71,18 +71,18 @@ new_accidda_cv <- function(forecasts, oracle, score, models, meta, data) {
       meta = meta,
       data = data
     ),
-    class = "accidda_cv"
+    class = "incast_cv"
   )
 }
 
 
 #' @keywords internal
 #' @noRd
-new_accidda_fcast <- function(hub, score, meta) {
+new_incast_fcast <- function(hub, score, meta) {
   stopifnot(is.list(hub), is.list(meta))
   structure(
     list(hub = hub, score = score, meta = meta),
-    class = "accidda_fcast"
+    class = "incast_fcast"
   )
 }
 
@@ -91,21 +91,21 @@ new_accidda_fcast <- function(hub, score, meta) {
 #'
 #' Returns the fields shared by every stage (\code{key}, \code{target},
 #' \code{interval}), plus \code{window} and \code{history} for
-#' \code{accidda_data} / \code{accidda_ncast}.
-#' @param x An \code{accidda_data}, \code{accidda_ncast}, \code{accidda_cv} or
-#'   \code{accidda_fcast}.
+#' \code{incast_data} / \code{incast_ncast}.
+#' @param x An \code{incast_data}, \code{incast_ncast}, \code{incast_cv} or
+#'   \code{incast_fcast}.
 #' @return A named list.
 #' @keywords internal
 #' @noRd
-accidda_meta <- function(x) {
-  if (inherits(x, c("accidda_data", "accidda_ncast"))) {
+incast_meta <- function(x) {
+  if (inherits(x, c("incast_data", "incast_ncast"))) {
     x[c("key", "target", "window", "interval", "history")]
-  } else if (inherits(x, c("accidda_cv", "accidda_fcast"))) {
+  } else if (inherits(x, c("incast_cv", "incast_fcast"))) {
     x$meta[c("key", "target", "interval")]
   } else {
     stop(
-      "`x` must be an accidda_data, accidda_ncast, accidda_cv or ",
-      "accidda_fcast object.\n",
+      "`x` must be an incast_data, incast_ncast, incast_cv or ",
+      "incast_fcast object.\n",
       "Run check_data() on your data frame first."
     )
   }

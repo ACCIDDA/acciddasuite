@@ -13,20 +13,20 @@ get_fcast(
 )
 }
 \arguments{
-\item{x}{An \code{accidda_*} object.}
+\item{x}{An \code{incast_*} object.}
 
 \item{models}{Named list of \code{fable} model specifications. Defaults to
-\code{\link{default_models}}. When \code{x} is an \code{accidda_cv} object,
+\code{\link{default_models}}. When \code{x} is an \code{incast_cv} object,
 leave unset to use the top-ranked models from cross-validation, or provide
 a custom set of models.}
 
 \item{h}{Integer giving the forecast horizon in reporting intervals. Defaults
-to \code{4}. When \code{x} is an \code{accidda_cv} object, the default is
+to \code{4}. When \code{x} is an \code{incast_cv} object, the default is
 the cross-validation horizon.}
 
 \item{top_n}{Integer giving the number of top-ranked models to combine into
 the ensemble for each series. Used only when \code{x} is an
-\code{accidda_cv} object and \code{models} is not provided. Defaults to
+\code{incast_cv} object and \code{models} is not provided. Defaults to
 \code{3}.}
 
 \item{ensemble}{Method used to combine the models into the \code{ENSEMBLE}
@@ -38,7 +38,7 @@ the median of the models' quantiles using
 \code{\link[hubEnsembles]{simple_ensemble}}}
 }
 \value{
-An \code{accidda_fcast} object containing:
+An \code{incast_fcast} object containing:
 \describe{
 \item{hub}{Hub-format forecasts containing \code{model_out_tbl} and
 \code{oracle_output}.}
@@ -55,10 +55,10 @@ Fit forecasting models to the full time series and generate forecasts for the
 next \code{h} reporting intervals.
 }
 \details{
-When provided with an \code{accidda_cv} object, the function uses the
+When provided with an \code{incast_cv} object, the function uses the
 cross-validation results to select the best-performing models for each series
-and combines them into an equal-weight ensemble. For \code{accidda_data} or
-\code{accidda_ncast} objects, all models in \code{models} are fitted and
+and combines them into an equal-weight ensemble. For \code{incast_data} or
+\code{incast_ncast} objects, all models in \code{models} are fitted and
 forecast.
 
 If the input contains nowcast uncertainty from \code{\link{get_ncast}},
