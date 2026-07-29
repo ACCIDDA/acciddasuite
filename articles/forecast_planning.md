@@ -4,15 +4,14 @@
 
 Disease forecasting is an invaluable tool for the field public health,
 however, clearly defining the parameters of the problems you want to
-solve is often more difficult than the forecasting itself. The
-`acciddasuite` pakcage provides a comprehensive toolkit for generating
-forecasts with the expectation that users already have a concrete idea
-of what they would like to forecast. In this vignette, we provide a
-series of questions to aid forecasters in the discovery of the “why”,
-“what”, “where” and “how” for their question. This package and its
-documentation is still actively under development, and we welcome
-[contributions and
-feedback](https://github.com/ACCIDDA/acciddasuite/issues/new) from the
+solve is often more difficult than the forecasting itself. The `incast`
+pakcage provides a comprehensive toolkit for generating forecasts with
+the expectation that users already have a concrete idea of what they
+would like to forecast. In this vignette, we provide a series of
+questions to aid forecasters in the discovery of the “why”, “what”,
+“where” and “how” for their question. This package and its documentation
+is still actively under development, and we welcome [contributions and
+feedback](https://github.com/ACCIDDA/incast/issues/new) from the
 community.
 
 ## Step 1: Why are we interested in forecasting?
@@ -101,7 +100,7 @@ unit** are involved in forecasting project.
       professionals an idea of how much disease a population bears at a
       given time. The most common forecasting target for respiratory
       illnesses is “incidence of hospitalization”, which makes it the
-      easiest to find data on. Presently, `acciddasuite` only forecasts
+      easiest to find data on. Presently, `incast` only forecasts
       targets “incidence of hospitalization” and “death”.
 
 3.  What **spatial unit** will provide the best insight? Is there data
@@ -175,19 +174,19 @@ stable enough to support a repeatable workflow.
 If you are pulling ground truth data from a hubverse hub, this data is
 likely released on a weekly cadence and is mostly complete. You can find
 this data in the `target-data/` directory of the hub’s GitHub
-repository. Alternatively, `acciddasuite` has a built-in function
-(**[`get_data()`](https://accidda.github.io/acciddasuite/reference/get_data.md)**)
+repository. Alternatively, `incast` has a built-in function
+(**[`get_data()`](https://accidda.github.io/incast/reference/get_data.md)**)
 that will handle the collection + formatting of state level respiratory
 data. If you want to use another ground truth data source, you will
 first have to validate it with
-**[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)**.
+**[`check_data()`](https://accidda.github.io/incast/reference/check_data.md)**.
 Please see the [external
-data](https://accidda.github.io/acciddasuite/articles/external_data.md)
+data](https://accidda.github.io/incast/articles/external_data.md)
 article for information on external data source formatting.
 
 If there are reporting delays in your data stream, or inconsistencies
 that are often fixed later but you cannot wait on, use the
-**[`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)**
+**[`get_ncast()`](https://accidda.github.io/incast/reference/get_ncast.md)**
 function to correct recent weeks for reporting delays.
 
 ### Confirming your data
@@ -195,5 +194,5 @@ function to correct recent weeks for reporting delays.
 ## Next steps:
 
 When you are ready to begin, visit the [**GET
-STARTED**](https://accidda.github.io/acciddasuite/articles/acciddasuite.md)
-page to use `acciddasuite` for your forecasting needs!
+STARTED**](https://accidda.github.io/incast/articles/incast.md) page to
+use `incast` for your forecasting needs!

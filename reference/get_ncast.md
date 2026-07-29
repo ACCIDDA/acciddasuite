@@ -18,10 +18,10 @@ get_ncast(x, max_delay = 2, draws = 1000, prop_delay = 0.5, scale_factor = 3)
 
 - x:
 
-  An `accidda_data`
-  ([`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md)
+  An `incast_data`
+  ([`get_data`](https://accidda.github.io/incast/reference/get_data.md)
   /
-  [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md))
+  [`check_data`](https://accidda.github.io/incast/reference/check_data.md))
   with revision history; use `get_data(revisions = TRUE)`.
 
 - max_delay:
@@ -44,7 +44,7 @@ get_ncast(x, max_delay = 2, draws = 1000, prop_delay = 0.5, scale_factor = 3)
 
 ## Value
 
-An `accidda_ncast` object with the shared backbone (`key`, `target`,
+An `incast_ncast` object with the shared backbone (`key`, `target`,
 `window`, `interval`, `history`) plus:
 
 - data:

@@ -2,9 +2,9 @@
 
 Weekly confirmed influenza hospital admissions for New York and
 California (CDC NHSN), with revision history, fetched via
-[`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md);
+[`get_data`](https://accidda.github.io/incast/reference/get_data.md);
 pass through
-[`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+[`check_data`](https://accidda.github.io/incast/reference/check_data.md)
 to use it.
 
 ## Usage
@@ -46,7 +46,7 @@ CDC NHSN via
 
 The archive is pinned to the 14 December 2025 history, so the most
 recent weeks are still right-truncated and
-[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+[`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md)
 has reporting delay to model. To regenerate with
 `data-raw/example_data.R`.
 

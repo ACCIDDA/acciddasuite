@@ -1,9 +1,8 @@
 # Default forecasting models
 
 Return the default set of forecasting models used by
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
-and
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+[`get_cv`](https://accidda.github.io/incast/reference/get_cv.md) and
+[`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 ## Usage
 

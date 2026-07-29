@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Disease Forecast Planning for Public Health • acciddasuite</title>
+<title>Disease Forecast Planning for Public Health • incast</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -24,7 +24,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="../index.html">acciddasuite</a>
+    <a class="navbar-brand me-2" href="../index.html">incast</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
@@ -35,7 +35,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/acciddasuite.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/incast.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
@@ -50,7 +50,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ACCIDDA/acciddasuite" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ACCIDDA/incast" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -68,7 +68,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Disease Forecast Planning for Public Health</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ACCIDDA/acciddasuite/blob/main/vignettes/forecast_planning.Rmd" class="external-link"><code>vignettes/forecast_planning.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ACCIDDA/incast/blob/main/vignettes/forecast_planning.Rmd" class="external-link"><code>vignettes/forecast_planning.Rmd</code></a></small>
       <div class="d-none name"><code>forecast_planning.Rmd</code></div>
     </div>
 
@@ -80,13 +80,13 @@
 <p>Disease forecasting is an invaluable tool for the field public
 health, however, clearly defining the parameters of the problems you
 want to solve is often more difficult than the forecasting itself. The
-<code>acciddasuite</code> pakcage provides a comprehensive toolkit for
+<code>incast</code> pakcage provides a comprehensive toolkit for
 generating forecasts with the expectation that users already have a
 concrete idea of what they would like to forecast. In this vignette, we
 provide a series of questions to aid forecasters in the discovery of the
 “why”, “what”, “where” and “how” for their question. This package and
-its documentation is still actively under development, and we welcome <a href="https://github.com/ACCIDDA/acciddasuite/issues/new" class="external-link">contributions
-and feedback</a> from the community.</p>
+its documentation is still actively under development, and we welcome <a href="https://github.com/ACCIDDA/incast/issues/new" class="external-link">contributions and
+feedback</a> from the community.</p>
 </div>
 <div class="section level2">
 <h2 id="step-1-why-are-we-interested-in-forecasting">Step 1: Why are we interested in forecasting?<a class="anchor" aria-label="anchor" href="#step-1-why-are-we-interested-in-forecasting"></a>
@@ -204,7 +204,7 @@ disease burden that give public health professionals an idea of how much
 disease a population bears at a given time. The most common forecasting
 target for respiratory illnesses is “incidence of hospitalization”,
 which makes it the easiest to find data on. Presently,
-<code>acciddasuite</code> only forecasts targets “incidence of
+<code>incast</code> only forecasts targets “incidence of
 hospitalization” and “death”.</li>
 </ul>
 </li>
@@ -348,13 +348,12 @@ is stable enough to support a repeatable workflow.</p>
 <p>If you are pulling ground truth data from a hubverse hub, this data
 is likely released on a weekly cadence and is mostly complete. You can
 find this data in the <code>target-data/</code> directory of the hub’s
-GitHub repository. Alternatively, <code>acciddasuite</code> has a
-built-in function (<strong><code><a href="../reference/get_data.html">get_data()</a></code></strong>) that will
-handle the collection + formatting of state level respiratory data. If
-you want to use another ground truth data source, you will first have to
-validate it with <strong><code><a href="../reference/check_data.html">check_data()</a></code></strong>. Please see
-the <a href="external_data.html">external data</a> article for
-information on external data source formatting.</p>
+GitHub repository. Alternatively, <code>incast</code> has a built-in
+function (<strong><code><a href="../reference/get_data.html">get_data()</a></code></strong>) that will handle the
+collection + formatting of state level respiratory data. If you want to
+use another ground truth data source, you will first have to validate it
+with <strong><code><a href="../reference/check_data.html">check_data()</a></code></strong>. Please see the <a href="external_data.html">external data</a> article for information on
+external data source formatting.</p>
 <p>If there are reporting delays in your data stream, or inconsistencies
 that are often fixed later but you cannot wait on, use the
 <strong><code><a href="../reference/get_ncast.html">get_ncast()</a></code></strong> function to correct recent
@@ -365,15 +364,15 @@ weeks for reporting delays.</p>
 </h3>
 <div class="planning-flowchart">
 <div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:768px;"></div>
-<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"diagram":"\ngraph TB\n\n    START[You are here!] --> CONSIST{Is the data reported<br/>consistently?<br/>For example, on a regular<br/>reporting cadence?}\n\n    CONSIST -->|No| FIX[Identify inconsistencies in<br/>reporting patterns]\n    FIX --> CONSIST\n\n    CONSIST -->|Yes| TIMELINE[Define a reporting timeline<br/>that best matches the<br/>data frequency]\n    TIMELINE --> PIPE[Download the full dataset<br/>regularly, not only for<br/>the current period]\n\n    PIPE --> DELAY{Are there reporting delays<br/>or completeness issues?}\n    DELAY -->|Yes| NOWCAST[Plan for nowcasting]\n    DELAY -->|No| READY[Proceed to using the<br/>acciddasuite for forecasting]\n    NOWCAST --> READY\n\n    classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;\n    classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;\n    classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;\n    class START,CONSIST,DELAY question;\n    class STEP1,FIX,TIMELINE,PIPE,NOWCAST action;\n    class READY outcome;\n"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"diagram":"\ngraph TB\n\n    START[You are here!] --> CONSIST{Is the data reported<br/>consistently?<br/>For example, on a regular<br/>reporting cadence?}\n\n    CONSIST -->|No| FIX[Identify inconsistencies in<br/>reporting patterns]\n    FIX --> CONSIST\n\n    CONSIST -->|Yes| TIMELINE[Define a reporting timeline<br/>that best matches the<br/>data frequency]\n    TIMELINE --> PIPE[Download the full dataset<br/>regularly, not only for<br/>the current period]\n\n    PIPE --> DELAY{Are there reporting delays<br/>or completeness issues?}\n    DELAY -->|Yes| NOWCAST[Plan for nowcasting]\n    DELAY -->|No| READY[Proceed to using<br/>incast for forecasting]\n    NOWCAST --> READY\n\n    classDef question fill:#fff7db,stroke:#c99600,color:#533f03,stroke-width:2px;\n    classDef action fill:#eef6ff,stroke:#6ea8fe,color:#17324d,stroke-width:2px;\n    classDef outcome fill:#edf8ee,stroke:#3e8f55,color:#1e4d2b,stroke-width:2px;\n    class START,CONSIST,DELAY question;\n    class STEP1,FIX,TIMELINE,PIPE,NOWCAST action;\n    class READY outcome;\n"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps:<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
-<p>When you are ready to begin, visit the <a href="acciddasuite.html"><strong>GET STARTED</strong></a> page to use
-<code>acciddasuite</code> for your forecasting needs!</p>
+<p>When you are ready to begin, visit the <a href="incast.html"><strong>GET STARTED</strong></a> page to use
+<code>incast</code> for your forecasting needs!</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

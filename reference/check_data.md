@@ -1,7 +1,7 @@
 # Validate surveillance data
 
 Validate and standardise surveillance data for use throughout the
-package. The returned `accidda_data` object can be passed directly to
+package. The returned `incast_data` object can be passed directly to
 forecasting and nowcasting functions.
 
 ## Usage
@@ -17,8 +17,8 @@ check_data(data, key = "location")
   A data frame containing `target_end_date` (`Date`), `observation`
   (numeric), `target` (character), and one or more key columns. An
   optional `as_of` (`Date`) column enables nowcasting with
-  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
-  If `data` is already an `accidda_data` object, it is returned
+  [`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md).
+  If `data` is already an `incast_data` object, it is returned
   unchanged.
 
 - key:
@@ -31,7 +31,7 @@ check_data(data, key = "location")
 
 ## Value
 
-An `accidda_data` object containing:
+An `incast_data` object containing:
 
 - data:
 

@@ -24,13 +24,13 @@ get_data(pathogen, geo_value, revisions = FALSE)
 - revisions:
 
   Logical. If `TRUE`, fetch the full revision history needed by
-  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md).
+  [`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md).
   Default `FALSE` (latest only).
 
 ## Value
 
-An `accidda_data` object (see
-[`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)).
+An `incast_data` object (see
+[`check_data`](https://accidda.github.io/incast/reference/check_data.md)).
 
 ## Examples
 
@@ -40,14 +40,14 @@ get_data(pathogen = "covid", geo_value = "ny")
 #> limits if you proceed.
 #> ℹ See `?save_api_key()` for details on obtaining and setting API keys.
 #> This warning is displayed once every 8 hours.
-#> <accidda_data>
+#> <incast_data>
 #> Target:   wk inc covid hosp
 #> Series:   1 (location)
 #> Window:   2020-08-08 to 2026-07-18 (7-day interval)
 
 # Revision history for nowcasting
 get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
-#> <accidda_data>
+#> <incast_data>
 #> Target:   wk inc covid hosp
 #> Series:   1 (location)
 #> Window:   2020-08-08 to 2026-07-18 (7-day interval)

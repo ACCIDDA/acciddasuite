@@ -6,9 +6,9 @@ In May 2026, the Democratic Republic of the Congo (DRC) reported an
 Ebola outbreak, caused by the Bundibugyo strain, just five months after
 the previous epidemic. By July 2026, 2,423 cases and 967 deaths had been
 reported. Rapid forecasting is essential to guide public health response
-and resource allocation. This vignette demonstrates how to use
-`acciddasuite` to forecast Ebola incidence using surveillance data from
-the [Institut National de Recherche Biomédicale
+and resource allocation. This vignette demonstrates how to use `incast`
+to forecast Ebola incidence using surveillance data from the [Institut
+National de Recherche Biomédicale
 (INRB)](https://github.com/INRB-UMIE/BDBV2026-Data).
 
 The vignette is not executed as the models are computationally
@@ -62,18 +62,18 @@ ebola <- ebola |>
   mutate(target = "insp_sitrep__cumulative_confirmed_cases__daily")
 ```
 
-## `acciddasuite` Workflow
+## `incast` Workflow
 
 ### Data Validation
 
-[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
-validates the Ebola data and returns an `accidda_data` object. The
+[`check_data()`](https://accidda.github.io/incast/reference/check_data.md)
+validates the Ebola data and returns an `incast_data` object. The
 function checks for missing values, ensures that the data is in the
 correct format, and verifies that the necessary columns are present.
 
 ``` r
 
-library(acciddasuite)
+library(incast)
 data <- ebola |> check_data()
 data
 data |> autoplot()
@@ -81,19 +81,19 @@ data |> autoplot()
 
 Revised history of cumulative confirmed cases is not available for this
 outbreak, so we will skip
-[`get_ncast()`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
+[`get_ncast()`](https://accidda.github.io/incast/reference/get_ncast.md)
 and proceed directly to cross-validation and forecasting.
 
 ### Cross Validation
 
-[`get_cv()`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
+[`get_cv()`](https://accidda.github.io/incast/reference/get_cv.md)
 performs time series cross-validation on the data to evaluate the
 performance of different forecasting models. We will use the last 21
 days of data as the evaluation window.
 
 First we define a list of models to test. We will use the default models
-provided by `acciddasuite` from `fable` and add some custom models,
-including ARIMA, (a neural network), and several foundation models.
+provided by `incast` from `fable` and add some custom models, including
+ARIMA, (a neural network), and several foundation models.
 
 ``` r
 
@@ -174,9 +174,9 @@ cv$score |>
 ### Forecasting
 
 By default
-[`get_fcast()`](https://accidda.github.io/acciddasuite/reference/get_fcast.md)
+[`get_fcast()`](https://accidda.github.io/incast/reference/get_fcast.md)
 will use the best 3 model for each location based on the
-cross-validation results. The function returns a `accidda_fcast` object
+cross-validation results. The function returns a `incast_fcast` object
 containing the forecasts for each location.
 
 ``` r

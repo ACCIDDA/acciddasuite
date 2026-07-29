@@ -2,9 +2,9 @@
 
 ## Bringing your own data
 
-You can use any surveillance dataset with `acciddasuite` — just pass it
+You can use any surveillance dataset with `incast` — just pass it
 through
-[`check_data()`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+[`check_data()`](https://accidda.github.io/incast/reference/check_data.md)
 to validate and enter the pipeline.
 
 ## Required columns
@@ -33,7 +33,7 @@ once.
 
 ``` r
 
-library(acciddasuite)
+library(incast)
 head(df)
 ```
 
@@ -51,7 +51,7 @@ checked <- check_data(df)
 checked
 ```
 
-    ## <accidda_data>
+    ## <incast_data>
     ## Target:   inc hosp influenza
     ## Series:   1 (location)
     ## Window:   2024-01-01 to 2024-12-23 (7-day interval)

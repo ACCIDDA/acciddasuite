@@ -49,17 +49,15 @@ FOUNDATION(
 
 A `fable` model specification for use with
 [`model`](https://fabletools.tidyverts.org/reference/model.html),
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md),
-or
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+[`get_cv`](https://accidda.github.io/incast/reference/get_cv.md), or
+[`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 ## Details
 
 Forecasts are returned in the same format as other `fable` models,
 allowing them to be used with functions such as
-[`get_cv`](https://accidda.github.io/acciddasuite/reference/get_cv.md)
-and
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+[`get_cv`](https://accidda.github.io/incast/reference/get_cv.md) and
+[`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 The models run through Python using `reticulate`. On the first forecast
 in a session, required Python dependencies and model weights are
@@ -89,7 +87,7 @@ prediction intervals may be approximate.
 
 ## See also
 
-[`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md)
+[`default_models`](https://accidda.github.io/incast/reference/default_models.md)
 
 ## Examples
 

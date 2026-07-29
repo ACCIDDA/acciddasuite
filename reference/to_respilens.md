@@ -12,8 +12,8 @@ to_respilens(x, path = NULL)
 
 - x:
 
-  An `accidda_fcast` from
-  [`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+  An `incast_fcast` from
+  [`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 - path:
 

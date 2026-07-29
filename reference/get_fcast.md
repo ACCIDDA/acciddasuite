@@ -19,25 +19,25 @@ get_fcast(
 
 - x:
 
-  An `accidda_*` object.
+  An `incast_*` object.
 
 - models:
 
   Named list of `fable` model specifications. Defaults to
-  [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
-  When `x` is an `accidda_cv` object, leave unset to use the top-ranked
+  [`default_models`](https://accidda.github.io/incast/reference/default_models.md).
+  When `x` is an `incast_cv` object, leave unset to use the top-ranked
   models from cross-validation, or provide a custom set of models.
 
 - h:
 
   Integer giving the forecast horizon in reporting intervals. Defaults
-  to `4`. When `x` is an `accidda_cv` object, the default is the
+  to `4`. When `x` is an `incast_cv` object, the default is the
   cross-validation horizon.
 
 - top_n:
 
   Integer giving the number of top-ranked models to combine into the
-  ensemble for each series. Used only when `x` is an `accidda_cv` object
+  ensemble for each series. Used only when `x` is an `incast_cv` object
   and `models` is not provided. Defaults to `3`.
 
 - ensemble:
@@ -50,7 +50,7 @@ get_fcast(
 
 ## Value
 
-An `accidda_fcast` object containing:
+An `incast_fcast` object containing:
 
 - hub:
 
@@ -67,18 +67,18 @@ An `accidda_fcast` object containing:
   and evaluation date.
 
 Forecast outputs can be exported with
-[`to_respilens`](https://accidda.github.io/acciddasuite/reference/to_respilens.md).
+[`to_respilens`](https://accidda.github.io/incast/reference/to_respilens.md).
 
 ## Details
 
-When provided with an `accidda_cv` object, the function uses the
+When provided with an `incast_cv` object, the function uses the
 cross-validation results to select the best-performing models for each
 series and combines them into an equal-weight ensemble. For
-`accidda_data` or `accidda_ncast` objects, all models in `models` are
+`incast_data` or `incast_ncast` objects, all models in `models` are
 fitted and forecast.
 
 If the input contains nowcast uncertainty from
-[`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md),
+[`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md),
 this uncertainty is incorporated into the forecast intervals.
 
 ## Examples

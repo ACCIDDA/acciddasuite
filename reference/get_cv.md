@@ -14,12 +14,12 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 
 - x:
 
-  An `accidda_ncast` object from
-  [`get_ncast`](https://accidda.github.io/acciddasuite/reference/get_ncast.md)
-  or an `accidda_data` object from
-  [`check_data`](https://accidda.github.io/acciddasuite/reference/check_data.md)
+  An `incast_ncast` object from
+  [`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md)
+  or an `incast_data` object from
+  [`check_data`](https://accidda.github.io/incast/reference/check_data.md)
   or
-  [`get_data`](https://accidda.github.io/acciddasuite/reference/get_data.md).
+  [`get_data`](https://accidda.github.io/incast/reference/get_data.md).
 
 - eval_start_date:
 
@@ -35,7 +35,7 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 - models:
 
   Named list of `fable` model specifications. Defaults to
-  [`default_models`](https://accidda.github.io/acciddasuite/reference/default_models.md).
+  [`default_models`](https://accidda.github.io/incast/reference/default_models.md).
   Additional models can be added with `c(default_models(), list(...))`.
   Each model must use `observation` as the response variable.
 
@@ -47,7 +47,7 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 
 ## Value
 
-An `accidda_cv` object containing:
+An `incast_cv` object containing:
 
 - forecasts:
 
@@ -74,14 +74,14 @@ An `accidda_cv` object containing:
 - data:
 
   Input data with revisions collapsed, used by
-  [`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+  [`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 ## Details
 
 Forecast performance is measured using weighted interval score (WIS) and
 interval coverage. Models are ranked separately for each series, and the
 resulting rankings are used by
-[`get_fcast`](https://accidda.github.io/acciddasuite/reference/get_fcast.md).
+[`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
 ## Examples
 
