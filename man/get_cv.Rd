@@ -4,7 +4,14 @@
 \alias{get_cv}
 \title{Cross-validate forecasting models}
 \usage{
-get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
+get_cv(
+  x,
+  eval_start_date = NULL,
+  h = 4,
+  models = default_models(),
+  step = h,
+  n_origins = NULL
+)
 }
 \arguments{
 \item{x}{An \code{incast_ncast} object from \code{\link{get_ncast}} or an
@@ -13,7 +20,8 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 
 \item{eval_start_date}{Date (or character string coercible to a date) giving
 the first forecast origin to evaluate. Must fall within the data window.
-All earlier observations are used as the initial training period.}
+All earlier observations are used as the initial training period.
+This argument is exclusive with \code{n_origins}.}
 
 \item{h}{Integer giving the forecast horizon in reporting intervals (for
 example, weeks for weekly data). Defaults to \code{4}.}
@@ -26,6 +34,13 @@ example, weeks for weekly data). Defaults to \code{4}.}
 \item{step}{Integer giving the number of reporting intervals between
 successive cross-validation origins. Defaults to \code{h}, resulting in
 non-overlapping evaluation periods.}
+
+\item{n_origins}{Integer giving the number of forecast origins to evaluate,
+as an alternative to \code{eval_start_date}. Origins are placed so that
+the last forecast ends at the last observation:
+\code{eval_start_date = t - ((h - 1) + (n_origins - 1) * step) * interval},
+where \code{t} is the last observation date.
+This argument is exclusive with \code{eval_start_date}.}
 }
 \value{
 An \code{incast_cv} object containing:
@@ -53,6 +68,11 @@ resulting rankings are used by \code{\link{get_fcast}}.
 }
 \examples{
 \dontrun{
+cv <- get_data("covid", "ny", revisions = TRUE) |>
+  get_ncast() |>
+  get_cv(h = 4, n_origins = 16)
+
+# or give the first forecast origin directly:
 cv <- get_data("covid", "ny", revisions = TRUE) |>
   get_ncast() |>
   get_cv(eval_start_date = "2025-01-01", h = 4)

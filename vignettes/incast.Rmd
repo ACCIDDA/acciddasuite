@@ -89,15 +89,7 @@ Default models are:
 
 ### Cross Validation
 
-`get_cv()` performs rolling-origin time series cross-validation. The time series is split into two parts:
-
-- **Training data**: all observations before `eval_start_date`, used to fit the models.
-- **Evaluation period**: all observations from `eval_start_date` to the end of the series, used to score the forecasts.
-
-```text
-|<--------- training data --------->|<---- evaluation period ---->|
-start of series                 eval_start_date                   t
-```
+`get_cv()` performs rolling-origin [time series cross-validation](https://otexts.com/fpp3/tscv.html).
 
 Three arguments determine how cross-validation is performed.
 
@@ -107,46 +99,24 @@ Three arguments determine how cross-validation is performed.
   - `step = h` (default) produces non-overlapping forecasts and is the fastest option.
   - `step < h` produces overlapping forecasts, resulting in more evaluation points but requiring more model fits.
 
-- **`eval_start_date`**: the first forecast origin. You can specify it directly, or choose the number of forecast origins (`N`) and calculate it as:
+- **`n_origins`** or **`eval_start_date`**: where the evaluation period starts. Supply exactly one:
+  - `n_origins`: the number of forecast origins.
+  - `eval_start_date`: the date of the first forecast origin.
+
+A forecast origin at time `d` predicts intervals `d` to `d + h - 1`, so `n_origins` origins spaced `step` intervals apart cover the last `h + (n_origins - 1) * step` reporting intervals of the series. For example, with `h = 4`, `step = 4`, and `n_origins = 3`, the evaluation period covers the last 12 intervals:
 
 ```text
-eval_start_date = t - ((h - 1) + (N - 1) * step) * interval
+Forecast 1: [d,   d+1, d+2,  d+3]
+Forecast 2: [d+4, d+5, d+6,  d+7]
+Forecast 3: [d+8, d+9, d+10, d+11]
 ```
 
-where:
-
-- `t` is the last observation date.
-- `interval` is the reporting interval in days (for example, `1` for daily data or `7` for weekly data).
-
-A forecast origin at time `d` predicts intervals `d` to `d + h - 1`. Therefore, `N` forecast origins spaced `step` intervals apart span:
-
-```text
-h + (N - 1) * step
-```
-
-reporting intervals in total.
-
-For example, if `h = 4`, `step = 4`, and `N = 3`:
-
-```text
-Forecast N1: [d,   d+1, d+2, d+3]
-Forecast N2: [d+4, d+5, d+6, d+7]
-Forecast N3: [d+8, d+9, d+10, d+11]
-```
-
-The evaluation period therefore spans `d` to `d+11` (12 intervals in total).
-
-Increasing `N` provides a more reliable comparison of models, but leaves less historical data for training. Ensure that each time series contains enough observations before `eval_start_date` to fit the models reliably.
+Increasing `n_origins` provides a more reliable comparison of models, but leaves less historical data for training. Ensure that each time series contains enough observations before the first forecast origin to fit the models reliably.
 
 The function returns an `incast_cv` object containing the cross-validation results for each model and location.
 
 ```{r, cross-validation}
-h <- 4 # forecast horizon
-step <- h # non-overlapping forecasts
-N <- 16 # number of origins
-t <- max(df$data$target_end_date) # last observation date
-eval_start_date <- t - ((h - 1) + (N - 1) * step) * df$interval
-cv <- get_cv(ncast, as.Date(eval_start_date), h)
+cv <- get_cv(ncast, h = 4, n_origins = 16)
 cv
 ```
 
@@ -195,7 +165,7 @@ my_models <- c(
 
 cv <- get_cv(
   ncast,
-  eval_start_date = eval_start_date,
+  n_origins = 16,
   models = my_models
 )
 

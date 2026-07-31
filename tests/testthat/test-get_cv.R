@@ -22,6 +22,42 @@ test_that("get_cv validates its parameters", {
   expect_error(get_cv(x, eval_start_date = "2023-03-01", models = list()), "models")
 })
 
+test_that("get_cv requires exactly one of eval_start_date and n_origins", {
+  x <- check_data(make_weekly_df(n = 20))
+
+  expect_error(get_cv(x), "either")
+  expect_error(
+    get_cv(x, eval_start_date = "2023-03-01", n_origins = 4),
+    "either"
+  )
+})
+
+test_that("get_cv derives the first origin from n_origins", {
+  x <- check_data(make_weekly_df(n = 30))
+  models <- list(NAIVE = fable::NAIVE(observation))
+
+  cv <- get_cv(x, h = 2, n_origins = 3, models = models)
+  expect_equal(dplyr::n_distinct(cv$forecasts$reference_date), 3)
+  expect_equal(cv$meta$n_origins, 3)
+
+  # matches the equivalent explicit eval_start_date
+  t <- max(x$data$target_end_date)
+  start <- t - ((2 - 1) + (3 - 1) * 2) * x$interval
+  expect_equal(cv$meta$eval_start_date, start)
+  cv2 <- get_cv(x, eval_start_date = start, h = 2, models = models)
+  expect_equal(
+    unique(cv$forecasts$reference_date),
+    unique(cv2$forecasts$reference_date)
+  )
+})
+
+test_that("get_cv validates n_origins", {
+  x <- check_data(make_weekly_df(n = 20))
+
+  expect_error(get_cv(x, n_origins = 0), "`n_origins`")
+  expect_error(get_cv(x, n_origins = 50, h = 1), "Reduce `n_origins`")
+})
+
 test_that("get_cv works with a single model", {
   x <- check_data(make_weekly_df(n = 30))
 

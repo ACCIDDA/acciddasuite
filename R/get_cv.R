@@ -16,7 +16,8 @@
 #'
 #' @param eval_start_date Date (or character string coercible to a date) giving
 #'   the first forecast origin to evaluate. Must fall within the data window.
-#'   All earlier observations are used as the initial training period.
+#'   All earlier observations are used as the initial training period. 
+#'   This argument is exclusive with \code{n_origins}.
 #'
 #' @param h Integer giving the forecast horizon in reporting intervals (for
 #'   example, weeks for weekly data). Defaults to \code{4}.
@@ -29,6 +30,13 @@
 #' @param step Integer giving the number of reporting intervals between
 #'   successive cross-validation origins. Defaults to \code{h}, resulting in
 #'   non-overlapping evaluation periods.
+#'
+#' @param n_origins Integer giving the number of forecast origins to evaluate,
+#'   as an alternative to \code{eval_start_date}. Origins are placed so that
+#'   the last forecast ends at the last observation:
+#'   \code{eval_start_date = t - ((h - 1) + (n_origins - 1) * step) * interval},
+#'   where \code{t} is the last observation date. 
+#'   This argument is exclusive with \code{eval_start_date}.
 #'
 #' @return An \code{incast_cv} object containing:
 #' \describe{
@@ -47,6 +55,11 @@
 #' \dontrun{
 #' cv <- get_data("covid", "ny", revisions = TRUE) |>
 #'   get_ncast() |>
+#'   get_cv(h = 4, n_origins = 16)
+#'
+#' # or give the first forecast origin directly:
+#' cv <- get_data("covid", "ny", revisions = TRUE) |>
+#'   get_ncast() |>
 #'   get_cv(eval_start_date = "2025-01-01", h = 4)
 #'
 #' cv$score
@@ -63,25 +76,44 @@
 
 get_cv <- function(
   x,
-  eval_start_date,
+  eval_start_date = NULL,
   h = 4,
   models = default_models(),
-  step = h
+  step = h,
+  n_origins = NULL
 ) {
   df <- extract_series(x) # errors unless x is an incast_data / incast_ncast
   meta <- incast_meta(x)
 
-  eval_start_date <- as.Date(eval_start_date)
-  if (length(eval_start_date) != 1L || is.na(eval_start_date)) {
-    stop("`eval_start_date` must be a single date.")
+  if (is.null(eval_start_date) == is.null(n_origins)) {
+    stop("Supply either `eval_start_date` or `n_origins`.")
   }
   validate_positive_scalar(h, "h", "number of forecast steps")
   validate_positive_scalar(step, "step", "periods between CV origins")
   validate_models(models)
 
-  # eval_start_date must sit inside the observed window.
   from <- meta$window[["from"]]
   to <- meta$window[["to"]]
+
+  if (!is.null(n_origins)) {
+    validate_positive_scalar(n_origins, "n_origins", "number of forecast origins")
+    eval_start_date <- to - ((h - 1) + (n_origins - 1) * step) * meta$interval
+    if (eval_start_date <= from) {
+      stop(
+        "`n_origins` = ", n_origins, " (with h = ", h, ", step = ", step,
+        ") puts the first forecast origin at ", as.character(eval_start_date),
+        ", on or before the start of the series (", as.character(from),
+        "). Reduce `n_origins`."
+      )
+    }
+  } else {
+    eval_start_date <- as.Date(eval_start_date)
+    if (length(eval_start_date) != 1L || is.na(eval_start_date)) {
+      stop("`eval_start_date` must be a single date.")
+    }
+  }
+
+  # eval_start_date must sit inside the observed window.
   if (eval_start_date <= from || eval_start_date > to) {
     stop(
       "`eval_start_date` (",
@@ -134,6 +166,7 @@ get_cv <- function(
         eval_start_date = eval_start_date,
         h = h,
         step = step,
+        n_origins = n_origins,
         key = meta$key,
         target = meta$target,
         interval = meta$interval
