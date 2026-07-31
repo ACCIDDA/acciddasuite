@@ -9,6 +9,8 @@
 #' share the same reporting dates, and end on the same date. Series may begin
 #' at different times and may contain missing reporting periods.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param data A data frame containing \code{target_end_date} (\code{Date}),
 #' \code{observation} (numeric), \code{target} (character), and one or more
 #' key columns. An optional \code{as_of} (\code{Date}) column enables

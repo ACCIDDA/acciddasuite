@@ -36,6 +36,8 @@ specials_foundation <- fabletools::new_specials(
 #' Some models provide only a limited number of quantiles, so extreme prediction
 #' intervals may be approximate.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param formula The series to forecast, for example \code{observation}.
 #'   For count data, use \code{log(observation)} if variance stabilisation is
 #'   required. \code{fable} automatically back-transforms forecasts.

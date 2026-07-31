@@ -8,6 +8,8 @@
 #' interval coverage. Models are ranked separately for each series, and the
 #' resulting rankings are used by \code{\link{get_fcast}}.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param x An \code{incast_ncast} object from \code{\link{get_ncast}} or an
 #'   \code{incast_data} object from \code{\link{check_data}} or
 #'   \code{\link{get_data}}.

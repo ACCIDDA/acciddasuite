@@ -20,6 +20,8 @@ dplyr::as_tibble
 #'     prediction intervals. Observed counts for context are in
 #'     \code{x$hub$oracle_output}.}
 #' }
+#' 
+#' @author Cyril Geismar
 #'
 #' @param x An \code{incast_data}, \code{incast_ncast} or
 #'   \code{incast_fcast} object.

@@ -28,3 +28,6 @@ get_data(pathogen = "covid", geo_value = "ny")
 # Revision history for nowcasting
 get_data(pathogen = "covid", geo_value = "ca", revisions = TRUE)
 }
+\author{
+Cyril Geismar
+}

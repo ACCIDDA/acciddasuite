@@ -6,6 +6,8 @@
 #' Series identifiers are preserved from the original tsibble and added as
 #' task ID columns in the output tables alongside \code{target}.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param fcast A \code{fable} forecast object containing an \code{.id} origin
 #' column.
 #' @param ts The keyed \code{tsibble} containing observed values, used to

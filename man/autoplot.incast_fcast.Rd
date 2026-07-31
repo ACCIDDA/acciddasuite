@@ -25,3 +25,6 @@ By default, the ensemble forecast is displayed.
 \details{
 Each panel corresponds to a single time series.
 }
+\author{
+Cyril Geismar
+}

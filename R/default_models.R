@@ -11,6 +11,8 @@
 #' Additional models can be added by extending the returned list, for example:
 #' \code{c(default_models(), list(CUSTOM = fable::ARIMA(observation)))}.
 #'
+#' @author Cyril Geismar
+#' 
 #' @return A named list of \code{fable} model specifications.
 #'
 #' @examples

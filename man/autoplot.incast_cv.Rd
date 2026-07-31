@@ -24,3 +24,6 @@ values are displayed instead.
 \details{
 Each panel corresponds to a single time series.
 }
+\author{
+Cyril Geismar
+}

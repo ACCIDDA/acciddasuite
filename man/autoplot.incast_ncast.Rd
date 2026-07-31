@@ -22,3 +22,6 @@ the median, with 50\% and 95\% credible intervals.
 \details{
 Each panel corresponds to a single time series.
 }
+\author{
+Cyril Geismar
+}

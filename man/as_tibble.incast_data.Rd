@@ -47,3 +47,6 @@ example_data |>
 \code{\link{autoplot.incast_data}},
 \code{\link{autoplot.incast_ncast}}, \code{\link{autoplot.incast_fcast}}
 }
+\author{
+Cyril Geismar
+}

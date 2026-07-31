@@ -81,3 +81,6 @@ get_fcast(ncast, models = c(
 \seealso{
 \code{\link{default_models}}
 }
+\author{
+Cyril Geismar
+}

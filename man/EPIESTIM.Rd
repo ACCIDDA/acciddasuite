@@ -57,3 +57,6 @@ example_data |>
 }
 
 }
+\author{
+Cyril Geismar
+}

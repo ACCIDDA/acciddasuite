@@ -12,6 +12,8 @@
 #' If the input contains nowcast uncertainty from \code{\link{get_ncast}},
 #' this uncertainty is incorporated into the forecast intervals.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param x An \code{incast_*} object.
 #'
 #' @param models Named list of \code{fable} model specifications. Defaults to

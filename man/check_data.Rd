@@ -48,3 +48,6 @@ my_x <- read.csv("my_data.csv") |>
 }
 
 }
+\author{
+Cyril Geismar
+}

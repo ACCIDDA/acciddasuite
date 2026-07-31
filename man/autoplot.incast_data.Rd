@@ -18,3 +18,6 @@ A ggplot object.
 Observed counts over time, one panel per series. When revision history is
 present, the latest reported value per week is shown.
 }
+\author{
+Cyril Geismar
+}

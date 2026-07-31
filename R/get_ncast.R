@@ -11,6 +11,8 @@
 #' Weekly data only; other cadences are rejected (the rest of the pipeline is
 #' cadence-agnostic).
 #'
+#' @author Cyril Geismar
+#' 
 #' @param x An \code{incast_data} (\code{\link{get_data}} /
 #'   \code{\link{check_data}}) with revision history; use
 #'   \code{get_data(revisions = TRUE)}.

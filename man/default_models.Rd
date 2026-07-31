@@ -26,3 +26,6 @@ Additional models can be added by extending the returned list, for example:
 default_models()
 
 }
+\author{
+Cyril Geismar
+}

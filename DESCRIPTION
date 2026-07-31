@@ -1,9 +1,11 @@
 Package: incast
 Title: A suite of tools for epidemic forecasting
 Version: 0.0.1
-Authors@R: 
-    person("Cyril", "Geismar", , "cgeisma1@jh.edu", role = c("aut", "cre"))
-Description: A simple framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.
+Date: 2026-07-30
+Authors@R: c(
+    person("Cyril", "Geismar", , "cgeisma1@jh.edu", role = c("aut", "cre")),
+    person("Insight Net", role = c("cph", "fnd")))
+Description: A unified framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

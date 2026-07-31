@@ -75,3 +75,6 @@ get_fcast(ncast) # forecast directly from nowcast data
 }
 
 }
+\author{
+Cyril Geismar
+}

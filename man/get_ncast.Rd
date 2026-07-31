@@ -59,3 +59,6 @@ autoplot(ncast)
 }
 
 }
+\author{
+Cyril Geismar
+}

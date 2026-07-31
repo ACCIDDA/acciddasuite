@@ -61,3 +61,6 @@ cv$score
 }
 
 }
+\author{
+Cyril Geismar
+}

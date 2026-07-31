@@ -3,6 +3,8 @@
 #' Fetch confirmed US hospital admissions (COVID-19, influenza or RSV) from
 #' NHSN via \link[epidatr]{pub_covidcast}.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param pathogen One of "covid", "flu" or "rsv".
 #' @param geo_value Geographic value(s) to fetch, as per
 #'   \link[epidatr]{pub_covidcast}.

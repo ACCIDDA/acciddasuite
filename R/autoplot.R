@@ -7,6 +7,8 @@ ggplot2::autoplot
 #'
 #' Observed counts over time, one panel per series. When revision history is
 #' present, the latest reported value per week is shown.
+#' 
+#' @author Cyril Geismar
 #'
 #' @param object An \code{incast_data} from \code{\link{check_data}}.
 #' @param ... Ignored.
@@ -49,6 +51,8 @@ plot_bands <- function(bands, x, key, target) {
 #' the median, with 50% and 95% credible intervals.
 #'
 #' Each panel corresponds to a single time series.
+#' 
+#' @author Cyril Geismar
 #'
 #' @param object An \code{incast_ncast} object returned by
 #' \code{\link{get_ncast}}.
@@ -78,6 +82,7 @@ autoplot.incast_ncast <- function(object, ...) {
 #'
 #' Each panel corresponds to a single time series.
 #'
+#' @author Cyril Geismar
 #'
 #' @param object An \code{incast_cv} object returned by \code{\link{get_cv}}.
 #' @param ... Ignored.
@@ -121,6 +126,8 @@ autoplot.incast_cv <- function(object, ...) {
 #'
 #' Each panel corresponds to a single time series.
 #'
+#' @author Cyril Geismar
+#' 
 #' @param object An \code{incast_fcast} object returned by
 #' \code{\link{get_fcast}}.
 #' @param model The model to plot. Defaults to \code{"ENSEMBLE"}.
