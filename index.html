@@ -17,8 +17,8 @@
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
 <script src="extra.js"></script><meta property="og:title" content="A suite of tools for epidemic forecasting">
-<meta name="description" content="A simple framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.">
-<meta property="og:description" content="A simple framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.">
+<meta name="description" content="A unified framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.">
+<meta property="og:description" content="A unified framework for forecasting epidemics. The package includes tools for data processing, nowcasting, forecasting, and evaluation of forecasts.">
 <meta property="og:image" content="https://accidda.github.io/incast/logo.png">
 </head>
 <body>
@@ -69,17 +69,18 @@
 </div>
 <!-- badges: start -->
 <!-- badges: end -->
-<p><code>incast</code> provides a complete pipeline for infectious diseases forecasts. It fetches (<code><a href="reference/get_data.html">get_data()</a></code>) and validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), evaluates models by cross-validation (<code><a href="reference/get_cv.html">get_cv()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
+<p><code>incast</code> is an R package for infectious disease nowcasting and forecasting developed as part of <strong><a href="https://www.cdc.gov/insight-net" class="external-link">Insight Net</a></strong>, a <strong><a href="https://www.cdc.gov/forecast-outbreak-analytics/index.html" class="external-link">CDC Center for Forecasting and Outbreak Analytics</a></strong> initiative. It provides a unified framework for generating, evaluating, and operationalising infectious disease forecasts.</p>
+<p>It fetches (<code><a href="reference/get_data.html">get_data()</a></code>) and validates input data (<code><a href="reference/check_data.html">check_data()</a></code>), optionally applies nowcasting to adjust for reporting delays (<code><a href="reference/get_ncast.html">get_ncast()</a></code>), evaluates models by cross-validation (<code><a href="reference/get_cv.html">get_cv()</a></code>), and generates forecasts (<code><a href="reference/get_fcast.html">get_fcast()</a></code>).</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of incast from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="co"># pak::pak("ACCIDDA/incast")</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"ACCIDDA/incast"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ACCIDDA/incast" class="external-link">incast</a></span><span class="op">)</span></span>
@@ -97,14 +98,14 @@
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">&lt;-</span> <span class="va">example_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/check_data.html">check_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/get_ncast.html">get_ncast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-01-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/get_cv.html">get_cv</a></span><span class="op">(</span>eval_start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-10-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/get_fcast.html">get_fcast</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Using max_delay = 6 from data</span></span>
 <span><span class="co">#&gt; ℹ Truncating from max_delay = 6 to 2.</span></span>
 <span><span class="co">#&gt; ℹ Using max_delay = 6 from data</span></span>
 <span><span class="co">#&gt; ℹ Truncating from max_delay = 6 to 2.</span></span>
-<span><span class="co">#&gt; [2026-07-29 18:48:06.284] get_cv: +2.7109 secs</span></span>
-<span><span class="co">#&gt; [2026-07-29 18:48:09.007] get_fcast: +4.4587 secs</span></span>
+<span><span class="co">#&gt; [2026-07-30 21:22:00.375] get_cv: +3.5481 secs</span></span>
+<span><span class="co">#&gt; [2026-07-30 21:22:03.937] get_fcast: +4.7442 secs</span></span>
 <span></span>
 <span><span class="va">fcast</span></span>
 <span><span class="co">#&gt; &lt;incast_fcast&gt;</span></span>
@@ -114,10 +115,37 @@
 <span><span class="co">#&gt; Models:   3 + ENSEMBLE</span></span>
 <span></span>
 <span><span class="va">fcast</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" alt="" width="100%"></p>
+<p><img src="reference/figures/README-forecast-1.png" alt="" width="100%"></p>
 <p>Save to <a href="https://www.respilens.com/myrespilens" class="external-link">myRespiLens</a> format:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, path <span class="op">=</span> <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>If you use <code>incast</code> in your work, please cite the package as follows:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"incast"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; To cite package 'incast' in publications use:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   Geismar C (2026). _incast: A suite of tools for epidemic</span></span>
+<span><span class="co">#&gt;   forecasting_. R package version 0.0.1,</span></span>
+<span><span class="co">#&gt;   &lt;https://github.com/ACCIDDA/incast&gt;.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   @Manual{,</span></span>
+<span><span class="co">#&gt;     title = {incast: A suite of tools for epidemic forecasting},</span></span>
+<span><span class="co">#&gt;     author = {Cyril Geismar},</span></span>
+<span><span class="co">#&gt;     year = {2026},</span></span>
+<span><span class="co">#&gt;     note = {R package version 0.0.1},</span></span>
+<span><span class="co">#&gt;     url = {https://github.com/ACCIDDA/incast},</span></span>
+<span><span class="co">#&gt;   }</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+</h2>
+<p>The package relies on the <a href="https://baselinenowcast.epinowcast.org/" class="external-link"><code>baselinenowcast</code></a> and <a href="https://fable.tidyverts.org/" class="external-link"><code>fable</code></a> framework for time series nowcasting and forecasting. It produces forecasts in the <a href="https://hubverse.io/" class="external-link"><code>hubverse</code></a> format for submission to the <a href="https://www.cdc.gov/cfa-modeling-and-forecasting/about/index.html" class="external-link">CDC Forecast Hubs</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -147,6 +175,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Cyril Geismar <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Insight Net <br><small class="roles"> Copyright holder, funder </small>   </li>
 </ul>
 </div>
 
@@ -157,7 +186,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Cyril Geismar.</p>
+  <p>Developed by Cyril Geismar, Insight Net.</p>
 </div>
 
 <div class="pkgdown-footer-right">

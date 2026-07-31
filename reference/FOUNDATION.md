@@ -89,6 +89,10 @@ prediction intervals may be approximate.
 
 [`default_models`](https://accidda.github.io/incast/reference/default_models.md)
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

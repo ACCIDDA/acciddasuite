@@ -32,6 +32,10 @@ get_data(pathogen, geo_value, revisions = FALSE)
 An `incast_data` object (see
 [`check_data`](https://accidda.github.io/incast/reference/check_data.md)).
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

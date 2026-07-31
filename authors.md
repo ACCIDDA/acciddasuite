@@ -4,6 +4,8 @@
 
 - **Cyril Geismar**. Author, maintainer.
 
+- **Insight Net**. Copyright holder, funder.
+
 ## Citation
 
 Source:

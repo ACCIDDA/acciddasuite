@@ -24,3 +24,7 @@ autoplot(object, ...)
 ## Value
 
 A ggplot object.
+
+## Author
+
+Cyril Geismar

@@ -28,3 +28,7 @@ A ggplot object.
 ## Details
 
 Each panel corresponds to a single time series.
+
+## Author
+
+Cyril Geismar

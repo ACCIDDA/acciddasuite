@@ -83,6 +83,10 @@ interval coverage. Models are ranked separately for each series, and the
 resulting rankings are used by
 [`get_fcast`](https://accidda.github.io/incast/reference/get_fcast.md).
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

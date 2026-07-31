@@ -81,6 +81,10 @@ If the input contains nowcast uncertainty from
 [`get_ncast`](https://accidda.github.io/incast/reference/get_ncast.md),
 this uncertainty is incorporated into the forecast intervals.
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

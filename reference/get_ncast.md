@@ -66,6 +66,10 @@ An `incast_ncast` object with the shared backbone (`key`, `target`,
 Weekly data only; other cadences are rejected (the rest of the pipeline
 is cadence-agnostic).
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

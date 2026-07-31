@@ -64,6 +64,10 @@ Data must contain one row per time series and reporting date (and
 share the same reporting dates, and end on the same date. Series may
 begin at different times and may contain missing reporting periods.
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

@@ -54,6 +54,10 @@ A tibble.
 [`autoplot.incast_ncast`](https://accidda.github.io/incast/reference/autoplot.incast_ncast.md),
 [`autoplot.incast_fcast`](https://accidda.github.io/incast/reference/autoplot.incast_fcast.md)
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r

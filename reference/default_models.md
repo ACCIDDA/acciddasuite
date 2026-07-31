@@ -25,6 +25,10 @@ Additional models can be added by extending the returned list, for
 example:
 `c(default_models(), list(CUSTOM = fable::ARIMA(observation)))`.
 
+## Author
+
+Cyril Geismar
+
 ## Examples
 
 ``` r
