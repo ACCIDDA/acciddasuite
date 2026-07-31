@@ -85,8 +85,8 @@ An `incast_cv` object containing:
 
 - meta:
 
-  Cross-validation settings including dates, horizon, step, series keys,
-  target, and reporting interval.
+  Cross-validation settings including dates, horizon, step, number of
+  origins, series keys, target, and reporting interval.
 
 - data:
 
