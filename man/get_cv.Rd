@@ -51,7 +51,7 @@ An \code{incast_cv} object containing:
 for each model and series.}
 \item{models}{The evaluated model specifications.}
 \item{meta}{Cross-validation settings including dates, horizon, step,
-series keys, target, and reporting interval.}
+number of origins, series keys, target, and reporting interval.}
 \item{data}{Input data with revisions collapsed, used by
 \code{\link{get_fcast}}.}
 }

@@ -46,7 +46,7 @@
 #'   for each model and series.}
 #'   \item{models}{The evaluated model specifications.}
 #'   \item{meta}{Cross-validation settings including dates, horizon, step,
-#'   series keys, target, and reporting interval.}
+#'   number of origins, series keys, target, and reporting interval.}
 #'   \item{data}{Input data with revisions collapsed, used by
 #'   \code{\link{get_fcast}}.}
 #' }
@@ -166,7 +166,7 @@ get_cv <- function(
         eval_start_date = eval_start_date,
         h = h,
         step = step,
-        n_origins = n_origins,
+        n_origins = dplyr::n_distinct(cv_ts$.id),
         key = meta$key,
         target = meta$target,
         interval = meta$interval

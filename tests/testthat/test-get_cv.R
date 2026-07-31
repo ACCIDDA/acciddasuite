@@ -49,6 +49,9 @@ test_that("get_cv derives the first origin from n_origins", {
     unique(cv$forecasts$reference_date),
     unique(cv2$forecasts$reference_date)
   )
+  # both paths record identical settings
+  expect_equal(cv$meta, cv2$meta)
+  expect_equal(cv2$meta$n_origins, 3)
 })
 
 test_that("get_cv validates n_origins", {
