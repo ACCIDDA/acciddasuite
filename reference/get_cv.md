@@ -7,7 +7,14 @@ at each forecast origin and evaluated over the next `h` time steps.
 ## Usage
 
 ``` r
-get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
+get_cv(
+  x,
+  eval_start_date = NULL,
+  h = 4,
+  models = default_models(),
+  step = h,
+  n_origins = NULL
+)
 ```
 
 ## Arguments
@@ -25,7 +32,8 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
 
   Date (or character string coercible to a date) giving the first
   forecast origin to evaluate. Must fall within the data window. All
-  earlier observations are used as the initial training period.
+  earlier observations are used as the initial training period. This
+  argument is exclusive with `n_origins`.
 
 - h:
 
@@ -44,6 +52,15 @@ get_cv(x, eval_start_date, h = 4, models = default_models(), step = h)
   Integer giving the number of reporting intervals between successive
   cross-validation origins. Defaults to `h`, resulting in
   non-overlapping evaluation periods.
+
+- n_origins:
+
+  Integer giving the number of forecast origins to evaluate, as an
+  alternative to `eval_start_date`. Origins are placed so that the last
+  forecast ends at the last observation:
+  `eval_start_date = t - ((h - 1) + (n_origins - 1) * step) * interval`,
+  where `t` is the last observation date. This argument is exclusive
+  with `eval_start_date`.
 
 ## Value
 
@@ -91,6 +108,11 @@ Cyril Geismar
 
 ``` r
 if (FALSE) { # \dontrun{
+cv <- get_data("covid", "ny", revisions = TRUE) |>
+  get_ncast() |>
+  get_cv(h = 4, n_origins = 16)
+
+# or give the first forecast origin directly:
 cv <- get_data("covid", "ny", revisions = TRUE) |>
   get_ncast() |>
   get_cv(eval_start_date = "2025-01-01", h = 4)

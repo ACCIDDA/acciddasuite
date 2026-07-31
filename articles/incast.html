@@ -193,19 +193,8 @@ automatically.</p></li>
 <div class="section level3">
 <h3 id="cross-validation">Cross Validation<a class="anchor" aria-label="anchor" href="#cross-validation"></a>
 </h3>
-<p><code><a href="../reference/get_cv.html">get_cv()</a></code> performs rolling-origin time series
-cross-validation. The time series is split into two parts:</p>
-<ul>
-<li>
-<strong>Training data</strong>: all observations before
-<code>eval_start_date</code>, used to fit the models.</li>
-<li>
-<strong>Evaluation period</strong>: all observations from
-<code>eval_start_date</code> to the end of the series, used to score the
-forecasts.</li>
-</ul>
-<pre class="text"><code>|&lt;--------- training data ---------&gt;|&lt;---- evaluation period ----&gt;|
-start of series                 eval_start_date                   t</code></pre>
+<p><code><a href="../reference/get_cv.html">get_cv()</a></code> performs rolling-origin <a href="https://otexts.com/fpp3/tscv.html" class="external-link">time series
+cross-validation</a>.</p>
 <p>Three arguments determine how cross-validation is performed.</p>
 <ul>
 <li><p><strong><code>h</code></strong>: the forecast horizon, that is,
@@ -222,45 +211,37 @@ and is the fastest option.</li>
 in more evaluation points but requiring more model fits.</li>
 </ul>
 </li>
-<li><p><strong><code>eval_start_date</code></strong>: the first forecast
-origin. You can specify it directly, or choose the number of forecast
-origins (<code>N</code>) and calculate it as:</p></li>
-</ul>
-<pre class="text"><code><span><span class="va">eval_start_date</span> <span class="op">=</span> <span class="va">t</span> <span class="op">-</span> <span class="op">(</span><span class="op">(</span><span class="va">h</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">step</span><span class="op">)</span> <span class="op">*</span> <span class="va">interval</span></span></code></pre>
-<p>where:</p>
+<li>
+<p><strong><code>n_origins</code></strong> or
+<strong><code>eval_start_date</code></strong>: where the evaluation
+period starts. Supply exactly one:</p>
 <ul>
 <li>
-<code>t</code> is the last observation date.</li>
+<code>n_origins</code>: the number of forecast origins.</li>
 <li>
-<code>interval</code> is the reporting interval in days (for
-example, <code>1</code> for daily data or <code>7</code> for weekly
-data).</li>
+<code>eval_start_date</code>: the date of the first forecast
+origin.</li>
+</ul>
+</li>
 </ul>
 <p>A forecast origin at time <code>d</code> predicts intervals
-<code>d</code> to <code>d + h - 1</code>. Therefore, <code>N</code>
-forecast origins spaced <code>step</code> intervals apart span:</p>
-<pre class="text"><code><span><span class="va">h</span> <span class="op">+</span> <span class="op">(</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">step</span></span></code></pre>
-<p>reporting intervals in total.</p>
-<p>For example, if <code>h = 4</code>, <code>step = 4</code>, and
-<code>N = 3</code>:</p>
-<pre class="text"><code>Forecast N1: [d,   d+1, d+2, d+3]
-Forecast N2: [d+4, d+5, d+6, d+7]
-Forecast N3: [d+8, d+9, d+10, d+11]</code></pre>
-<p>The evaluation period therefore spans <code>d</code> to
-<code>d+11</code> (12 intervals in total).</p>
-<p>Increasing <code>N</code> provides a more reliable comparison of
-models, but leaves less historical data for training. Ensure that each
-time series contains enough observations before
-<code>eval_start_date</code> to fit the models reliably.</p>
+<code>d</code> to <code>d + h - 1</code>, so <code>n_origins</code>
+origins spaced <code>step</code> intervals apart cover the last
+<code>h + (n_origins - 1) * step</code> reporting intervals of the
+series. For example, with <code>h = 4</code>, <code>step = 4</code>, and
+<code>n_origins = 3</code>, the evaluation period covers the last 12
+intervals:</p>
+<pre class="text"><code>Forecast 1: [d,   d+1, d+2,  d+3]
+Forecast 2: [d+4, d+5, d+6,  d+7]
+Forecast 3: [d+8, d+9, d+10, d+11]</code></pre>
+<p>Increasing <code>n_origins</code> provides a more reliable comparison
+of models, but leaves less historical data for training. Ensure that
+each time series contains enough observations before the first forecast
+origin to fit the models reliably.</p>
 <p>The function returns an <code>incast_cv</code> object containing the
 cross-validation results for each model and location.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">4</span> <span class="co"># forecast horizon</span></span>
-<span><span class="va">step</span> <span class="op">&lt;-</span> <span class="va">h</span> <span class="co"># non-overlapping forecasts</span></span>
-<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">16</span> <span class="co"># number of origins</span></span>
-<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="co"># last observation date</span></span>
-<span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="va">t</span> <span class="op">-</span> <span class="op">(</span><span class="op">(</span><span class="va">h</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">step</span><span class="op">)</span> <span class="op">*</span> <span class="va">df</span><span class="op">$</span><span class="va">interval</span></span>
-<span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cv.html">get_cv</a></span><span class="op">(</span><span class="va">ncast</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">eval_start_date</span><span class="op">)</span>, <span class="va">h</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cv.html">get_cv</a></span><span class="op">(</span><span class="va">ncast</span>, h <span class="op">=</span> <span class="fl">4</span>, n_origins <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span>
 <span><span class="va">cv</span></span>
 <span><span class="co">#&gt; &lt;incast_cv&gt;</span></span>
 <span><span class="co">#&gt; Target:   wk inc flu hosp</span></span>
@@ -271,7 +252,7 @@ cross-validation results for each model and location.</p>
 <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code>. Values of <code>wis_relative_skill</code> below
 1 indicate better-than-average forecasts (lower WIS), while values above
 1 indicate worse-than-average forecasts (higher WIS).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">cv</span><span class="op">)</span></span></code></pre></div>
 <p><img src="incast_files/figure-html/plot-cv-1.png" class="r-plt" alt="" width="2100"></p>
 </div>
@@ -282,7 +263,7 @@ cross-validation results for each model and location.</p>
 from cross-validation and forecasts <code>h</code> reporting intervals
 ahead. <code>h</code> defaults to the horizon used in
 <code><a href="../reference/get_cv.html">get_cv()</a></code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fcast.html">get_fcast</a></span><span class="op">(</span><span class="va">cv</span>, top_n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">fcast</span></span>
 <span><span class="co">#&gt; &lt;incast_fcast&gt;</span></span>
@@ -292,7 +273,7 @@ ahead. <code>h</code> defaults to the horizon used in
 <span><span class="co">#&gt; Models:   3 + ENSEMBLE</span></span></code></pre></div>
 <p>Plot the ensemble forecast with <code>autoplot(fcast)</code> (pass
 <code>model =</code> to inspect any single model instead):</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">fcast</span><span class="op">)</span></span></code></pre></div>
 <p><img src="incast_files/figure-html/plot-forecast-1.png" class="r-plt" alt="" width="2100"></p>
 </div>
@@ -303,7 +284,7 @@ ahead. <code>h</code> defaults to the horizon used in
 be passed to <code><a href="../reference/get_cv.html">get_cv()</a></code>/<code><a href="../reference/get_fcast.html">get_fcast()</a></code> via
 <code>models</code>. Compose with <code><a href="../reference/default_models.html">default_models()</a></code> to keep
 the built-ins alongside your own:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://fable.tidyverts.org" class="external-link">fable</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pkg.mitchelloharawild.com/fable.prophet/" class="external-link">fable.prophet</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mrc-ide/EpiEstim" class="external-link">EpiEstim</a></span><span class="op">)</span></span>
@@ -322,7 +303,7 @@ the built-ins alongside your own:</p>
 <span></span>
 <span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cv.html">get_cv</a></span><span class="op">(</span></span>
 <span>  <span class="va">ncast</span>,</span>
-<span>  eval_start_date <span class="op">=</span> <span class="va">eval_start_date</span>,</span>
+<span>  n_origins <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>  models <span class="op">=</span> <span class="va">my_models</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -335,7 +316,7 @@ the built-ins alongside your own:</p>
 <p><a href="https://www.respilens.com/" class="external-link">RespiLens</a> is a platform for
 sharing respiratory disease forecasts. Use <code><a href="../reference/to_respilens.html">to_respilens()</a></code>
 to export the forecast as JSON for upload to <a href="https://www.respilens.com/myrespilens" class="external-link">MyRespiLens</a>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/to_respilens.html">to_respilens</a></span><span class="op">(</span><span class="va">fcast</span>, <span class="st">"respilens.json"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

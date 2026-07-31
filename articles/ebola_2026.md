@@ -129,17 +129,11 @@ evaluation period spans 22 days.
 
 ``` r
 
-h <- 7 # forecast horizon
-step <- 1 # one origin per day
-N <- 16 # number of origins
-t <- max(data$data$target_end_date) # last observation date
-eval_start_date <- t - ((h - 1) + (N - 1) * step) * data$interval
-
 cv <- data |>
   get_cv(
-    eval_start_date = eval_start_date,
-    h = h,
-    step = step,
+    h = 7, # forecast horizon
+    step = 1, # one origin per day
+    n_origins = 16,
     models = models
   )
 ```

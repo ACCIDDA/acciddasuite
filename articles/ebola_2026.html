@@ -188,17 +188,11 @@ foundation models.</p>
 <p>Here we forecast 7 days ahead with 16 origins spaced 1 day apart, so
 the evaluation period spans 22 days.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">7</span> <span class="co"># forecast horizon</span></span>
-<span><span class="va">step</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># one origin per day</span></span>
-<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">16</span> <span class="co"># number of origins</span></span>
-<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">target_end_date</span><span class="op">)</span> <span class="co"># last observation date</span></span>
-<span><span class="va">eval_start_date</span> <span class="op">&lt;-</span> <span class="va">t</span> <span class="op">-</span> <span class="op">(</span><span class="op">(</span><span class="va">h</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">N</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="va">step</span><span class="op">)</span> <span class="op">*</span> <span class="va">data</span><span class="op">$</span><span class="va">interval</span></span>
-<span></span>
-<span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/get_cv.html">get_cv</a></span><span class="op">(</span></span>
-<span>    eval_start_date <span class="op">=</span> <span class="va">eval_start_date</span>,</span>
-<span>    h <span class="op">=</span> <span class="va">h</span>,</span>
-<span>    step <span class="op">=</span> <span class="va">step</span>,</span>
+<span>    h <span class="op">=</span> <span class="fl">7</span>, <span class="co"># forecast horizon</span></span>
+<span>    step <span class="op">=</span> <span class="fl">1</span>, <span class="co"># one origin per day</span></span>
+<span>    n_origins <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>    models <span class="op">=</span> <span class="va">models</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
